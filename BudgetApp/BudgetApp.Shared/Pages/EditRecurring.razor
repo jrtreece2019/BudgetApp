@@ -1,0 +1,289 @@
+@page "/recurring/add"
+@page "/recurring/edit/{RecurringId:int}"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<PageTitle>@(IsEditing ? "Edit" : "Add") Recurring</PageTitle>
+
+<div class="edit-recurring">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" @onclick="GoBack">←</button>
+        <h1 class="header-title">@(IsEditing ? "Edit" : "Add") Recurring</h1>
+        @if (IsEditing)
+        {
+            <button class="delete-btn" @onclick="DeleteRecurring">🗑️</button>
+        }
+        else
+        {
+            <div class="header-spacer"></div>
+        }
+    </div>
+
+    <!-- Transaction Type Toggle -->
+    <div class="type-toggle">
+        <button class="type-btn @(IsExpense ? "active" : "")" @onclick="() => IsExpense = true">
+            Expense
+        </button>
+        <button class="type-btn @(!IsExpense ? "active income" : "")" @onclick="() => IsExpense = false">
+            Income
+        </button>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="amount-section">
+        <span class="currency-symbol">$</span>
+        <input type="number" 
+               class="amount-input" 
+               placeholder="0.00" 
+               step="0.01" 
+               min="0"
+               @bind="Amount" 
+               @bind:event="oninput" />
+    </div>
+
+    <!-- Form Fields -->
+    <div class="form-section">
+        <!-- Description -->
+        <div class="form-field">
+            <label class="field-label">Description</label>
+            <input type="text" 
+                   class="field-input" 
+                   placeholder="e.g., Netflix, Rent, Salary"
+                   @bind="Description" />
+        </div>
+
+        <!-- Category -->
+        <div class="form-field">
+            <label class="field-label">Category</label>
+            <div class="category-grid">
+                @foreach (var category in Categories)
+                {
+                    <button type="button"
+                            class="category-chip @(SelectedCategoryId == category.Id ? "selected" : "")"
+                            style="@(SelectedCategoryId == category.Id ? $"background-color: {category.Color}; border-color: {category.Color};" : "")"
+                            @onclick="() => SelectedCategoryId = category.Id">
+                        <span class="chip-icon">@category.Icon</span>
+                        <span class="chip-name">@category.Name</span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Frequency -->
+        <div class="form-field">
+            <label class="field-label">Frequency</label>
+            <div class="frequency-options">
+                <button type="button" class="freq-btn @(Frequency == RecurrenceFrequency.Weekly ? "active" : "")"
+                        @onclick="() => Frequency = RecurrenceFrequency.Weekly">
+                    Weekly
+                </button>
+                <button type="button" class="freq-btn @(Frequency == RecurrenceFrequency.Biweekly ? "active" : "")"
+                        @onclick="() => Frequency = RecurrenceFrequency.Biweekly">
+                    Biweekly
+                </button>
+                <button type="button" class="freq-btn @(Frequency == RecurrenceFrequency.Monthly ? "active" : "")"
+                        @onclick="() => Frequency = RecurrenceFrequency.Monthly">
+                    Monthly
+                </button>
+                <button type="button" class="freq-btn @(Frequency == RecurrenceFrequency.Yearly ? "active" : "")"
+                        @onclick="() => Frequency = RecurrenceFrequency.Yearly">
+                    Yearly
+                </button>
+            </div>
+        </div>
+
+        <!-- Day of Month (for monthly) -->
+        @if (Frequency == RecurrenceFrequency.Monthly)
+        {
+            <div class="form-field">
+                <label class="field-label">Day of Month</label>
+                <select class="field-input" @bind="DayOfMonth">
+                    @for (int i = 1; i <= 31; i++)
+                    {
+                        <option value="@i">@i@GetDaySuffix(i)</option>
+                    }
+                </select>
+            </div>
+        }
+
+        <!-- Start Date -->
+        <div class="form-field">
+            <label class="field-label">Start Date</label>
+            <input type="date" 
+                   class="field-input" 
+                   @bind="StartDate" />
+        </div>
+
+        <!-- Active Toggle -->
+        @if (IsEditing)
+        {
+            <div class="form-field toggle-field">
+                <label class="field-label">Active</label>
+                <button class="toggle-btn @(IsActive ? "active" : "")" @onclick="() => IsActive = !IsActive">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-label">@(IsActive ? "Active" : "Paused")</span>
+                </button>
+            </div>
+        }
+    </div>
+
+    <!-- Save Button -->
+    <div class="save-section">
+        <button class="save-btn @(!IsValid ? "disabled" : "")" 
+                @onclick="Save" 
+                disabled="@(!IsValid)">
+            @(IsEditing ? "Update" : "Create") Recurring
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int? RecurringId { get; set; }
+
+    private bool IsEditing => RecurringId.HasValue;
+    private bool IsExpense { get; set; } = true;
+    private decimal Amount { get; set; }
+    private string Description { get; set; } = string.Empty;
+    private int SelectedCategoryId { get; set; }
+    private RecurrenceFrequency Frequency { get; set; } = RecurrenceFrequency.Monthly;
+    private int DayOfMonth { get; set; } = DateTime.Today.Day;
+    private DateTime StartDate { get; set; } = DateTime.Today;
+    private bool IsActive { get; set; } = true;
+    private List<Category> Categories { get; set; } = new();
+
+    private bool IsValid => Amount > 0 && SelectedCategoryId > 0 && !string.IsNullOrWhiteSpace(Description);
+
+    protected override void OnInitialized()
+    {
+        Categories = BudgetService.GetCategories();
+        
+        if (IsEditing)
+        {
+            var recurring = BudgetService.GetRecurringTransaction(RecurringId!.Value);
+            if (recurring != null)
+            {
+                Amount = recurring.Amount;
+                Description = recurring.Description;
+                SelectedCategoryId = recurring.CategoryId;
+                IsExpense = recurring.Type == TransactionType.Expense;
+                Frequency = recurring.Frequency;
+                DayOfMonth = recurring.DayOfMonth;
+                StartDate = recurring.StartDate;
+                IsActive = recurring.IsActive;
+            }
+        }
+        else if (Categories.Any())
+        {
+            SelectedCategoryId = Categories.First().Id;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/recurring");
+    }
+
+    private void Save()
+    {
+        if (!IsValid) return;
+
+        var nextDueDate = CalculateInitialNextDueDate();
+
+        if (IsEditing)
+        {
+            var recurring = new RecurringTransaction
+            {
+                Id = RecurringId!.Value,
+                Description = Description,
+                Amount = Amount,
+                CategoryId = SelectedCategoryId,
+                Type = IsExpense ? TransactionType.Expense : TransactionType.Income,
+                Frequency = Frequency,
+                DayOfMonth = DayOfMonth,
+                StartDate = StartDate,
+                NextDueDate = nextDueDate,
+                IsActive = IsActive
+            };
+            BudgetService.UpdateRecurringTransaction(recurring);
+        }
+        else
+        {
+            // Create the first transaction immediately for this month
+            var firstTransaction = new Transaction
+            {
+                Description = Description,
+                Amount = Amount,
+                CategoryId = SelectedCategoryId,
+                Type = IsExpense ? TransactionType.Expense : TransactionType.Income,
+                Date = DateTime.Today
+            };
+            BudgetService.AddTransaction(firstTransaction);
+
+            // Set up recurring for future months
+            var recurring = new RecurringTransaction
+            {
+                Description = Description,
+                Amount = Amount,
+                CategoryId = SelectedCategoryId,
+                Type = IsExpense ? TransactionType.Expense : TransactionType.Income,
+                Frequency = Frequency,
+                DayOfMonth = DayOfMonth,
+                StartDate = StartDate,
+                NextDueDate = nextDueDate,
+                IsActive = true
+            };
+            BudgetService.AddRecurringTransaction(recurring);
+        }
+
+        Navigation.NavigateTo("/");
+    }
+
+    private DateTime CalculateInitialNextDueDate()
+    {
+        var today = DateTime.Today;
+        
+        // Since we create the first transaction immediately,
+        // NextDueDate should be the NEXT occurrence
+        if (Frequency == RecurrenceFrequency.Monthly)
+        {
+            // Next month on the specified day
+            var nextMonth = today.AddMonths(1);
+            var daysInNextMonth = DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month);
+            var day = Math.Min(DayOfMonth, daysInNextMonth);
+            return new DateTime(nextMonth.Year, nextMonth.Month, day);
+        }
+        
+        return Frequency switch
+        {
+            RecurrenceFrequency.Weekly => today.AddDays(7),
+            RecurrenceFrequency.Biweekly => today.AddDays(14),
+            RecurrenceFrequency.Yearly => today.AddYears(1),
+            _ => today.AddMonths(1)
+        };
+    }
+
+    private void DeleteRecurring()
+    {
+        if (IsEditing)
+        {
+            BudgetService.DeleteRecurringTransaction(RecurringId!.Value);
+            Navigation.NavigateTo("/recurring");
+        }
+    }
+
+    private string GetDaySuffix(int day)
+    {
+        return day switch
+        {
+            1 or 21 or 31 => "st",
+            2 or 22 => "nd",
+            3 or 23 => "rd",
+            _ => "th"
+        };
+    }
+}
+

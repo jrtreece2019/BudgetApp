@@ -7,31 +7,27 @@ public class BudgetService : IBudgetService
     private readonly List<Category> _categories;
     private readonly List<Transaction> _transactions;
     private readonly List<Budget> _budgets;
+    private readonly List<RecurringTransaction> _recurringTransactions;
     private int _nextTransactionId = 100;
+    private int _nextCategoryId = 100;
+    private int _nextRecurringId = 100;
 
     public BudgetService()
     {
         _categories = new List<Category>
         {
-            new() { Id = 1, Name = "Food & Dining", Icon = "🍽️", Color = "#F59E0B" },
-            new() { Id = 2, Name = "Transport", Icon = "🚗", Color = "#3B82F6" },
-            new() { Id = 3, Name = "Bills & Utilities", Icon = "📄", Color = "#EF4444" },
-            new() { Id = 4, Name = "Shopping", Icon = "🛍️", Color = "#EC4899" },
-            new() { Id = 5, Name = "Entertainment", Icon = "🎬", Color = "#8B5CF6" },
-            new() { Id = 6, Name = "Health", Icon = "💊", Color = "#10B981" }
+            new() { Id = 1, Name = "Food & Dining", Icon = "🍽️", Color = "#F59E0B", DefaultBudget = 500 },
+            new() { Id = 2, Name = "Transport", Icon = "🚗", Color = "#3B82F6", DefaultBudget = 200 },
+            new() { Id = 3, Name = "Bills & Utilities", Icon = "📄", Color = "#EF4444", DefaultBudget = 800 },
+            new() { Id = 4, Name = "Shopping", Icon = "🛍️", Color = "#EC4899", DefaultBudget = 300 },
+            new() { Id = 5, Name = "Entertainment", Icon = "🎬", Color = "#8B5CF6", DefaultBudget = 150 },
+            new() { Id = 6, Name = "Health", Icon = "💊", Color = "#10B981", DefaultBudget = 100 }
         };
 
         var now = DateTime.Now;
         
-        _budgets = new List<Budget>
-        {
-            new() { Id = 1, CategoryId = 1, Amount = 500, Month = now.Month, Year = now.Year },
-            new() { Id = 2, CategoryId = 2, Amount = 200, Month = now.Month, Year = now.Year },
-            new() { Id = 3, CategoryId = 3, Amount = 800, Month = now.Month, Year = now.Year },
-            new() { Id = 4, CategoryId = 4, Amount = 300, Month = now.Month, Year = now.Year },
-            new() { Id = 5, CategoryId = 5, Amount = 150, Month = now.Month, Year = now.Year },
-            new() { Id = 6, CategoryId = 6, Amount = 100, Month = now.Month, Year = now.Year }
-        };
+        // No month-specific budgets needed - they'll use category defaults
+        _budgets = new List<Budget>();
 
         _transactions = new List<Transaction>
         {
@@ -45,9 +41,50 @@ public class BudgetService : IBudgetService
             new() { Id = 8, Description = "Pharmacy", Amount = 25.00m, Date = now.AddDays(-4), CategoryId = 6, Type = TransactionType.Expense },
             new() { Id = 9, Description = "Paycheck", Amount = 2500.00m, Date = now.AddDays(-15), CategoryId = 1, Type = TransactionType.Income }
         };
+        
+        _recurringTransactions = new List<RecurringTransaction>();
     }
 
+    // Categories
     public List<Category> GetCategories() => _categories;
+
+    public Category? GetCategory(int categoryId)
+    {
+        return _categories.FirstOrDefault(c => c.Id == categoryId);
+    }
+
+    public void AddCategory(Category category)
+    {
+        category.Id = _nextCategoryId++;
+        _categories.Add(category);
+    }
+
+    public void UpdateCategory(Category category)
+    {
+        var existing = _categories.FirstOrDefault(c => c.Id == category.Id);
+        if (existing != null)
+        {
+            existing.Name = category.Name;
+            existing.Icon = category.Icon;
+            existing.Color = category.Color;
+            existing.DefaultBudget = category.DefaultBudget;
+        }
+    }
+
+    public void DeleteCategory(int categoryId)
+    {
+        var category = _categories.FirstOrDefault(c => c.Id == categoryId);
+        if (category != null)
+        {
+            _categories.Remove(category);
+        }
+    }
+
+    public bool CanDeleteCategory(int categoryId)
+    {
+        return !_transactions.Any(t => t.CategoryId == categoryId) &&
+               !_recurringTransactions.Any(r => r.CategoryId == categoryId);
+    }
 
     public List<Transaction> GetTransactions(int month, int year)
     {
@@ -67,9 +104,13 @@ public class BudgetService : IBudgetService
 
     public decimal GetTotalBudget(int month, int year)
     {
-        return _budgets
-            .Where(b => b.Month == month && b.Year == year)
-            .Sum(b => b.Amount);
+        // Sum of custom budgets for this month + default budgets for categories without custom
+        decimal total = 0;
+        foreach (var category in _categories)
+        {
+            total += GetBudgetByCategory(category.Id, month, year);
+        }
+        return total;
     }
 
     public decimal GetTotalSpent(int month, int year)
@@ -88,9 +129,30 @@ public class BudgetService : IBudgetService
 
     public decimal GetBudgetByCategory(int categoryId, int month, int year)
     {
-        return _budgets
-            .Where(b => b.CategoryId == categoryId && b.Month == month && b.Year == year)
-            .Sum(b => b.Amount);
+        // First check for month-specific custom budget
+        var customBudget = _budgets.FirstOrDefault(b => b.CategoryId == categoryId && b.Month == month && b.Year == year);
+        if (customBudget != null)
+        {
+            return customBudget.Amount;
+        }
+        
+        // Fall back to category's default budget
+        var category = _categories.FirstOrDefault(c => c.Id == categoryId);
+        return category?.DefaultBudget ?? 0;
+    }
+
+    public bool IsBudgetCustom(int categoryId, int month, int year)
+    {
+        return _budgets.Any(b => b.CategoryId == categoryId && b.Month == month && b.Year == year);
+    }
+
+    public void ResetBudgetToDefault(int categoryId, int month, int year)
+    {
+        var budget = _budgets.FirstOrDefault(b => b.CategoryId == categoryId && b.Month == month && b.Year == year);
+        if (budget != null)
+        {
+            _budgets.Remove(budget);
+        }
     }
 
     public void AddTransaction(Transaction transaction)
@@ -145,6 +207,95 @@ public class BudgetService : IBudgetService
                 Amount = amount
             });
         }
+    }
+
+    // Recurring Transactions
+    public List<RecurringTransaction> GetRecurringTransactions() => _recurringTransactions;
+
+    public RecurringTransaction? GetRecurringTransaction(int id)
+    {
+        return _recurringTransactions.FirstOrDefault(r => r.Id == id);
+    }
+
+    public void AddRecurringTransaction(RecurringTransaction recurring)
+    {
+        recurring.Id = _nextRecurringId++;
+        _recurringTransactions.Add(recurring);
+    }
+
+    public void UpdateRecurringTransaction(RecurringTransaction recurring)
+    {
+        var existing = _recurringTransactions.FirstOrDefault(r => r.Id == recurring.Id);
+        if (existing != null)
+        {
+            existing.Description = recurring.Description;
+            existing.Amount = recurring.Amount;
+            existing.CategoryId = recurring.CategoryId;
+            existing.Type = recurring.Type;
+            existing.Frequency = recurring.Frequency;
+            existing.DayOfMonth = recurring.DayOfMonth;
+            existing.StartDate = recurring.StartDate;
+            existing.NextDueDate = recurring.NextDueDate;
+            existing.IsActive = recurring.IsActive;
+        }
+    }
+
+    public void DeleteRecurringTransaction(int id)
+    {
+        var recurring = _recurringTransactions.FirstOrDefault(r => r.Id == id);
+        if (recurring != null)
+        {
+            _recurringTransactions.Remove(recurring);
+        }
+    }
+
+    public void ProcessRecurringTransactions()
+    {
+        var today = DateTime.Today;
+        var dueRecurring = _recurringTransactions
+            .Where(r => r.IsActive && r.NextDueDate <= today)
+            .ToList();
+
+        foreach (var recurring in dueRecurring)
+        {
+            while (recurring.NextDueDate <= today)
+            {
+                var transaction = new Transaction
+                {
+                    Id = _nextTransactionId++,
+                    Description = recurring.Description,
+                    Amount = recurring.Amount,
+                    CategoryId = recurring.CategoryId,
+                    Type = recurring.Type,
+                    Date = recurring.NextDueDate
+                };
+                _transactions.Add(transaction);
+
+                recurring.NextDueDate = CalculateNextDueDate(recurring);
+            }
+        }
+    }
+
+    private DateTime CalculateNextDueDate(RecurringTransaction recurring)
+    {
+        var current = recurring.NextDueDate;
+        
+        return recurring.Frequency switch
+        {
+            RecurrenceFrequency.Weekly => current.AddDays(7),
+            RecurrenceFrequency.Biweekly => current.AddDays(14),
+            RecurrenceFrequency.Monthly => GetNextMonthlyDate(current, recurring.DayOfMonth),
+            RecurrenceFrequency.Yearly => current.AddYears(1),
+            _ => current.AddMonths(1)
+        };
+    }
+
+    private DateTime GetNextMonthlyDate(DateTime current, int dayOfMonth)
+    {
+        var nextMonth = current.AddMonths(1);
+        var daysInMonth = DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month);
+        var day = Math.Min(dayOfMonth, daysInMonth);
+        return new DateTime(nextMonth.Year, nextMonth.Month, day);
     }
 }
 

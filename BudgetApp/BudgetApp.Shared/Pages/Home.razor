@@ -27,36 +27,102 @@
         </div>
     </div>
 
-    <!-- Categories -->
+    <!-- Fixed Expenses -->
     <div class="section">
-        <div class="section-header">
-            <span class="section-title">Categories</span>
+        <div class="section-header-group" @onclick="() => FixedExpanded = !FixedExpanded">
+            <div class="section-header-left">
+                <span class="section-expand-icon">@(FixedExpanded ? "▼" : "▶")</span>
+                <span class="section-type-icon">📌</span>
+                <span class="section-title">Fixed Expenses</span>
+            </div>
+            <div class="section-header-right">
+                <span class="section-summary">@FixedSpent.ToString("C0") / @FixedBudget.ToString("C0")</span>
+                <span class="section-count">@FixedCategories.Count</span>
+            </div>
         </div>
-        <div class="category-list">
-            @foreach (var category in Categories)
-            {
-                var catId = category.Id;
-                var spent = BudgetService.GetSpentByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
-                var budget = BudgetService.GetBudgetByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
-                var percent = budget > 0 ? Math.Min((double)(spent / budget) * 100, 100) : 0;
-                var isOver = spent > budget;
+        @if (FixedExpanded)
+        {
+            <div class="category-list">
+                @foreach (var category in FixedCategories)
+                {
+                    var catId = category.Id;
+                    var spent = BudgetService.GetSpentByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var budget = BudgetService.GetBudgetByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var percent = budget > 0 ? Math.Min((double)(spent / budget) * 100, 100) : 0;
+                    var isOver = spent > budget;
 
-                <div class="category-item" @onclick="() => OpenCategory(catId)">
-                    <div class="category-icon" style="background-color: @category.Color">@category.Icon</div>
-                    <div class="category-info">
-                        <div class="category-header">
-                            <span class="category-name">@category.Name</span>
-                            <span class="category-amount @(isOver ? "over" : "")">@spent.ToString("C0") / @budget.ToString("C0")</span>
+                    <div class="category-item" @onclick="() => OpenCategory(catId)">
+                        <div class="category-icon" style="background-color: @category.Color">@category.Icon</div>
+                        <div class="category-info">
+                            <div class="category-header">
+                                <span class="category-name">@category.Name</span>
+                                <span class="category-amount @(isOver ? "over" : "")">@spent.ToString("C0") / @budget.ToString("C0")</span>
+                            </div>
+                            <div class="category-progress-container">
+                                <div class="category-progress-bar @(isOver ? "over" : "")" 
+                                     style="width: @percent%; background-color: @category.Color"></div>
+                            </div>
                         </div>
-                        <div class="category-progress-container">
-                            <div class="category-progress-bar @(isOver ? "over" : "")" 
-                                 style="width: @percent%; background-color: @category.Color"></div>
-                        </div>
+                        <span class="category-chevron">›</span>
                     </div>
-                    <span class="category-chevron">›</span>
-                </div>
-            }
+                }
+                @if (FixedCategories.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-text">No fixed expense categories</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Discretionary -->
+    <div class="section">
+        <div class="section-header-group" @onclick="() => DiscretionaryExpanded = !DiscretionaryExpanded">
+            <div class="section-header-left">
+                <span class="section-expand-icon">@(DiscretionaryExpanded ? "▼" : "▶")</span>
+                <span class="section-type-icon">🎯</span>
+                <span class="section-title">Discretionary</span>
+            </div>
+            <div class="section-header-right">
+                <span class="section-summary">@DiscretionarySpent.ToString("C0") / @DiscretionaryBudget.ToString("C0")</span>
+                <span class="section-count">@DiscretionaryCategories.Count</span>
+            </div>
         </div>
+        @if (DiscretionaryExpanded)
+        {
+            <div class="category-list">
+                @foreach (var category in DiscretionaryCategories)
+                {
+                    var catId = category.Id;
+                    var spent = BudgetService.GetSpentByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var budget = BudgetService.GetBudgetByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var percent = budget > 0 ? Math.Min((double)(spent / budget) * 100, 100) : 0;
+                    var isOver = spent > budget;
+
+                    <div class="category-item" @onclick="() => OpenCategory(catId)">
+                        <div class="category-icon" style="background-color: @category.Color">@category.Icon</div>
+                        <div class="category-info">
+                            <div class="category-header">
+                                <span class="category-name">@category.Name</span>
+                                <span class="category-amount @(isOver ? "over" : "")">@spent.ToString("C0") / @budget.ToString("C0")</span>
+                            </div>
+                            <div class="category-progress-container">
+                                <div class="category-progress-bar @(isOver ? "over" : "")" 
+                                     style="width: @percent%; background-color: @category.Color"></div>
+                            </div>
+                        </div>
+                        <span class="category-chevron">›</span>
+                    </div>
+                }
+                @if (DiscretionaryCategories.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-text">No discretionary categories</span>
+                    </div>
+                }
+            </div>
+        }
     </div>
 
     <!-- Recent Transactions -->
@@ -104,9 +170,38 @@
     private decimal TotalSpent { get; set; }
     private decimal RemainingBudget => TotalBudget - TotalSpent;
     private double ProgressPercentage => TotalBudget > 0 ? Math.Min((double)(TotalSpent / TotalBudget) * 100, 100) : 0;
+    
+    // Grouped categories
+    private List<Category> FixedCategories => Categories.Where(c => c.Type == CategoryType.Fixed).ToList();
+    private List<Category> DiscretionaryCategories => Categories.Where(c => c.Type == CategoryType.Discretionary).ToList();
+    
+    // Section expand state
+    private bool FixedExpanded { get; set; } = true;
+    private bool DiscretionaryExpanded { get; set; } = true;
+    
+    // Group totals
+    private decimal FixedBudget { get; set; }
+    private decimal FixedSpent { get; set; }
+    private decimal DiscretionaryBudget { get; set; }
+    private decimal DiscretionarySpent { get; set; }
 
     protected override void OnInitialized()
     {
+        // Check for month/year query parameters (when returning from category detail)
+        var uri = new Uri(Navigation.Uri);
+        if (!string.IsNullOrEmpty(uri.Query))
+        {
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            if (int.TryParse(queryParams["month"], out var month) && 
+                int.TryParse(queryParams["year"], out var year))
+            {
+                CurrentDate = new DateTime(year, month, 1);
+            }
+        }
+
+        // Process any pending recurring transactions
+        BudgetService.ProcessRecurringTransactions();
+        
         LoadData();
     }
 
@@ -116,6 +211,12 @@
         RecentTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
         TotalBudget = BudgetService.GetTotalBudget(CurrentDate.Month, CurrentDate.Year);
         TotalSpent = BudgetService.GetTotalSpent(CurrentDate.Month, CurrentDate.Year);
+        
+        // Calculate group totals
+        FixedBudget = FixedCategories.Sum(c => BudgetService.GetBudgetByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+        FixedSpent = FixedCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+        DiscretionaryBudget = DiscretionaryCategories.Sum(c => BudgetService.GetBudgetByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+        DiscretionarySpent = DiscretionaryCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
     }
 
     private void PreviousMonth()
@@ -137,7 +238,7 @@
 
     private void OpenCategory(int categoryId)
     {
-        Navigation.NavigateTo($"/category/{categoryId}");
+        Navigation.NavigateTo($"/category/{categoryId}/{CurrentDate.Month}/{CurrentDate.Year}");
     }
 
     private string FormatDate(DateTime date)

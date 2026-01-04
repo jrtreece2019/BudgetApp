@@ -22,9 +22,20 @@
                     <span class="menu-item-icon">📋</span>
                     <span class="menu-item-label">All Transactions</span>
                 </a>
+                <a class="menu-item @(IsActive("/recurring") ? "active" : "")" href="/recurring" @onclick="CloseMenu">
+                    <span class="menu-item-icon">🔄</span>
+                    <span class="menu-item-label">Recurring</span>
+                </a>
                 <a class="menu-item @(IsActive("/reports") ? "active" : "")" href="/reports" @onclick="CloseMenu">
                     <span class="menu-item-icon">📊</span>
                     <span class="menu-item-label">Reports</span>
+                </a>
+                
+                <div class="menu-divider"></div>
+                
+                <a class="menu-item @(IsActive("/categories") ? "active" : "")" href="/categories" @onclick="CloseMenu">
+                    <span class="menu-item-icon">🏷️</span>
+                    <span class="menu-item-label">Categories</span>
                 </a>
             </div>
         </nav>

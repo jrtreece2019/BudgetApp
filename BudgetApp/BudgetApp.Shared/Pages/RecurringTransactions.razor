@@ -1,0 +1,124 @@
+@page "/recurring"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<PageTitle>Recurring Transactions</PageTitle>
+
+<div class="recurring-page">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" @onclick="GoBack">←</button>
+        <h1 class="header-title">Recurring</h1>
+        <div class="header-spacer"></div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="info-card">
+        <div class="info-icon">🔄</div>
+        <div class="info-text">
+            <span class="info-title">Automatic Transactions</span>
+            <span class="info-desc">Set up bills and subscriptions to be added automatically each month.</span>
+        </div>
+    </div>
+
+    <!-- Recurring List -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">@(RecurringList.Count) recurring transactions</span>
+        </div>
+
+        @if (RecurringList.Any())
+        {
+            <div class="recurring-list">
+                @foreach (var recurring in RecurringList)
+                {
+                    var category = Categories.FirstOrDefault(c => c.Id == recurring.CategoryId);
+                    var isIncome = recurring.Type == TransactionType.Income;
+
+                    <div class="recurring-item" @onclick="() => EditRecurring(recurring.Id)">
+                        <div class="recurring-icon" style="background-color: @(category?.Color ?? "#6B7280")">
+                            @(category?.Icon ?? "💰")
+                        </div>
+                        <div class="recurring-info">
+                            <span class="recurring-desc">@recurring.Description</span>
+                            <span class="recurring-meta">
+                                @GetFrequencyText(recurring.Frequency) · Next: @recurring.NextDueDate.ToString("MMM d")
+                            </span>
+                        </div>
+                        <div class="recurring-right">
+                            <span class="recurring-amount @(isIncome ? "income" : "expense")">
+                                @(isIncome ? "+" : "-")@recurring.Amount.ToString("C2")
+                            </span>
+                            <span class="recurring-status @(recurring.IsActive ? "active" : "paused")">
+                                @(recurring.IsActive ? "Active" : "Paused")
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">🔄</div>
+                <p class="empty-text">No recurring transactions yet</p>
+                <p class="empty-hint">Tap the + button to add your first recurring bill or subscription</p>
+            </div>
+        }
+    </div>
+
+    <!-- Spacer -->
+    <div class="bottom-spacer"></div>
+
+    <!-- Floating Add Button -->
+    <button class="fab" @onclick="AddRecurring">
+        <span class="fab-icon">+</span>
+        <span class="fab-text">Add Recurring</span>
+    </button>
+</div>
+
+@code {
+    private List<RecurringTransaction> RecurringList { get; set; } = new();
+    private List<Category> Categories { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Categories = BudgetService.GetCategories();
+        RecurringList = BudgetService.GetRecurringTransactions()
+            .OrderBy(r => r.NextDueDate)
+            .ToList();
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void AddRecurring()
+    {
+        Navigation.NavigateTo("/recurring/add");
+    }
+
+    private void EditRecurring(int id)
+    {
+        Navigation.NavigateTo($"/recurring/edit/{id}");
+    }
+
+    private string GetFrequencyText(RecurrenceFrequency frequency)
+    {
+        return frequency switch
+        {
+            RecurrenceFrequency.Weekly => "Weekly",
+            RecurrenceFrequency.Biweekly => "Every 2 weeks",
+            RecurrenceFrequency.Monthly => "Monthly",
+            RecurrenceFrequency.Yearly => "Yearly",
+            _ => "Monthly"
+        };
+    }
+}
+

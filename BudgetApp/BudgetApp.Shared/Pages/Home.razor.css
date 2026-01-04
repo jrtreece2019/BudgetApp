@@ -97,7 +97,7 @@
 
 /* Sections */
 .section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .section-header {
@@ -107,12 +107,80 @@
     margin-bottom: 0.75rem;
 }
 
-.section-title {
+.section-header-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.section-header-group:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.section-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-expand-icon {
+    font-size: 0.625rem;
+    color: #64748b;
+    width: 12px;
+    text-align: center;
+}
+
+.section-type-icon {
     font-size: 1rem;
+}
+
+.section-title {
+    font-size: 0.9375rem;
     font-weight: 600;
+    color: #f8fafc;
+}
+
+.section-summary {
+    font-size: 0.8125rem;
+    font-weight: 500;
     color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+}
+
+.section-count {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.1875rem 0.5rem;
+    border-radius: 10px;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.empty-text {
+    font-size: 0.875rem;
+    color: #64748b;
 }
 
 /* Category List */

@@ -1,0 +1,353 @@
+@page "/categories"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<PageTitle>Categories</PageTitle>
+
+<div class="categories-page">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" @onclick="GoBack">←</button>
+        <h1 class="header-title">Categories</h1>
+        <div class="header-spacer"></div>
+    </div>
+
+    <!-- Fixed Categories Section -->
+    <div class="section">
+        <div class="section-header" @onclick="() => FixedExpanded = !FixedExpanded">
+            <div class="section-header-left">
+                <span class="section-expand-icon">@(FixedExpanded ? "▼" : "▶")</span>
+                <span class="section-icon fixed">📌</span>
+                <span class="section-title">Fixed Expenses</span>
+            </div>
+            <span class="section-count">@FixedCategories.Count</span>
+        </div>
+
+        @if (FixedExpanded)
+        {
+            <div class="category-list">
+                @foreach (var category in FixedCategories)
+                {
+                    <div class="category-item" @onclick="() => EditCategory(category)">
+                        <div class="category-icon" style="background-color: @category.Color">
+                            @category.Icon
+                        </div>
+                        <div class="category-info">
+                            <span class="category-name">@category.Name</span>
+                            <span class="category-budget">@category.DefaultBudget.ToString("C0")/month</span>
+                        </div>
+                        <span class="category-chevron">›</span>
+                    </div>
+                }
+                @if (FixedCategories.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-text">No fixed expense categories yet</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Discretionary Categories Section -->
+    <div class="section">
+        <div class="section-header" @onclick="() => DiscretionaryExpanded = !DiscretionaryExpanded">
+            <div class="section-header-left">
+                <span class="section-expand-icon">@(DiscretionaryExpanded ? "▼" : "▶")</span>
+                <span class="section-icon discretionary">🎯</span>
+                <span class="section-title">Discretionary</span>
+            </div>
+            <span class="section-count">@DiscretionaryCategories.Count</span>
+        </div>
+
+        @if (DiscretionaryExpanded)
+        {
+            <div class="category-list">
+                @foreach (var category in DiscretionaryCategories)
+                {
+                    <div class="category-item" @onclick="() => EditCategory(category)">
+                        <div class="category-icon" style="background-color: @category.Color">
+                            @category.Icon
+                        </div>
+                        <div class="category-info">
+                            <span class="category-name">@category.Name</span>
+                            <span class="category-budget">@category.DefaultBudget.ToString("C0")/month</span>
+                        </div>
+                        <span class="category-chevron">›</span>
+                    </div>
+                }
+                @if (DiscretionaryCategories.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-text">No discretionary categories yet</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Spacer -->
+    <div class="bottom-spacer"></div>
+
+    <!-- Floating Add Button -->
+    <button class="fab" @onclick="AddCategory">
+        <span class="fab-icon">+</span>
+        <span class="fab-text">Add Category</span>
+    </button>
+</div>
+
+<!-- Edit Modal -->
+@if (ShowModal)
+{
+    <div class="category-modal-overlay" @onclick="CloseModal">
+        <div class="category-modal" @onclick:stopPropagation>
+            <div class="category-modal-header">
+                <h2 class="category-modal-title">@(IsEditingCategory ? "Edit" : "New") Category</h2>
+                <button class="category-modal-close" @onclick="CloseModal">✕</button>
+            </div>
+
+            <div class="category-modal-body">
+                <!-- Category Type -->
+                <div class="form-field">
+                    <label class="field-label">Type</label>
+                    <div class="type-toggle">
+                        <button type="button" 
+                                class="type-btn @(EditType == CategoryType.Fixed ? "selected" : "")"
+                                @onclick="() => EditType = CategoryType.Fixed">
+                            <span class="type-icon">📌</span>
+                            <span class="type-label">Fixed</span>
+                        </button>
+                        <button type="button" 
+                                class="type-btn @(EditType == CategoryType.Discretionary ? "selected" : "")"
+                                @onclick="() => EditType = CategoryType.Discretionary">
+                            <span class="type-icon">🎯</span>
+                            <span class="type-label">Discretionary</span>
+                        </button>
+                    </div>
+                    <span class="type-hint">
+                        @(EditType == CategoryType.Fixed 
+                            ? "Predictable, recurring expenses (rent, bills, insurance)" 
+                            : "Variable, optional spending (dining, entertainment, shopping)")
+                    </span>
+                </div>
+
+                <!-- Name -->
+                <div class="form-field">
+                    <label class="field-label">Name</label>
+                    <input type="text" 
+                           class="field-input" 
+                           placeholder="Category name"
+                           @bind="EditName" />
+                </div>
+
+                <!-- Icon Picker -->
+                <div class="form-field">
+                    <label class="field-label">Icon</label>
+                    <div class="icon-grid">
+                        @foreach (var icon in IconOptions)
+                        {
+                            <button type="button" 
+                                    class="icon-btn @(EditIcon == icon ? "selected" : "")"
+                                    style="@(EditIcon == icon ? $"background-color: {EditColor};" : "")"
+                                    @onclick="() => EditIcon = icon">
+                                @icon
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Color Picker -->
+                <div class="form-field">
+                    <label class="field-label">Color</label>
+                    <div class="color-grid">
+                        @foreach (var color in ColorOptions)
+                        {
+                            <button type="button" 
+                                    class="color-btn @(EditColor == color ? "selected" : "")"
+                                    style="background-color: @color;"
+                                    @onclick="() => EditColor = color">
+                                @if (EditColor == color)
+                                {
+                                    <span class="check">✓</span>
+                                }
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Default Budget -->
+                <div class="form-field">
+                    <label class="field-label">Default Monthly Budget</label>
+                    <div class="budget-input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" 
+                               class="field-input budget-field" 
+                               placeholder="0"
+                               step="1"
+                               min="0"
+                               @bind="EditDefaultBudget" />
+                    </div>
+                    <span class="field-hint">This amount applies to all months unless you set a custom budget.</span>
+                </div>
+
+                <!-- Preview -->
+                <div class="form-field">
+                    <label class="field-label">Preview</label>
+                    <div class="preview-item">
+                        <div class="preview-icon" style="background-color: @EditColor">
+                            @EditIcon
+                        </div>
+                        <div class="preview-details">
+                            <span class="preview-name">@(string.IsNullOrEmpty(EditName) ? "Category Name" : EditName)</span>
+                            <span class="preview-budget">@EditDefaultBudget.ToString("C0")/month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-modal-footer">
+                @if (IsEditingCategory && CanDelete)
+                {
+                    <button class="delete-category-btn" @onclick="DeleteCurrentCategory">
+                        Delete
+                    </button>
+                }
+                <button class="save-category-btn @(!IsModalValid ? "disabled" : "")" 
+                        @onclick="SaveCategory"
+                        disabled="@(!IsModalValid)">
+                    @(IsEditingCategory ? "Update" : "Create")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Category> CategoryList { get; set; } = new();
+    
+    // Grouped categories
+    private List<Category> FixedCategories => CategoryList.Where(c => c.Type == CategoryType.Fixed).ToList();
+    private List<Category> DiscretionaryCategories => CategoryList.Where(c => c.Type == CategoryType.Discretionary).ToList();
+    
+    // Section expand state
+    private bool FixedExpanded { get; set; } = true;
+    private bool DiscretionaryExpanded { get; set; } = true;
+    
+    // Modal state
+    private bool ShowModal { get; set; }
+    private bool IsEditingCategory { get; set; }
+    private int? EditCategoryId { get; set; }
+    private string EditName { get; set; } = string.Empty;
+    private string EditIcon { get; set; } = "📁";
+    private string EditColor { get; set; } = "#6366f1";
+    private decimal EditDefaultBudget { get; set; } = 0;
+    private CategoryType EditType { get; set; } = CategoryType.Discretionary;
+    private bool CanDelete { get; set; }
+
+    private bool IsModalValid => !string.IsNullOrWhiteSpace(EditName);
+
+    private readonly string[] IconOptions = new[]
+    {
+        "🍽️", "🚗", "📄", "🛍️", "🎬", "💊",
+        "🏠", "💼", "🎮", "📚", "✈️", "🎵",
+        "💪", "🐕", "👶", "🎁", "💰", "📱",
+        "☕", "🍺", "🛒", "⚡", "💳", "🎓",
+        "🛡️", "🎯", "📌"
+    };
+
+    private readonly string[] ColorOptions = new[]
+    {
+        "#F59E0B", "#3B82F6", "#EF4444", "#EC4899", "#8B5CF6", "#10B981",
+        "#F97316", "#06B6D4", "#84CC16", "#6366F1", "#14B8A6", "#F43F5E"
+    };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        CategoryList = BudgetService.GetCategories();
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void AddCategory()
+    {
+        IsEditingCategory = false;
+        EditCategoryId = null;
+        EditName = string.Empty;
+        EditIcon = "📁";
+        EditColor = "#6366f1";
+        EditDefaultBudget = 0;
+        EditType = CategoryType.Discretionary;
+        CanDelete = false;
+        ShowModal = true;
+    }
+
+    private void EditCategory(Category category)
+    {
+        IsEditingCategory = true;
+        EditCategoryId = category.Id;
+        EditName = category.Name;
+        EditIcon = category.Icon;
+        EditColor = category.Color;
+        EditDefaultBudget = category.DefaultBudget;
+        EditType = category.Type;
+        CanDelete = BudgetService.CanDeleteCategory(category.Id);
+        ShowModal = true;
+    }
+
+    private void CloseModal()
+    {
+        ShowModal = false;
+    }
+
+    private void SaveCategory()
+    {
+        if (!IsModalValid) return;
+
+        if (IsEditingCategory && EditCategoryId.HasValue)
+        {
+            var category = new Category
+            {
+                Id = EditCategoryId.Value,
+                Name = EditName,
+                Icon = EditIcon,
+                Color = EditColor,
+                DefaultBudget = EditDefaultBudget,
+                Type = EditType
+            };
+            BudgetService.UpdateCategory(category);
+        }
+        else
+        {
+            var category = new Category
+            {
+                Name = EditName,
+                Icon = EditIcon,
+                Color = EditColor,
+                DefaultBudget = EditDefaultBudget,
+                Type = EditType
+            };
+            BudgetService.AddCategory(category);
+        }
+
+        CloseModal();
+        LoadData();
+    }
+
+    private void DeleteCurrentCategory()
+    {
+        if (IsEditingCategory && EditCategoryId.HasValue && CanDelete)
+        {
+            BudgetService.DeleteCategory(EditCategoryId.Value);
+            CloseModal();
+            LoadData();
+        }
+    }
+}

@@ -1,4 +1,5 @@
 @page "/category/{CategoryId:int}"
+@page "/category/{CategoryId:int}/{Month:int}/{Year:int}"
 @inject IBudgetService BudgetService
 @inject NavigationManager Navigation
 
@@ -23,7 +24,13 @@
                     <span class="stat-value">@TotalSpent.ToString("C2")</span>
                 </div>
                 <div class="stat-row editable" @onclick="StartEditingBudget">
-                    <span class="stat-label">Budget <span class="edit-hint">✎</span></span>
+                    <span class="stat-label">
+                        Budget <span class="edit-hint">✎</span>
+                        @if (!IsBudgetCustom)
+                        {
+                            <span class="default-badge">default</span>
+                        }
+                    </span>
                     @if (IsEditingBudget)
                     {
                         <div class="budget-edit" @onclick:stopPropagation="true">
@@ -36,6 +43,10 @@
                                    min="0" />
                             <button class="save-budget-btn" @onclick="SaveBudget">✓</button>
                             <button class="cancel-budget-btn" @onclick="CancelEditBudget">✕</button>
+                            @if (IsBudgetCustom)
+                            {
+                                <button class="reset-budget-btn" @onclick="ResetBudgetToDefault" title="Reset to default">↺</button>
+                            }
                         </div>
                     }
                     else
@@ -116,11 +127,18 @@
     [Parameter]
     public int CategoryId { get; set; }
 
+    [Parameter]
+    public int? Month { get; set; }
+
+    [Parameter]
+    public int? Year { get; set; }
+
     private Category? Category { get; set; }
     private List<Transaction> Transactions { get; set; } = new();
     private DateTime CurrentDate { get; set; } = DateTime.Now;
     private decimal TotalSpent { get; set; }
     private decimal Budget { get; set; }
+    private bool IsBudgetCustom { get; set; }
     private decimal Remaining => Budget - TotalSpent;
     private double ProgressPercentage => Budget > 0 ? Math.Min((double)(TotalSpent / Budget) * 100, 100) : 0;
     
@@ -129,11 +147,21 @@
 
     protected override void OnInitialized()
     {
+        // Use passed month/year if provided, otherwise use current date
+        if (Month.HasValue && Year.HasValue)
+        {
+            CurrentDate = new DateTime(Year.Value, Month.Value, 1);
+        }
         LoadData();
     }
 
     protected override void OnParametersSet()
     {
+        // Update date if parameters changed
+        if (Month.HasValue && Year.HasValue)
+        {
+            CurrentDate = new DateTime(Year.Value, Month.Value, 1);
+        }
         LoadData();
     }
 
@@ -153,12 +181,14 @@
 
             TotalSpent = BudgetService.GetSpentByCategory(CategoryId, CurrentDate.Month, CurrentDate.Year);
             Budget = BudgetService.GetBudgetByCategory(CategoryId, CurrentDate.Month, CurrentDate.Year);
+            IsBudgetCustom = BudgetService.IsBudgetCustom(CategoryId, CurrentDate.Month, CurrentDate.Year);
         }
     }
 
     private void GoBack()
     {
-        Navigation.NavigateTo("/");
+        // Navigate back to home with the current month/year context
+        Navigation.NavigateTo($"/?month={CurrentDate.Month}&year={CurrentDate.Year}");
     }
 
     private void PreviousMonth()
@@ -210,6 +240,13 @@
 
     private void CancelEditBudget()
     {
+        IsEditingBudget = false;
+    }
+
+    private void ResetBudgetToDefault()
+    {
+        BudgetService.ResetBudgetToDefault(CategoryId, CurrentDate.Month, CurrentDate.Year);
+        LoadData();
         IsEditingBudget = false;
     }
 

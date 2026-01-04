@@ -31,6 +31,7 @@ public class DatabaseService
         _database!.CreateTable<Category>();
         _database.CreateTable<Transaction>();
         _database.CreateTable<Budget>();
+        _database.CreateTable<RecurringTransaction>();
 
         // Seed default categories if empty
         if (_database.Table<Category>().Count() == 0)
@@ -41,36 +42,33 @@ public class DatabaseService
 
     private void SeedDefaultData()
     {
-        var categories = new List<Category>
+        // Fixed categories - predictable, recurring expenses
+        var fixedCategories = new List<Category>
         {
-            new() { Name = "Food & Dining", Icon = "🍽️", Color = "#F59E0B" },
-            new() { Name = "Transport", Icon = "🚗", Color = "#3B82F6" },
-            new() { Name = "Bills & Utilities", Icon = "📄", Color = "#EF4444" },
-            new() { Name = "Shopping", Icon = "🛍️", Color = "#EC4899" },
-            new() { Name = "Entertainment", Icon = "🎬", Color = "#8B5CF6" },
-            new() { Name = "Health", Icon = "💊", Color = "#10B981" }
+            new() { Name = "Rent/Mortgage", Icon = "🏠", Color = "#EF4444", DefaultBudget = 1500, Type = CategoryType.Fixed },
+            new() { Name = "Bills & Utilities", Icon = "📄", Color = "#F97316", DefaultBudget = 300, Type = CategoryType.Fixed },
+            new() { Name = "Insurance", Icon = "🛡️", Color = "#3B82F6", DefaultBudget = 200, Type = CategoryType.Fixed },
+            new() { Name = "Subscriptions", Icon = "📱", Color = "#8B5CF6", DefaultBudget = 50, Type = CategoryType.Fixed },
+            new() { Name = "Transport", Icon = "🚗", Color = "#06B6D4", DefaultBudget = 200, Type = CategoryType.Fixed }
         };
 
-        foreach (var category in categories)
+        // Discretionary categories - variable, optional spending
+        var discretionaryCategories = new List<Category>
+        {
+            new() { Name = "Food & Dining", Icon = "🍽️", Color = "#F59E0B", DefaultBudget = 500, Type = CategoryType.Discretionary },
+            new() { Name = "Shopping", Icon = "🛍️", Color = "#EC4899", DefaultBudget = 300, Type = CategoryType.Discretionary },
+            new() { Name = "Entertainment", Icon = "🎬", Color = "#A855F7", DefaultBudget = 150, Type = CategoryType.Discretionary },
+            new() { Name = "Health & Fitness", Icon = "💪", Color = "#10B981", DefaultBudget = 100, Type = CategoryType.Discretionary },
+            new() { Name = "Personal Care", Icon = "💊", Color = "#14B8A6", DefaultBudget = 75, Type = CategoryType.Discretionary }
+        };
+
+        foreach (var category in fixedCategories)
         {
             _database!.Insert(category);
         }
-
-        // Seed default budgets for current month
-        var now = DateTime.Now;
-        var defaultBudgets = new List<Budget>
+        foreach (var category in discretionaryCategories)
         {
-            new() { CategoryId = 1, Amount = 500, Month = now.Month, Year = now.Year },
-            new() { CategoryId = 2, Amount = 200, Month = now.Month, Year = now.Year },
-            new() { CategoryId = 3, Amount = 800, Month = now.Month, Year = now.Year },
-            new() { CategoryId = 4, Amount = 300, Month = now.Month, Year = now.Year },
-            new() { CategoryId = 5, Amount = 150, Month = now.Month, Year = now.Year },
-            new() { CategoryId = 6, Amount = 100, Month = now.Month, Year = now.Year }
-        };
-
-        foreach (var budget in defaultBudgets)
-        {
-            _database!.Insert(budget);
+            _database!.Insert(category);
         }
     }
 
@@ -78,6 +76,36 @@ public class DatabaseService
     public List<Category> GetCategories()
     {
         return Database.Table<Category>().ToList();
+    }
+
+    public Category? GetCategory(int categoryId)
+    {
+        return Database.Find<Category>(categoryId);
+    }
+
+    public void AddCategory(Category category)
+    {
+        Database.Insert(category);
+    }
+
+    public void UpdateCategory(Category category)
+    {
+        Database.Update(category);
+    }
+
+    public void DeleteCategory(int categoryId)
+    {
+        Database.Delete<Category>(categoryId);
+    }
+
+    public bool HasTransactionsForCategory(int categoryId)
+    {
+        return Database.Table<Transaction>().ToList().Any(t => t.CategoryId == categoryId);
+    }
+
+    public bool HasRecurringTransactionsForCategory(int categoryId)
+    {
+        return Database.Table<RecurringTransaction>().ToList().Any(r => r.CategoryId == categoryId);
     }
 
     // Transactions
@@ -150,6 +178,41 @@ public class DatabaseService
                 Amount = amount
             });
         }
+    }
+
+    public void DeleteBudget(int categoryId, int month, int year)
+    {
+        var budget = GetBudget(categoryId, month, year);
+        if (budget != null)
+        {
+            Database.Delete<Budget>(budget.Id);
+        }
+    }
+
+    // Recurring Transactions
+    public List<RecurringTransaction> GetRecurringTransactions()
+    {
+        return Database.Table<RecurringTransaction>().ToList();
+    }
+
+    public RecurringTransaction? GetRecurringTransaction(int id)
+    {
+        return Database.Find<RecurringTransaction>(id);
+    }
+
+    public void AddRecurringTransaction(RecurringTransaction recurring)
+    {
+        Database.Insert(recurring);
+    }
+
+    public void UpdateRecurringTransaction(RecurringTransaction recurring)
+    {
+        Database.Update(recurring);
+    }
+
+    public void DeleteRecurringTransaction(int id)
+    {
+        Database.Delete<RecurringTransaction>(id);
     }
 }
 
