@@ -98,5 +98,14 @@ public class BudgetService : IBudgetService
         transaction.Id = _nextTransactionId++;
         _transactions.Add(transaction);
     }
+
+    public void DeleteTransaction(int transactionId)
+    {
+        var transaction = _transactions.FirstOrDefault(t => t.Id == transactionId);
+        if (transaction != null)
+        {
+            _transactions.Remove(transaction);
+        }
+    }
 }
 

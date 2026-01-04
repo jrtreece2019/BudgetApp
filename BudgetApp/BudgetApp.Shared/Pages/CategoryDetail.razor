@@ -54,6 +54,7 @@
                 <div class="transaction-list">
                     @foreach (var transaction in Transactions)
                     {
+                        var txnId = transaction.Id;
                         var isIncome = transaction.Type == TransactionType.Income;
 
                         <div class="transaction-item">
@@ -67,6 +68,9 @@
                             <div class="transaction-amount @(isIncome ? "income" : "expense")">
                                 @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
                             </div>
+                            <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">
+                                ✕
+                            </button>
                         </div>
                     }
                 </div>
@@ -152,6 +156,12 @@
     private void AddTransaction()
     {
         Navigation.NavigateTo("/add");
+    }
+
+    private void DeleteTransaction(int transactionId)
+    {
+        BudgetService.DeleteTransaction(transactionId);
+        LoadData();
     }
 
     private string FormatDate(DateTime date)

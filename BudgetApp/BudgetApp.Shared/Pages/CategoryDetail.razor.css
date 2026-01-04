@@ -238,6 +238,45 @@
     color: #f87171;
 }
 
+/* Delete Button */
+.delete-btn {
+    background: rgba(239, 68, 68, 0.1);
+    border: none;
+    color: #f87171;
+    font-size: 0.875rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: all 0.2s;
+}
+
+.transaction-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.delete-btn:active {
+    background: rgba(239, 68, 68, 0.3);
+    transform: scale(0.95);
+}
+
+/* For touch devices, always show delete button */
+@media (hover: none) {
+    .delete-btn {
+        opacity: 1;
+    }
+}
+
 .transaction-amount.income {
     color: #4ade80;
 }
