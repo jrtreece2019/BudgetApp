@@ -1,6 +1,7 @@
 .app-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: var(--gradient-bg);
+    transition: background 0.3s ease;
 }
 
 #blazor-error-ui {

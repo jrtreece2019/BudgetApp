@@ -12,18 +12,61 @@
         <button class="month-btn" @onclick="NextMonth">›</button>
     </div>
 
-    <!-- Summary Card -->
+    <!-- Income Summary Card -->
     <div class="summary-card">
-        <div class="summary-label">Remaining to spend</div>
-        <div class="summary-amount @(RemainingBudget < 0 ? "negative" : "")">
-            @RemainingBudget.ToString("C0")
+        <!-- Income Row -->
+        <div class="income-row" @onclick="StartEditingIncome">
+            <div class="income-label">
+                Monthly Income
+                <span class="edit-hint">✎</span>
+            </div>
+            @if (IsEditingIncome)
+            {
+                <div class="income-edit" @onclick:stopPropagation="true">
+                    <span class="currency-prefix">$</span>
+                    <input type="number" 
+                           class="income-input" 
+                           @bind="EditIncomeAmount" 
+                           @bind:event="oninput"
+                           step="100" 
+                           min="0" />
+                    <button class="save-btn" @onclick="SaveIncome">✓</button>
+                    <button class="cancel-btn" @onclick="CancelEditIncome">✕</button>
+                </div>
+            }
+            else
+            {
+                <div class="income-amount">@MonthlyIncome.ToString("C0")</div>
+            }
         </div>
-        <div class="progress-container">
-            <div class="progress-bar" style="width: @ProgressPercentage%"></div>
+
+        <!-- Budget Allocation -->
+        <div class="allocation-section">
+            <div class="allocation-row">
+                <span class="allocation-label">Budgeted</span>
+                <span class="allocation-value">@TotalBudget.ToString("C0")</span>
+            </div>
+            <div class="allocation-row @(Unallocated < 0 ? "warning" : "success")">
+                <span class="allocation-label">@(Unallocated >= 0 ? "Unallocated" : "Over budget by")</span>
+                <span class="allocation-value">@Math.Abs(Unallocated).ToString("C0")</span>
+            </div>
         </div>
-        <div class="progress-label">
-            <span>@TotalSpent.ToString("C0") spent</span>
-            <span>@TotalBudget.ToString("C0") budget</span>
+
+        <!-- Spending Progress -->
+        <div class="spending-section">
+            <div class="spending-header">
+                <span class="spending-label">Spent this month</span>
+                <span class="spending-value @(TotalSpent > MonthlyIncome ? "over" : "")">
+                    @TotalSpent.ToString("C0")
+                </span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar @(TotalSpent > MonthlyIncome ? "over" : "")" style="width: @ProgressPercentage%"></div>
+            </div>
+            <div class="progress-label">
+                <span>@RemainingIncome.ToString("C0") left of income</span>
+                <span>@ProgressPercentage.ToString("0")% spent</span>
+            </div>
         </div>
     </div>
 
@@ -166,10 +209,17 @@
     private DateTime CurrentDate { get; set; } = DateTime.Now;
     private List<Category> Categories { get; set; } = new();
     private List<Transaction> RecentTransactions { get; set; } = new();
+    private decimal MonthlyIncome { get; set; }
     private decimal TotalBudget { get; set; }
     private decimal TotalSpent { get; set; }
     private decimal RemainingBudget => TotalBudget - TotalSpent;
-    private double ProgressPercentage => TotalBudget > 0 ? Math.Min((double)(TotalSpent / TotalBudget) * 100, 100) : 0;
+    private decimal Unallocated => MonthlyIncome - TotalBudget;
+    private decimal RemainingIncome => MonthlyIncome - TotalSpent;
+    private double ProgressPercentage => MonthlyIncome > 0 ? Math.Min((double)(TotalSpent / MonthlyIncome) * 100, 100) : 0;
+    
+    // Income editing
+    private bool IsEditingIncome { get; set; }
+    private decimal EditIncomeAmount { get; set; }
     
     // Grouped categories
     private List<Category> FixedCategories => Categories.Where(c => c.Type == CategoryType.Fixed).ToList();
@@ -209,6 +259,7 @@
     {
         Categories = BudgetService.GetCategories();
         RecentTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
+        MonthlyIncome = BudgetService.GetMonthlyIncome();
         TotalBudget = BudgetService.GetTotalBudget(CurrentDate.Month, CurrentDate.Year);
         TotalSpent = BudgetService.GetTotalSpent(CurrentDate.Month, CurrentDate.Year);
         
@@ -217,6 +268,31 @@
         FixedSpent = FixedCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         DiscretionaryBudget = DiscretionaryCategories.Sum(c => BudgetService.GetBudgetByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         DiscretionarySpent = DiscretionaryCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+    }
+
+    // Income editing
+    private void StartEditingIncome()
+    {
+        if (!IsEditingIncome)
+        {
+            EditIncomeAmount = MonthlyIncome;
+            IsEditingIncome = true;
+        }
+    }
+
+    private void SaveIncome()
+    {
+        if (EditIncomeAmount >= 0)
+        {
+            BudgetService.SetMonthlyIncome(EditIncomeAmount);
+            LoadData();
+        }
+        IsEditingIncome = false;
+    }
+
+    private void CancelEditIncome()
+    {
+        IsEditingIncome = false;
     }
 
     private void PreviousMonth()

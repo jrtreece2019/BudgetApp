@@ -213,5 +213,24 @@ public class SqliteBudgetService : IBudgetService
         var day = Math.Min(dayOfMonth, daysInMonth);
         return new DateTime(nextMonth.Year, nextMonth.Month, day);
     }
+
+    // Income & Settings
+    public decimal GetMonthlyIncome()
+    {
+        return _db.GetMonthlyIncome();
+    }
+
+    public void SetMonthlyIncome(decimal income)
+    {
+        _db.SetMonthlyIncome(income);
+    }
+
+    public decimal GetTotalIncome(int month, int year)
+    {
+        // Sum of all income transactions for the month
+        return _db.GetTransactions(month, year)
+            .Where(t => t.Type == TransactionType.Income)
+            .Sum(t => t.Amount);
+    }
 }
 

@@ -32,11 +32,18 @@ public class DatabaseService
         _database.CreateTable<Transaction>();
         _database.CreateTable<Budget>();
         _database.CreateTable<RecurringTransaction>();
+        _database.CreateTable<UserSettings>();
 
         // Seed default categories if empty
         if (_database.Table<Category>().Count() == 0)
         {
             SeedDefaultData();
+        }
+
+        // Ensure settings row exists
+        if (_database.Table<UserSettings>().Count() == 0)
+        {
+            _database.Insert(new UserSettings { Id = 1, MonthlyIncome = 0 });
         }
     }
 
@@ -213,6 +220,30 @@ public class DatabaseService
     public void DeleteRecurringTransaction(int id)
     {
         Database.Delete<RecurringTransaction>(id);
+    }
+
+    // User Settings
+    public UserSettings GetSettings()
+    {
+        return Database.Find<UserSettings>(1) ?? new UserSettings { Id = 1, MonthlyIncome = 0 };
+    }
+
+    public void UpdateSettings(UserSettings settings)
+    {
+        settings.Id = 1; // Ensure we always use the same row
+        Database.InsertOrReplace(settings);
+    }
+
+    public decimal GetMonthlyIncome()
+    {
+        return GetSettings().MonthlyIncome;
+    }
+
+    public void SetMonthlyIncome(decimal income)
+    {
+        var settings = GetSettings();
+        settings.MonthlyIncome = income;
+        UpdateSettings(settings);
     }
 }
 

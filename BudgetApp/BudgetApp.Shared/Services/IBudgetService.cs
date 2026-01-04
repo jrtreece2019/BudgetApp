@@ -36,5 +36,10 @@ public interface IBudgetService
     void UpdateRecurringTransaction(RecurringTransaction recurring);
     void DeleteRecurringTransaction(int id);
     void ProcessRecurringTransactions();
+
+    // Income & Settings
+    decimal GetMonthlyIncome();
+    void SetMonthlyIncome(decimal income);
+    decimal GetTotalIncome(int month, int year); // From income transactions
 }
 

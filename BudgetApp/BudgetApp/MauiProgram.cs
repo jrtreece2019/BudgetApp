@@ -23,6 +23,7 @@ namespace BudgetApp
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "budget.db3");
             builder.Services.AddSingleton(new DatabaseService(dbPath));
             builder.Services.AddSingleton<IBudgetService, SqliteBudgetService>();
+            builder.Services.AddSingleton<ThemeService>();
 
             builder.Services.AddMauiBlazorWebView();
 

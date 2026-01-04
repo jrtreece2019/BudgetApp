@@ -16,6 +16,7 @@ var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Lo
 Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
 builder.Services.AddSingleton(new DatabaseService(dbPath));
 builder.Services.AddSingleton<IBudgetService, SqliteBudgetService>();
+builder.Services.AddSingleton<ThemeService>();
 
 var app = builder.Build();
 

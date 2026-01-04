@@ -1,4 +1,5 @@
 @inject NavigationManager Navigation
+@inject ThemeService ThemeService
 
 <div class="menu-container">
     <button class="hamburger-btn" @onclick="ToggleMenu">
@@ -37,6 +38,17 @@
                     <span class="menu-item-icon">🏷️</span>
                     <span class="menu-item-label">Categories</span>
                 </a>
+
+                <div class="menu-divider"></div>
+
+                <!-- Theme Toggle -->
+                <div class="menu-item theme-toggle" @onclick="ToggleTheme">
+                    <span class="menu-item-icon">@(ThemeService.IsDarkMode ? "🌙" : "☀️")</span>
+                    <span class="menu-item-label">@(ThemeService.IsDarkMode ? "Dark Mode" : "Light Mode")</span>
+                    <div class="toggle-switch @(ThemeService.IsDarkMode ? "dark" : "light")">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
             </div>
         </nav>
     }
@@ -56,6 +68,11 @@
         IsOpen = false;
     }
 
+    private void ToggleTheme()
+    {
+        ThemeService.ToggleTheme();
+    }
+
     private bool IsActive(string path)
     {
         if (path == "/")
@@ -65,4 +82,3 @@
         return CurrentPath.StartsWith(path, StringComparison.OrdinalIgnoreCase);
     }
 }
-

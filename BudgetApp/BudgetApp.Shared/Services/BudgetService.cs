@@ -11,6 +11,7 @@ public class BudgetService : IBudgetService
     private int _nextTransactionId = 100;
     private int _nextCategoryId = 100;
     private int _nextRecurringId = 100;
+    private decimal _monthlyIncome = 0;
 
     public BudgetService()
     {
@@ -296,6 +297,21 @@ public class BudgetService : IBudgetService
         var daysInMonth = DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month);
         var day = Math.Min(dayOfMonth, daysInMonth);
         return new DateTime(nextMonth.Year, nextMonth.Month, day);
+    }
+
+    // Income & Settings
+    public decimal GetMonthlyIncome() => _monthlyIncome;
+
+    public void SetMonthlyIncome(decimal income)
+    {
+        _monthlyIncome = income;
+    }
+
+    public decimal GetTotalIncome(int month, int year)
+    {
+        return _transactions
+            .Where(t => t.Date.Month == month && t.Date.Year == year && t.Type == TransactionType.Income)
+            .Sum(t => t.Amount);
     }
 }
 
