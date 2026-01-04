@@ -1,0 +1,307 @@
+.budget-app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    min-height: 100vh;
+    color: #f8fafc;
+}
+
+/* Month Navigation */
+.month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0 1rem;
+}
+
+.month-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #94a3b8;
+    font-size: 1.5rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.month-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #f8fafc;
+}
+
+.month-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f8fafc;
+    min-width: 160px;
+    text-align: center;
+}
+
+/* Summary Card */
+.summary-card {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: 20px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.summary-amount {
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.02em;
+}
+
+.summary-amount.negative {
+    color: #fca5a5;
+}
+
+.progress-container {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #ffffff;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Sections */
+.section {
+    margin-bottom: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Category List */
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 0.875rem;
+    transition: background 0.2s;
+}
+
+.category-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.category-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.category-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #f8fafc;
+}
+
+.category-amount {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.category-amount.over {
+    color: #f87171;
+}
+
+.category-progress-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.category-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.category-progress-bar.over {
+    background: #f87171 !important;
+}
+
+/* Transaction List */
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 0.875rem;
+    transition: background 0.2s;
+}
+
+.transaction-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.transaction-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.transaction-desc {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #f8fafc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.transaction-date {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.transaction-amount {
+    font-size: 0.95rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.transaction-amount.expense {
+    color: #f87171;
+}
+
+.transaction-amount.income {
+    color: #4ade80;
+}
+
+/* Floating Action Button */
+.fab {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 1.75rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.fab:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
+}
+
+.fab:active {
+    transform: translateX(-50%) scale(0.98);
+}
+
+.fab-icon {
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.fab-text {
+    white-space: nowrap;
+}
+
+.bottom-spacer {
+    height: 100px;
+}
+

@@ -18,6 +18,7 @@ namespace BudgetApp
 
             // Add device-specific services used by the BudgetApp.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
+            builder.Services.AddSingleton<IBudgetService, BudgetService>();
 
             builder.Services.AddMauiBlazorWebView();
 

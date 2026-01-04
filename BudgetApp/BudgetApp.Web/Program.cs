@@ -10,6 +10,7 @@ builder.Services.AddRazorComponents()
 
 // Add device-specific services used by the BudgetApp.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
+builder.Services.AddSingleton<IBudgetService, BudgetService>();
 
 var app = builder.Build();
 

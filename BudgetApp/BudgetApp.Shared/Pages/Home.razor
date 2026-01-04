@@ -1,14 +1,143 @@
 ﻿@page "/"
-@using BudgetApp.Shared.Services
-@inject IFormFactor FormFactor
+@inject IBudgetService BudgetService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Budget</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="budget-app">
+    <!-- Month Navigation -->
+    <div class="month-nav">
+        <button class="month-btn" @onclick="PreviousMonth">‹</button>
+        <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
+        <button class="month-btn" @onclick="NextMonth">›</button>
+    </div>
 
-Welcome to your new app running on <em>@factor</em> using <em>@platform</em>.
+    <!-- Summary Card -->
+    <div class="summary-card">
+        <div class="summary-label">Remaining to spend</div>
+        <div class="summary-amount @(RemainingBudget < 0 ? "negative" : "")">
+            @RemainingBudget.ToString("C0")
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" style="width: @ProgressPercentage%"></div>
+        </div>
+        <div class="progress-label">
+            <span>@TotalSpent.ToString("C0") spent</span>
+            <span>@TotalBudget.ToString("C0") budget</span>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">Categories</span>
+        </div>
+        <div class="category-list">
+            @foreach (var category in Categories)
+            {
+                var spent = BudgetService.GetSpentByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                var budget = BudgetService.GetBudgetByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                var percent = budget > 0 ? Math.Min((double)(spent / budget) * 100, 100) : 0;
+                var isOver = spent > budget;
+
+                <div class="category-item">
+                    <div class="category-icon" style="background-color: @category.Color">@category.Icon</div>
+                    <div class="category-info">
+                        <div class="category-header">
+                            <span class="category-name">@category.Name</span>
+                            <span class="category-amount @(isOver ? "over" : "")">@spent.ToString("C0") / @budget.ToString("C0")</span>
+                        </div>
+                        <div class="category-progress-container">
+                            <div class="category-progress-bar @(isOver ? "over" : "")" 
+                                 style="width: @percent%; background-color: @category.Color"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">Recent Transactions</span>
+        </div>
+        <div class="transaction-list">
+            @foreach (var transaction in RecentTransactions.Take(5))
+            {
+                var category = Categories.FirstOrDefault(c => c.Id == transaction.CategoryId);
+                var isIncome = transaction.Type == TransactionType.Income;
+
+                <div class="transaction-item">
+                    <div class="transaction-icon" style="background-color: @(category?.Color ?? "#6B7280")">
+                        @(category?.Icon ?? "💰")
+                    </div>
+                    <div class="transaction-info">
+                        <span class="transaction-desc">@transaction.Description</span>
+                        <span class="transaction-date">@FormatDate(transaction.Date)</span>
+                    </div>
+                    <div class="transaction-amount @(isIncome ? "income" : "expense")">
+                        @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Spacer for floating button -->
+    <div class="bottom-spacer"></div>
+
+    <!-- Floating Add Button -->
+    <button class="fab" @onclick="OpenAddTransaction">
+        <span class="fab-icon">+</span>
+        <span class="fab-text">Add Transaction</span>
+    </button>
+</div>
 
 @code {
-    private string factor => FormFactor.GetFormFactor();
-    private string platform => FormFactor.GetPlatform();
+    private DateTime CurrentDate { get; set; } = DateTime.Now;
+    private List<Category> Categories { get; set; } = new();
+    private List<Transaction> RecentTransactions { get; set; } = new();
+    private decimal TotalBudget { get; set; }
+    private decimal TotalSpent { get; set; }
+    private decimal RemainingBudget => TotalBudget - TotalSpent;
+    private double ProgressPercentage => TotalBudget > 0 ? Math.Min((double)(TotalSpent / TotalBudget) * 100, 100) : 0;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Categories = BudgetService.GetCategories();
+        RecentTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
+        TotalBudget = BudgetService.GetTotalBudget(CurrentDate.Month, CurrentDate.Year);
+        TotalSpent = BudgetService.GetTotalSpent(CurrentDate.Month, CurrentDate.Year);
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        LoadData();
+    }
+
+    private void NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        LoadData();
+    }
+
+    private void OpenAddTransaction()
+    {
+        // TODO: Navigate to add transaction page
+    }
+
+    private string FormatDate(DateTime date)
+    {
+        if (date.Date == DateTime.Today)
+            return "Today";
+        if (date.Date == DateTime.Today.AddDays(-1))
+            return "Yesterday";
+        return date.ToString("MMM d");
+    }
 }
