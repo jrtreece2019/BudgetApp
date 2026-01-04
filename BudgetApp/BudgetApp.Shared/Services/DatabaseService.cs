@@ -33,6 +33,8 @@ public class DatabaseService
         _database.CreateTable<Budget>();
         _database.CreateTable<RecurringTransaction>();
         _database.CreateTable<UserSettings>();
+        _database.CreateTable<SinkingFund>();
+        _database.CreateTable<SinkingFundTransaction>();
 
         // Seed default categories if empty
         if (_database.Table<Category>().Count() == 0)
@@ -244,6 +246,118 @@ public class DatabaseService
         var settings = GetSettings();
         settings.MonthlyIncome = income;
         UpdateSettings(settings);
+    }
+
+    // Sinking Funds
+    public List<SinkingFund> GetSinkingFunds()
+    {
+        return Database.Table<SinkingFund>().ToList();
+    }
+
+    public SinkingFund? GetSinkingFund(int id)
+    {
+        return Database.Find<SinkingFund>(id);
+    }
+
+    public void AddSinkingFund(SinkingFund fund)
+    {
+        Database.Insert(fund);
+    }
+
+    public void UpdateSinkingFund(SinkingFund fund)
+    {
+        Database.Update(fund);
+    }
+
+    public void DeleteSinkingFund(int id)
+    {
+        // Delete all associated transactions first
+        var transactions = GetSinkingFundTransactions(id);
+        foreach (var tx in transactions)
+        {
+            Database.Delete<SinkingFundTransaction>(tx.Id);
+        }
+        Database.Delete<SinkingFund>(id);
+    }
+
+    // Sinking Fund Transactions
+    public List<SinkingFundTransaction> GetSinkingFundTransactions(int fundId)
+    {
+        return Database.Table<SinkingFundTransaction>()
+            .ToList()
+            .Where(t => t.SinkingFundId == fundId)
+            .OrderByDescending(t => t.Date)
+            .ToList();
+    }
+
+    public void AddSinkingFundTransaction(SinkingFundTransaction transaction)
+    {
+        Database.Insert(transaction);
+        
+        // Update the fund's current balance
+        var fund = GetSinkingFund(transaction.SinkingFundId);
+        if (fund != null)
+        {
+            if (transaction.Type == SinkingFundTransactionType.Contribution)
+            {
+                fund.CurrentBalance += transaction.Amount;
+            }
+            else
+            {
+                fund.CurrentBalance -= transaction.Amount;
+            }
+            
+            // Check if goal is reached
+            if (fund.CurrentBalance >= fund.GoalAmount)
+            {
+                fund.Status = SinkingFundStatus.Completed;
+            }
+            
+            UpdateSinkingFund(fund);
+        }
+    }
+
+    public void DeleteSinkingFundTransaction(int transactionId)
+    {
+        var transaction = Database.Find<SinkingFundTransaction>(transactionId);
+        if (transaction != null)
+        {
+            // Reverse the balance change
+            var fund = GetSinkingFund(transaction.SinkingFundId);
+            if (fund != null)
+            {
+                if (transaction.Type == SinkingFundTransactionType.Contribution)
+                {
+                    fund.CurrentBalance -= transaction.Amount;
+                }
+                else
+                {
+                    fund.CurrentBalance += transaction.Amount;
+                }
+                
+                // Revert completed status if balance drops below goal
+                if (fund.CurrentBalance < fund.GoalAmount && fund.Status == SinkingFundStatus.Completed)
+                {
+                    fund.Status = SinkingFundStatus.Active;
+                }
+                
+                UpdateSinkingFund(fund);
+            }
+            
+            Database.Delete<SinkingFundTransaction>(transactionId);
+        }
+    }
+
+    public decimal GetTotalSinkingFundContributions(int month, int year)
+    {
+        var startDate = new DateTime(year, month, 1);
+        var endDate = startDate.AddMonths(1);
+        
+        return Database.Table<SinkingFundTransaction>()
+            .ToList()
+            .Where(t => t.Date >= startDate && t.Date < endDate 
+                     && t.Type == SinkingFundTransactionType.Contribution)
+            .Sum(t => t.Amount);
     }
 }
 

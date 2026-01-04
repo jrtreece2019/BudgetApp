@@ -41,5 +41,16 @@ public interface IBudgetService
     decimal GetMonthlyIncome();
     void SetMonthlyIncome(decimal income);
     decimal GetTotalIncome(int month, int year); // From income transactions
+
+    // Sinking Funds
+    List<SinkingFund> GetSinkingFunds();
+    SinkingFund? GetSinkingFund(int id);
+    void AddSinkingFund(SinkingFund fund);
+    void UpdateSinkingFund(SinkingFund fund);
+    void DeleteSinkingFund(int id);
+    List<SinkingFundTransaction> GetSinkingFundTransactions(int fundId);
+    void AddSinkingFundTransaction(SinkingFundTransaction transaction);
+    void DeleteSinkingFundTransaction(int transactionId);
+    decimal GetTotalSinkingFundContributions(int month, int year);
 }
 

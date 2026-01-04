@@ -232,5 +232,51 @@ public class SqliteBudgetService : IBudgetService
             .Where(t => t.Type == TransactionType.Income)
             .Sum(t => t.Amount);
     }
+
+    // Sinking Funds
+    public List<SinkingFund> GetSinkingFunds()
+    {
+        return _db.GetSinkingFunds();
+    }
+
+    public SinkingFund? GetSinkingFund(int id)
+    {
+        return _db.GetSinkingFund(id);
+    }
+
+    public void AddSinkingFund(SinkingFund fund)
+    {
+        _db.AddSinkingFund(fund);
+    }
+
+    public void UpdateSinkingFund(SinkingFund fund)
+    {
+        _db.UpdateSinkingFund(fund);
+    }
+
+    public void DeleteSinkingFund(int id)
+    {
+        _db.DeleteSinkingFund(id);
+    }
+
+    public List<SinkingFundTransaction> GetSinkingFundTransactions(int fundId)
+    {
+        return _db.GetSinkingFundTransactions(fundId);
+    }
+
+    public void AddSinkingFundTransaction(SinkingFundTransaction transaction)
+    {
+        _db.AddSinkingFundTransaction(transaction);
+    }
+
+    public void DeleteSinkingFundTransaction(int transactionId)
+    {
+        _db.DeleteSinkingFundTransaction(transactionId);
+    }
+
+    public decimal GetTotalSinkingFundContributions(int month, int year)
+    {
+        return _db.GetTotalSinkingFundContributions(month, year);
+    }
 }
 

@@ -14,30 +14,59 @@
 
     <!-- Income Summary Card -->
     <div class="summary-card">
-        <!-- Income Row -->
-        <div class="income-row" @onclick="StartEditingIncome">
-            <div class="income-label">
-                Monthly Income
-                <span class="edit-hint">✎</span>
-            </div>
-            @if (IsEditingIncome)
-            {
-                <div class="income-edit" @onclick:stopPropagation="true">
-                    <span class="currency-prefix">$</span>
-                    <input type="number" 
-                           class="income-input" 
-                           @bind="EditIncomeAmount" 
-                           @bind:event="oninput"
-                           step="100" 
-                           min="0" />
-                    <button class="save-btn" @onclick="SaveIncome">✓</button>
-                    <button class="cancel-btn" @onclick="CancelEditIncome">✕</button>
+        <!-- Expected Income Row (for budgeting) -->
+        <div class="income-section">
+            <div class="income-expected" @onclick="StartEditingExpectedIncome">
+                <div class="income-label-row">
+                    <span class="income-label">Expected Income</span>
+                    <span class="edit-hint">✎</span>
                 </div>
-            }
-            else
-            {
-                <div class="income-amount">@MonthlyIncome.ToString("C0")</div>
-            }
+                @if (IsEditingExpectedIncome)
+                {
+                    <div class="income-edit" @onclick:stopPropagation="true">
+                        <span class="currency-prefix">$</span>
+                        <input type="number" 
+                               class="income-input" 
+                               @bind="EditExpectedIncomeAmount" 
+                               @bind:event="oninput"
+                               step="100" 
+                               min="0" />
+                        <button class="save-btn" @onclick="SaveExpectedIncome">✓</button>
+                        <button class="cancel-btn" @onclick="CancelEditExpectedIncome">✕</button>
+                    </div>
+                }
+                else
+                {
+                    <span class="income-amount">@ExpectedIncome.ToString("C0")</span>
+                }
+            </div>
+            
+            <!-- Actual/Received Income -->
+            <div class="income-actual" @onclick="OpenIncomeModal">
+                <div class="income-label-row">
+                    <span class="income-label received">Received</span>
+                    <span class="edit-hint">+ Add</span>
+                </div>
+                <div class="income-received-group">
+                    <span class="income-received-amount @(ActualIncome >= ExpectedIncome ? "complete" : "")">
+                        @ActualIncome.ToString("C0")
+                    </span>
+                    <span class="income-status">
+                        @if (ActualIncome >= ExpectedIncome && ExpectedIncome > 0)
+                        {
+                            <span class="status-complete">✓ All received</span>
+                        }
+                        else if (IncomeTransactionCount > 0)
+                        {
+                            <span>@IncomeTransactionCount paycheck@(IncomeTransactionCount != 1 ? "s" : "")</span>
+                        }
+                        else
+                        {
+                            <span class="status-pending">Awaiting paychecks</span>
+                        }
+                    </span>
+                </div>
+            </div>
         </div>
 
         <!-- Budget Allocation -->
@@ -56,12 +85,12 @@
         <div class="spending-section">
             <div class="spending-header">
                 <span class="spending-label">Spent this month</span>
-                <span class="spending-value @(TotalSpent > MonthlyIncome ? "over" : "")">
+                <span class="spending-value @(TotalSpent > ExpectedIncome ? "over" : "")">
                     @TotalSpent.ToString("C0")
                 </span>
             </div>
             <div class="progress-container">
-                <div class="progress-bar @(TotalSpent > MonthlyIncome ? "over" : "")" style="width: @ProgressPercentage%"></div>
+                <div class="progress-bar @(TotalSpent > ExpectedIncome ? "over" : "")" style="width: @ProgressPercentage%"></div>
             </div>
             <div class="progress-label">
                 <span>@RemainingIncome.ToString("C0") left of income</span>
@@ -72,7 +101,7 @@
 
     <!-- Fixed Expenses -->
     <div class="section">
-        <div class="section-header-group" @onclick="() => FixedExpanded = !FixedExpanded">
+        <div class="section-header-group fixed" @onclick="() => FixedExpanded = !FixedExpanded">
             <div class="section-header-left">
                 <span class="section-expand-icon">@(FixedExpanded ? "▼" : "▶")</span>
                 <span class="section-type-icon">📌</span>
@@ -121,7 +150,7 @@
 
     <!-- Discretionary -->
     <div class="section">
-        <div class="section-header-group" @onclick="() => DiscretionaryExpanded = !DiscretionaryExpanded">
+        <div class="section-header-group discretionary" @onclick="() => DiscretionaryExpanded = !DiscretionaryExpanded">
             <div class="section-header-left">
                 <span class="section-expand-icon">@(DiscretionaryExpanded ? "▼" : "▶")</span>
                 <span class="section-type-icon">🎯</span>
@@ -168,6 +197,60 @@
         }
     </div>
 
+    <!-- Sinking Funds -->
+    @if (SinkingFunds.Any())
+    {
+        <div class="section">
+            <div class="section-header-group sinking-funds" @onclick="() => SinkingFundsExpanded = !SinkingFundsExpanded">
+                <div class="section-header-left">
+                    <span class="section-expand-icon">@(SinkingFundsExpanded ? "▼" : "▶")</span>
+                    <span class="section-type-icon">💰</span>
+                    <span class="section-title">Sinking Funds</span>
+                </div>
+                <div class="section-header-right">
+                    <span class="section-summary">@TotalSaved.ToString("C0") / @TotalGoal.ToString("C0")</span>
+                    <span class="section-count">@ActiveFunds.Count()</span>
+                </div>
+            </div>
+            @if (SinkingFundsExpanded)
+            {
+                <div class="sinking-funds-list">
+                    @foreach (var fund in ActiveFunds)
+                    {
+                        <div class="fund-item" @onclick="() => OpenFund(fund.Id)">
+                            <div class="fund-icon" style="background-color: @fund.Color">@fund.Icon</div>
+                            <div class="fund-info">
+                                <div class="fund-header">
+                                    <span class="fund-name">@fund.Name</span>
+                                    <span class="fund-amount">@fund.CurrentBalance.ToString("C0") / @fund.GoalAmount.ToString("C0")</span>
+                                </div>
+                                <div class="fund-progress-container">
+                                    <div class="fund-progress-bar" 
+                                         style="width: @fund.ProgressPercentage%; background-color: @fund.Color"></div>
+                                </div>
+                                <div class="fund-meta">
+                                    @if (fund.MonthlyContribution > 0)
+                                    {
+                                        <span class="fund-contribution">@fund.MonthlyContribution.ToString("C0")/mo</span>
+                                    }
+                                    @if (fund.MonthsRemaining > 0)
+                                    {
+                                        <span class="fund-remaining">@fund.MonthsRemaining mo left</span>
+                                    }
+                                    @if (fund.AutoContribute)
+                                    {
+                                        <span class="fund-auto-badge">Auto</span>
+                                    }
+                                </div>
+                            </div>
+                            <span class="fund-chevron">›</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
     <!-- Recent Transactions -->
     <div class="section">
         <div class="section-header">
@@ -205,21 +288,192 @@
     </button>
 </div>
 
+<!-- Paycheck Modal -->
+@if (ShowPaycheckModal)
+{
+    <div class="modal-overlay" @onclick="ClosePaycheckModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2 class="modal-title">💵 Add Paycheck</h2>
+                <button class="modal-close" @onclick="ClosePaycheckModal">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input type="text" 
+                           class="form-input" 
+                           placeholder="e.g., Company ABC Salary"
+                           @bind="PaycheckDescription" />
+                </div>
+                
+                <!-- Amount -->
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <div class="amount-input-group">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" 
+                               class="form-input amount" 
+                               placeholder="0.00"
+                               step="0.01"
+                               min="0"
+                               @bind="PaycheckAmount" />
+                    </div>
+                </div>
+                
+                <!-- Recurring Toggle -->
+                <div class="form-group">
+                    <div class="toggle-row" @onclick="() => IsRecurringPaycheck = !IsRecurringPaycheck">
+                        <div class="toggle-label">
+                            <span class="toggle-icon">🔄</span>
+                            <span>Recurring paycheck</span>
+                        </div>
+                        <div class="toggle-switch @(IsRecurringPaycheck ? "active" : "")">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                @if (IsRecurringPaycheck)
+                {
+                    <!-- Frequency -->
+                    <div class="form-group">
+                        <label class="form-label">Frequency</label>
+                        <select class="form-input" @bind="PaycheckFrequency">
+                            <option value="@RecurrenceFrequency.Weekly">Weekly</option>
+                            <option value="@RecurrenceFrequency.Biweekly">Every 2 weeks</option>
+                            <option value="@RecurrenceFrequency.Monthly">Monthly</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Day of Month (for monthly) -->
+                    @if (PaycheckFrequency == RecurrenceFrequency.Monthly)
+                    {
+                        <div class="form-group">
+                            <label class="form-label">Pay day</label>
+                            <select class="form-input" @bind="PaycheckDayOfMonth">
+                                @for (int i = 1; i <= 28; i++)
+                                {
+                                    <option value="@i">@GetOrdinal(i) of each month</option>
+                                }
+                                <option value="31">Last day of month</option>
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Start date for weekly/biweekly -->
+                        <div class="form-group">
+                            <label class="form-label">Next pay date</label>
+                            <input type="date" 
+                                   class="form-input"
+                                   @bind="PaycheckDate" />
+                        </div>
+                    }
+                    
+                    <div class="recurring-hint">
+                        <span class="hint-icon">💡</span>
+                        <span>This paycheck will automatically appear each @GetFrequencyText()</span>
+                    </div>
+                }
+                else
+                {
+                    <!-- One-time date -->
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" 
+                               class="form-input"
+                               @bind="PaycheckDate" />
+                    </div>
+                }
+                
+                <!-- This Month's Paychecks -->
+                @if (RecentPaychecks.Any() || RecurringPaychecks.Any())
+                {
+                    <div class="recent-paychecks">
+                        <label class="form-label">This Month's Income</label>
+                        <div class="paycheck-list">
+                            @foreach (var paycheck in RecentPaychecks)
+                            {
+                                var paycheckId = paycheck.Id;
+                                <div class="paycheck-item">
+                                    <div class="paycheck-info">
+                                        <span class="paycheck-desc">@paycheck.Description</span>
+                                        <span class="paycheck-date">@paycheck.Date.ToString("MMM d")</span>
+                                    </div>
+                                    <span class="paycheck-amount">+@paycheck.Amount.ToString("C2")</span>
+                                    <button class="paycheck-delete" @onclick="() => DeletePaycheck(paycheckId)">✕</button>
+                                </div>
+                            }
+                        </div>
+                        
+                        @if (RecurringPaychecks.Any())
+                        {
+                            <div class="recurring-section">
+                                <span class="recurring-label">🔄 Recurring Paychecks</span>
+                                <div class="paycheck-list">
+                                    @foreach (var recurring in RecurringPaychecks)
+                                    {
+                                        var recurringId = recurring.Id;
+                                        <div class="paycheck-item recurring">
+                                            <div class="paycheck-info">
+                                                <span class="paycheck-desc">@recurring.Description</span>
+                                                <span class="paycheck-date">@GetFrequencyLabel(recurring)</span>
+                                            </div>
+                                            <span class="paycheck-amount">+@recurring.Amount.ToString("C2")</span>
+                                            <button class="paycheck-delete" @onclick="() => DeleteRecurringPaycheck(recurringId)">✕</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" @onclick="ClosePaycheckModal">Cancel</button>
+                <button class="btn-save" @onclick="SavePaycheck" disabled="@(!IsPaycheckValid)">
+                    @(IsRecurringPaycheck ? "Set Up Recurring" : "Add Paycheck")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private DateTime CurrentDate { get; set; } = DateTime.Now;
     private List<Category> Categories { get; set; } = new();
     private List<Transaction> RecentTransactions { get; set; } = new();
-    private decimal MonthlyIncome { get; set; }
+    
+    // Expected vs Actual Income
+    private decimal ExpectedIncome { get; set; }  // From setting - used for budget calculations
+    private decimal ActualIncome { get; set; }    // Sum of received paychecks
+    private decimal Unallocated => ExpectedIncome - TotalBudget;
+    private decimal RemainingIncome => ExpectedIncome - TotalSpent;
+    private double ProgressPercentage => ExpectedIncome > 0 ? Math.Min((double)(TotalSpent / ExpectedIncome) * 100, 100) : 0;
+    
+    // Budget totals
     private decimal TotalBudget { get; set; }
     private decimal TotalSpent { get; set; }
-    private decimal RemainingBudget => TotalBudget - TotalSpent;
-    private decimal Unallocated => MonthlyIncome - TotalBudget;
-    private decimal RemainingIncome => MonthlyIncome - TotalSpent;
-    private double ProgressPercentage => MonthlyIncome > 0 ? Math.Min((double)(TotalSpent / MonthlyIncome) * 100, 100) : 0;
     
     // Income editing
-    private bool IsEditingIncome { get; set; }
-    private decimal EditIncomeAmount { get; set; }
+    private bool IsEditingExpectedIncome { get; set; }
+    private decimal EditExpectedIncomeAmount { get; set; }
+    
+    // Paycheck modal
+    private bool ShowPaycheckModal { get; set; }
+    private string PaycheckDescription { get; set; } = string.Empty;
+    private decimal PaycheckAmount { get; set; }
+    private DateTime PaycheckDate { get; set; } = DateTime.Today;
+    private bool IsRecurringPaycheck { get; set; }
+    private RecurrenceFrequency PaycheckFrequency { get; set; } = RecurrenceFrequency.Biweekly;
+    private int PaycheckDayOfMonth { get; set; } = 1;
+    private bool IsPaycheckValid => PaycheckAmount > 0 && !string.IsNullOrWhiteSpace(PaycheckDescription);
+    private int IncomeTransactionCount { get; set; }
+    private List<Transaction> RecentPaychecks { get; set; } = new();
+    private List<RecurringTransaction> RecurringPaychecks { get; set; } = new();
     
     // Grouped categories
     private List<Category> FixedCategories => Categories.Where(c => c.Type == CategoryType.Fixed).ToList();
@@ -234,6 +488,13 @@
     private decimal FixedSpent { get; set; }
     private decimal DiscretionaryBudget { get; set; }
     private decimal DiscretionarySpent { get; set; }
+    
+    // Sinking Funds
+    private List<SinkingFund> SinkingFunds { get; set; } = new();
+    private bool SinkingFundsExpanded { get; set; } = true;
+    private IEnumerable<SinkingFund> ActiveFunds => SinkingFunds.Where(f => f.Status == SinkingFundStatus.Active);
+    private decimal TotalGoal => SinkingFunds.Sum(f => f.GoalAmount);
+    private decimal TotalSaved => SinkingFunds.Sum(f => f.CurrentBalance);
 
     protected override void OnInitialized()
     {
@@ -259,7 +520,23 @@
     {
         Categories = BudgetService.GetCategories();
         RecentTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
-        MonthlyIncome = BudgetService.GetMonthlyIncome();
+        
+        // Expected income from setting (for budget calculations)
+        ExpectedIncome = BudgetService.GetMonthlyIncome();
+        
+        // Actual income from received paychecks
+        RecentPaychecks = RecentTransactions
+            .Where(t => t.Type == TransactionType.Income)
+            .OrderByDescending(t => t.Date)
+            .ToList();
+        ActualIncome = RecentPaychecks.Sum(t => t.Amount);
+        IncomeTransactionCount = RecentPaychecks.Count;
+        
+        // Get recurring paychecks (income type recurring transactions)
+        RecurringPaychecks = BudgetService.GetRecurringTransactions()
+            .Where(r => r.Type == TransactionType.Income && r.IsActive)
+            .ToList();
+        
         TotalBudget = BudgetService.GetTotalBudget(CurrentDate.Month, CurrentDate.Year);
         TotalSpent = BudgetService.GetTotalSpent(CurrentDate.Month, CurrentDate.Year);
         
@@ -268,31 +545,154 @@
         FixedSpent = FixedCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         DiscretionaryBudget = DiscretionaryCategories.Sum(c => BudgetService.GetBudgetByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         DiscretionarySpent = DiscretionaryCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+        
+        // Load sinking funds
+        SinkingFunds = BudgetService.GetSinkingFunds();
     }
 
-    // Income editing
-    private void StartEditingIncome()
+    // Paycheck modal methods
+    private void OpenIncomeModal()
     {
-        if (!IsEditingIncome)
+        PaycheckDescription = string.Empty;
+        PaycheckAmount = 0;
+        PaycheckDate = DateTime.Today;
+        IsRecurringPaycheck = false;
+        PaycheckFrequency = RecurrenceFrequency.Biweekly;
+        PaycheckDayOfMonth = 15;
+        ShowPaycheckModal = true;
+    }
+
+    private void ClosePaycheckModal()
+    {
+        ShowPaycheckModal = false;
+    }
+
+    private void SavePaycheck()
+    {
+        if (!IsPaycheckValid) return;
+
+        if (IsRecurringPaycheck)
         {
-            EditIncomeAmount = MonthlyIncome;
-            IsEditingIncome = true;
+            // Create a recurring paycheck
+            var recurring = new RecurringTransaction
+            {
+                Description = PaycheckDescription,
+                Amount = PaycheckAmount,
+                CategoryId = 0,
+                Type = TransactionType.Income,
+                Frequency = PaycheckFrequency,
+                DayOfMonth = PaycheckFrequency == RecurrenceFrequency.Monthly ? PaycheckDayOfMonth : PaycheckDate.Day,
+                StartDate = PaycheckFrequency == RecurrenceFrequency.Monthly 
+                    ? new DateTime(CurrentDate.Year, CurrentDate.Month, Math.Min(PaycheckDayOfMonth, DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month)))
+                    : PaycheckDate,
+                NextDueDate = PaycheckFrequency == RecurrenceFrequency.Monthly 
+                    ? new DateTime(CurrentDate.Year, CurrentDate.Month, Math.Min(PaycheckDayOfMonth, DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month)))
+                    : PaycheckDate,
+                IsActive = true
+            };
+            BudgetService.AddRecurringTransaction(recurring);
+            
+            // Also create the first transaction immediately if the date is today or earlier
+            if (recurring.NextDueDate <= DateTime.Today)
+            {
+                var transaction = new Transaction
+                {
+                    Description = PaycheckDescription,
+                    Amount = PaycheckAmount,
+                    Date = recurring.NextDueDate,
+                    CategoryId = 0,
+                    Type = TransactionType.Income
+                };
+                BudgetService.AddTransaction(transaction);
+            }
+        }
+        else
+        {
+            // One-time paycheck
+            var transaction = new Transaction
+            {
+                Description = PaycheckDescription,
+                Amount = PaycheckAmount,
+                Date = PaycheckDate,
+                CategoryId = 0,
+                Type = TransactionType.Income
+            };
+            BudgetService.AddTransaction(transaction);
+        }
+        
+        ShowPaycheckModal = false;
+        LoadData();
+    }
+
+    private string GetOrdinal(int number)
+    {
+        if (number >= 11 && number <= 13) return $"{number}th";
+        return (number % 10) switch
+        {
+            1 => $"{number}st",
+            2 => $"{number}nd",
+            3 => $"{number}rd",
+            _ => $"{number}th"
+        };
+    }
+
+    private string GetFrequencyText()
+    {
+        return PaycheckFrequency switch
+        {
+            RecurrenceFrequency.Weekly => "week",
+            RecurrenceFrequency.Biweekly => "2 weeks",
+            RecurrenceFrequency.Monthly => "month",
+            _ => "period"
+        };
+    }
+
+    private string GetFrequencyLabel(RecurringTransaction r)
+    {
+        return r.Frequency switch
+        {
+            RecurrenceFrequency.Weekly => "Every week",
+            RecurrenceFrequency.Biweekly => "Every 2 weeks",
+            RecurrenceFrequency.Monthly => $"{GetOrdinal(r.DayOfMonth)} of month",
+            _ => "Recurring"
+        };
+    }
+
+    private void DeletePaycheck(int transactionId)
+    {
+        BudgetService.DeleteTransaction(transactionId);
+        LoadData();
+    }
+
+    private void DeleteRecurringPaycheck(int recurringId)
+    {
+        BudgetService.DeleteRecurringTransaction(recurringId);
+        LoadData();
+    }
+
+    // Expected income editing
+    private void StartEditingExpectedIncome()
+    {
+        if (!IsEditingExpectedIncome)
+        {
+            EditExpectedIncomeAmount = ExpectedIncome;
+            IsEditingExpectedIncome = true;
         }
     }
 
-    private void SaveIncome()
+    private void SaveExpectedIncome()
     {
-        if (EditIncomeAmount >= 0)
+        if (EditExpectedIncomeAmount >= 0)
         {
-            BudgetService.SetMonthlyIncome(EditIncomeAmount);
+            BudgetService.SetMonthlyIncome(EditExpectedIncomeAmount);
             LoadData();
         }
-        IsEditingIncome = false;
+        IsEditingExpectedIncome = false;
     }
 
-    private void CancelEditIncome()
+    private void CancelEditExpectedIncome()
     {
-        IsEditingIncome = false;
+        IsEditingExpectedIncome = false;
     }
 
     private void PreviousMonth()
@@ -315,6 +715,11 @@
     private void OpenCategory(int categoryId)
     {
         Navigation.NavigateTo($"/category/{categoryId}/{CurrentDate.Month}/{CurrentDate.Year}");
+    }
+
+    private void OpenFund(int fundId)
+    {
+        Navigation.NavigateTo($"/sinking-fund/{fundId}/detail");
     }
 
     private string FormatDate(DateTime date)

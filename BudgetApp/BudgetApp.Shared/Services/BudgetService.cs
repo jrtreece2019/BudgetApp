@@ -8,9 +8,13 @@ public class BudgetService : IBudgetService
     private readonly List<Transaction> _transactions;
     private readonly List<Budget> _budgets;
     private readonly List<RecurringTransaction> _recurringTransactions;
+    private readonly List<SinkingFund> _sinkingFunds;
+    private readonly List<SinkingFundTransaction> _sinkingFundTransactions;
     private int _nextTransactionId = 100;
     private int _nextCategoryId = 100;
     private int _nextRecurringId = 100;
+    private int _nextSinkingFundId = 100;
+    private int _nextSinkingFundTransactionId = 100;
     private decimal _monthlyIncome = 0;
 
     public BudgetService()
@@ -44,6 +48,8 @@ public class BudgetService : IBudgetService
         };
         
         _recurringTransactions = new List<RecurringTransaction>();
+        _sinkingFunds = new List<SinkingFund>();
+        _sinkingFundTransactions = new List<SinkingFundTransaction>();
     }
 
     // Categories
@@ -311,6 +317,120 @@ public class BudgetService : IBudgetService
     {
         return _transactions
             .Where(t => t.Date.Month == month && t.Date.Year == year && t.Type == TransactionType.Income)
+            .Sum(t => t.Amount);
+    }
+
+    // Sinking Funds
+    public List<SinkingFund> GetSinkingFunds() => _sinkingFunds;
+
+    public SinkingFund? GetSinkingFund(int id)
+    {
+        return _sinkingFunds.FirstOrDefault(f => f.Id == id);
+    }
+
+    public void AddSinkingFund(SinkingFund fund)
+    {
+        fund.Id = _nextSinkingFundId++;
+        _sinkingFunds.Add(fund);
+    }
+
+    public void UpdateSinkingFund(SinkingFund fund)
+    {
+        var existing = _sinkingFunds.FirstOrDefault(f => f.Id == fund.Id);
+        if (existing != null)
+        {
+            existing.Name = fund.Name;
+            existing.Icon = fund.Icon;
+            existing.Color = fund.Color;
+            existing.GoalAmount = fund.GoalAmount;
+            existing.CurrentBalance = fund.CurrentBalance;
+            existing.MonthlyContribution = fund.MonthlyContribution;
+            existing.StartDate = fund.StartDate;
+            existing.TargetDate = fund.TargetDate;
+            existing.Status = fund.Status;
+        }
+    }
+
+    public void DeleteSinkingFund(int id)
+    {
+        var fund = _sinkingFunds.FirstOrDefault(f => f.Id == id);
+        if (fund != null)
+        {
+            // Remove associated transactions
+            _sinkingFundTransactions.RemoveAll(t => t.SinkingFundId == id);
+            _sinkingFunds.Remove(fund);
+        }
+    }
+
+    public List<SinkingFundTransaction> GetSinkingFundTransactions(int fundId)
+    {
+        return _sinkingFundTransactions
+            .Where(t => t.SinkingFundId == fundId)
+            .OrderByDescending(t => t.Date)
+            .ToList();
+    }
+
+    public void AddSinkingFundTransaction(SinkingFundTransaction transaction)
+    {
+        transaction.Id = _nextSinkingFundTransactionId++;
+        _sinkingFundTransactions.Add(transaction);
+        
+        // Update fund balance
+        var fund = _sinkingFunds.FirstOrDefault(f => f.Id == transaction.SinkingFundId);
+        if (fund != null)
+        {
+            if (transaction.Type == SinkingFundTransactionType.Contribution)
+            {
+                fund.CurrentBalance += transaction.Amount;
+            }
+            else
+            {
+                fund.CurrentBalance -= transaction.Amount;
+            }
+            
+            if (fund.CurrentBalance >= fund.GoalAmount)
+            {
+                fund.Status = SinkingFundStatus.Completed;
+            }
+        }
+    }
+
+    public void DeleteSinkingFundTransaction(int transactionId)
+    {
+        var transaction = _sinkingFundTransactions.FirstOrDefault(t => t.Id == transactionId);
+        if (transaction != null)
+        {
+            // Reverse balance
+            var fund = _sinkingFunds.FirstOrDefault(f => f.Id == transaction.SinkingFundId);
+            if (fund != null)
+            {
+                if (transaction.Type == SinkingFundTransactionType.Contribution)
+                {
+                    fund.CurrentBalance -= transaction.Amount;
+                }
+                else
+                {
+                    fund.CurrentBalance += transaction.Amount;
+                }
+                
+                if (fund.CurrentBalance < fund.GoalAmount && fund.Status == SinkingFundStatus.Completed)
+                {
+                    fund.Status = SinkingFundStatus.Active;
+                }
+            }
+            
+            _sinkingFundTransactions.Remove(transaction);
+        }
+    }
+
+    public decimal GetTotalSinkingFundContributions(int month, int year)
+    {
+        var startDate = new DateTime(year, month, 1);
+        var endDate = startDate.AddMonths(1);
+        
+        return _sinkingFundTransactions
+            .Where(t => t.Date >= startDate && t.Date < endDate 
+                     && t.Type == SinkingFundTransactionType.Contribution)
             .Sum(t => t.Amount);
     }
 }

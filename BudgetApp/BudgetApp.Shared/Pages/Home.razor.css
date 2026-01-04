@@ -53,36 +53,96 @@
     box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
 }
 
-/* Income Row */
-.income-row {
+/* Income Section - Expected vs Actual */
+.income-section {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     margin-bottom: 1rem;
+}
+
+.income-expected,
+.income-actual {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 12px;
     cursor: pointer;
+    transition: background 0.2s;
+}
+
+.income-expected {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.income-expected:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.income-actual {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+.income-actual:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.income-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
 }
 
 .income-label {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
-.income-label .edit-hint {
-    font-size: 0.75rem;
-    opacity: 0.6;
+.income-label.received {
+    color: rgba(16, 185, 129, 0.9);
+}
+
+.edit-hint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .income-amount {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
+}
+
+.income-received-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.income-received-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.income-received-amount.complete {
+    color: #4ade80;
+}
+
+.income-status {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 2px;
+}
+
+.status-complete {
+    color: #4ade80;
+}
+
+.status-pending {
+    color: rgba(251, 191, 36, 0.8);
 }
 
 .income-edit {
@@ -264,10 +324,39 @@
     margin-bottom: 0.5rem;
     cursor: pointer;
     transition: background 0.2s;
+    border-left: 4px solid transparent;
 }
 
 .section-header-group:hover {
     background: var(--bg-card-hover);
+}
+
+/* Section type colors */
+.section-header-group.fixed {
+    border-left-color: #EF4444;
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 30%);
+}
+
+.section-header-group.fixed:hover {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, var(--bg-card-hover) 30%);
+}
+
+.section-header-group.discretionary {
+    border-left-color: #8B5CF6;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, var(--bg-card) 30%);
+}
+
+.section-header-group.discretionary:hover {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-card-hover) 30%);
+}
+
+.section-header-group.sinking-funds {
+    border-left-color: #10B981;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 30%);
+}
+
+.section-header-group.sinking-funds:hover {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, var(--bg-card-hover) 30%);
 }
 
 .section-header-left {
@@ -493,6 +582,120 @@
     color: var(--income);
 }
 
+/* Sinking Funds List */
+.sinking-funds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.fund-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 0.875rem;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.fund-item:hover {
+    background: var(--bg-card-hover);
+}
+
+.fund-item:active {
+    background: var(--bg-card-active);
+}
+
+.fund-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.fund-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.fund-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.375rem;
+}
+
+.fund-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.fund-amount {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.fund-progress-container {
+    height: 6px;
+    background: var(--bg-card);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.375rem;
+}
+
+.fund-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.fund-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+}
+
+.fund-contribution {
+    color: var(--text-muted);
+}
+
+.fund-remaining {
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.1);
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+}
+
+.fund-auto-badge {
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.fund-chevron {
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    font-weight: 300;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+
+.fund-item:hover .fund-chevron {
+    color: var(--text-secondary);
+    transform: translateX(2px);
+}
+
 /* Floating Action Button */
 .fab {
     position: fixed;
@@ -535,5 +738,336 @@
 
 .bottom-spacer {
     height: 100px;
+}
+
+/* Paycheck Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--bg-card, #1e293b);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: #f8fafc;
+}
+
+.modal-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #94a3b8;
+    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #f8fafc;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: #10B981;
+}
+
+.form-input::placeholder {
+    color: #64748b;
+}
+
+.amount-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.amount-input-group .currency-symbol {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #10B981;
+}
+
+.amount-input-group .form-input.amount {
+    flex: 1;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Recent Paychecks in Modal */
+.recent-paychecks {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.paycheck-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.paycheck-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 10px;
+}
+
+.paycheck-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.paycheck-desc {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #f8fafc;
+}
+
+.paycheck-date {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.paycheck-amount {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #10B981;
+}
+
+.paycheck-delete {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.875rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+    opacity: 0.5;
+}
+
+.paycheck-item:hover .paycheck-delete {
+    opacity: 1;
+}
+
+.paycheck-delete:hover {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+}
+
+.paycheck-item.recurring {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px dashed rgba(99, 102, 241, 0.3);
+}
+
+.recurring-section {
+    margin-top: 1rem;
+}
+
+.recurring-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+/* Toggle Row */
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #f8fafc;
+    font-weight: 500;
+}
+
+.toggle-icon {
+    font-size: 1.125rem;
+}
+
+.toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.toggle-switch.active {
+    background: #10B981;
+}
+
+.toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.toggle-switch.active .toggle-knob {
+    transform: translateX(20px);
+}
+
+/* Recurring Hint */
+.recurring-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 10px;
+    margin-top: 0.5rem;
+}
+
+.recurring-hint .hint-icon {
+    flex-shrink: 0;
+}
+
+.recurring-hint span:last-child {
+    font-size: 0.8125rem;
+    color: #a5b4fc;
+    line-height: 1.4;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.btn-cancel,
+.btn-save {
+    flex: 1;
+    padding: 0.875rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-save:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Date input styling */
+.form-input[type="date"] {
+    color-scheme: dark;
 }
 

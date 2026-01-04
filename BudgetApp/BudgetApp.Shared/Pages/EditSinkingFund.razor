@@ -1,0 +1,261 @@
+@page "/sinking-fund/new"
+@page "/sinking-fund/{FundId:int}"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<div class="edit-fund-page">
+    <header class="page-header">
+        <button class="back-btn" @onclick="GoBack">← Back</button>
+        <h1>@(IsNew ? "Create Sinking Fund" : "Edit Sinking Fund")</h1>
+    </header>
+
+    <div class="form-card">
+        <!-- Name & Icon/Color -->
+        <div class="form-section">
+            <h3 class="section-title">Fund Details</h3>
+            
+            <div class="preview-row">
+                <div class="fund-preview" style="background: @Fund.Color">@Fund.Icon</div>
+                <div class="preview-name">@(string.IsNullOrWhiteSpace(Fund.Name) ? "New Fund" : Fund.Name)</div>
+            </div>
+
+            <div class="form-group">
+                <label>Fund Name</label>
+                <input type="text" @bind="Fund.Name" placeholder="e.g., Vacation, Car Repair, Holiday Gifts" />
+            </div>
+
+            <div class="form-group">
+                <label>Icon</label>
+                <div class="icon-grid">
+                    @foreach (var icon in Icons)
+                    {
+                        <button class="icon-btn @(Fund.Icon == icon ? "selected" : "")" 
+                                @onclick="() => Fund.Icon = icon">@icon</button>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Color</label>
+                <div class="color-grid">
+                    @foreach (var color in Colors)
+                    {
+                        <button class="color-btn @(Fund.Color == color ? "selected" : "")"
+                                style="background: @color"
+                                @onclick="() => Fund.Color = color"></button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Goal & Contributions -->
+        <div class="form-section">
+            <h3 class="section-title">Savings Goal</h3>
+            
+            <div class="form-group">
+                <label>Goal Amount</label>
+                <div class="input-with-prefix">
+                    <span class="prefix">$</span>
+                    <input type="number" @bind="Fund.GoalAmount" min="0" step="0.01" placeholder="0.00" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Monthly Contribution</label>
+                <div class="input-with-prefix">
+                    <span class="prefix">$</span>
+                    <input type="number" @bind="Fund.MonthlyContribution" min="0" step="0.01" placeholder="0.00" />
+                </div>
+                @if (Fund.MonthlyContribution > 0 && Fund.GoalAmount > 0)
+                {
+                    <div class="calc-helper">
+                        You'll reach your goal in <strong>@CalculatedMonths months</strong> (@CalculatedDate.ToString("MMM yyyy"))
+                    </div>
+                }
+            </div>
+
+            @if (Fund.MonthlyContribution > 0)
+            {
+                <div class="form-group">
+                    <div class="auto-contribute-toggle" @onclick="() => Fund.AutoContribute = !Fund.AutoContribute">
+                        <div class="toggle-info">
+                            <span class="toggle-label">Auto-contribute monthly</span>
+                            <span class="toggle-description">Automatically add @Fund.MonthlyContribution.ToString("C0") at the start of each month</span>
+                        </div>
+                        <div class="toggle-switch @(Fund.AutoContribute ? "on" : "")">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="form-row">
+                <div class="form-group half">
+                    <label>Start Date</label>
+                    <input type="date" @bind="Fund.StartDate" />
+                </div>
+                <div class="form-group half">
+                    <label>Target Date (optional)</label>
+                    <input type="date" @bind="TargetDateValue" />
+                </div>
+            </div>
+
+            @if (TargetDateValue.HasValue && Fund.GoalAmount > 0)
+            {
+                <div class="calc-helper target-calc">
+                    To reach your goal by @TargetDateValue.Value.ToString("MMM yyyy"), save 
+                    <strong>@RequiredMonthlyContribution.ToString("C0")/month</strong>
+                    <button class="apply-btn" @onclick="ApplySuggestedContribution">Apply</button>
+                </div>
+            }
+        </div>
+
+        <!-- Status (for existing funds) -->
+        @if (!IsNew)
+        {
+            <div class="form-section">
+                <h3 class="section-title">Status</h3>
+                
+                <div class="status-options">
+                    <button class="status-btn @(Fund.Status == SinkingFundStatus.Active ? "selected active" : "")"
+                            @onclick="() => Fund.Status = SinkingFundStatus.Active">
+                        <span class="status-icon">▶</span> Active
+                    </button>
+                    <button class="status-btn @(Fund.Status == SinkingFundStatus.Paused ? "selected paused" : "")"
+                            @onclick="() => Fund.Status = SinkingFundStatus.Paused">
+                        <span class="status-icon">⏸</span> Paused
+                    </button>
+                    <button class="status-btn @(Fund.Status == SinkingFundStatus.Completed ? "selected completed" : "")"
+                            @onclick="() => Fund.Status = SinkingFundStatus.Completed">
+                        <span class="status-icon">✓</span> Completed
+                    </button>
+                </div>
+
+                @if (!IsNew)
+                {
+                    <div class="current-balance-info">
+                        <span>Current Balance:</span>
+                        <strong>@Fund.CurrentBalance.ToString("C2")</strong>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <button class="save-btn" @onclick="Save" disabled="@(!IsValid)">
+                @(IsNew ? "Create Fund" : "Save Changes")
+            </button>
+            
+            @if (!IsNew)
+            {
+                <button class="delete-btn" @onclick="Delete">Delete Fund</button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int? FundId { get; set; }
+
+    private SinkingFund Fund { get; set; } = new();
+    private bool IsNew => FundId == null || FundId == 0;
+    private bool IsValid => !string.IsNullOrWhiteSpace(Fund.Name) && Fund.GoalAmount > 0;
+
+    private DateTime? TargetDateValue
+    {
+        get => Fund.TargetDate;
+        set => Fund.TargetDate = value;
+    }
+
+    private int CalculatedMonths
+    {
+        get
+        {
+            if (Fund.MonthlyContribution <= 0) return 0;
+            return (int)Math.Ceiling(Fund.GoalAmount / Fund.MonthlyContribution);
+        }
+    }
+
+    private DateTime CalculatedDate => DateTime.Today.AddMonths(CalculatedMonths);
+
+    private decimal RequiredMonthlyContribution
+    {
+        get
+        {
+            if (!TargetDateValue.HasValue || Fund.GoalAmount <= 0) return 0;
+            var months = ((TargetDateValue.Value.Year - DateTime.Today.Year) * 12) 
+                       + TargetDateValue.Value.Month - DateTime.Today.Month;
+            if (months <= 0) return Fund.GoalAmount;
+            return Math.Ceiling(Fund.GoalAmount / months);
+        }
+    }
+
+    private readonly string[] Icons = new[]
+    {
+        "🎯", "✈️", "🚗", "🏠", "🎁", "💍",
+        "📱", "💻", "🎓", "🏥", "🛠️", "🎄",
+        "🏖️", "🎉", "👶", "🐕", "📚", "🎸",
+        "⚽", "🏋️", "🧳", "💄", "🪑", "🌴"
+    };
+
+    private readonly string[] Colors = new[]
+    {
+        "#6366F1", "#8B5CF6", "#EC4899", "#EF4444",
+        "#F97316", "#F59E0B", "#10B981", "#14B8A6",
+        "#06B6D4", "#3B82F6", "#6B7280", "#1F2937"
+    };
+
+    protected override void OnInitialized()
+    {
+        if (FundId.HasValue && FundId > 0)
+        {
+            var existing = BudgetService.GetSinkingFund(FundId.Value);
+            if (existing != null)
+            {
+                Fund = existing;
+            }
+        }
+        else
+        {
+            Fund.StartDate = DateTime.Today;
+        }
+    }
+
+    private void ApplySuggestedContribution()
+    {
+        Fund.MonthlyContribution = RequiredMonthlyContribution;
+    }
+
+    private void Save()
+    {
+        if (!IsValid) return;
+
+        if (IsNew)
+        {
+            BudgetService.AddSinkingFund(Fund);
+        }
+        else
+        {
+            BudgetService.UpdateSinkingFund(Fund);
+        }
+
+        Navigation.NavigateTo("/sinking-funds");
+    }
+
+    private void Delete()
+    {
+        if (FundId.HasValue)
+        {
+            BudgetService.DeleteSinkingFund(FundId.Value);
+        }
+        Navigation.NavigateTo("/sinking-funds");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/sinking-funds");
+    }
+}
+

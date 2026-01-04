@@ -42,26 +42,36 @@
             <label class="field-label">Description</label>
             <input type="text" 
                    class="field-input" 
-                   placeholder="What was this for?"
+                   placeholder="@(IsExpense ? "What was this for?" : "e.g., Bonus, Side gig, Gift")"
                    @bind="Description" />
         </div>
 
-        <!-- Category -->
-        <div class="form-field">
-            <label class="field-label">Category</label>
-            <div class="category-grid">
-                @foreach (var category in Categories)
-                {
-                    <button type="button"
-                            class="category-chip @(SelectedCategoryId == category.Id ? "selected" : "")"
-                            style="@(SelectedCategoryId == category.Id ? $"background-color: {category.Color}; border-color: {category.Color};" : "")"
-                            @onclick="() => SelectedCategoryId = category.Id">
-                        <span class="chip-icon">@category.Icon</span>
-                        <span class="chip-name">@category.Name</span>
-                    </button>
-                }
+        <!-- Category (only for expenses) -->
+        @if (IsExpense)
+        {
+            <div class="form-field">
+                <label class="field-label">Category</label>
+                <div class="category-grid">
+                    @foreach (var category in Categories)
+                    {
+                        <button type="button"
+                                class="category-chip @(SelectedCategoryId == category.Id ? "selected" : "")"
+                                style="@(SelectedCategoryId == category.Id ? $"background-color: {category.Color}; border-color: {category.Color};" : "")"
+                                @onclick="() => SelectedCategoryId = category.Id">
+                            <span class="chip-icon">@category.Icon</span>
+                            <span class="chip-name">@category.Name</span>
+                        </button>
+                    }
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="income-hint">
+                <span class="hint-icon">💡</span>
+                <span class="hint-text">Recording additional income beyond your monthly budget</span>
+            </div>
+        }
 
         <!-- Date -->
         <div class="form-field">
@@ -97,11 +107,24 @@
     private List<Category> Categories { get; set; } = new();
     private string? ReturnUrl { get; set; }
 
-    private bool IsValid => Amount > 0 && SelectedCategoryId > 0;
+    // For expenses: need amount and category. For income: just need amount and description
+    private bool IsValid => Amount > 0 && (IsExpense ? SelectedCategoryId > 0 : !string.IsNullOrWhiteSpace(Description));
 
     protected override void OnInitialized()
     {
         Categories = BudgetService.GetCategories();
+        
+        // Check for returnUrl query parameter
+        var uri = new Uri(Navigation.Uri);
+        if (!string.IsNullOrEmpty(uri.Query))
+        {
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var returnUrlParam = queryParams["returnUrl"];
+            if (!string.IsNullOrEmpty(returnUrlParam))
+            {
+                ReturnUrl = returnUrlParam;
+            }
+        }
         
         if (IsEditing)
         {
@@ -114,7 +137,14 @@
                 SelectedCategoryId = transaction.CategoryId;
                 TransactionDate = transaction.Date;
                 IsExpense = transaction.Type == TransactionType.Expense;
-                ReturnUrl = $"/category/{transaction.CategoryId}";
+                
+                // Only set return URL if not already set from query param
+                if (string.IsNullOrEmpty(ReturnUrl))
+                {
+                    ReturnUrl = transaction.CategoryId > 0 
+                        ? $"/category/{transaction.CategoryId}" 
+                        : "/";
+                }
             }
         }
         else if (Categories.Any())
@@ -132,17 +162,21 @@
     {
         if (!IsValid) return;
 
+        // For expenses, use category name as default description if empty
+        // For income, description is required so it will always have a value
+        var description = string.IsNullOrWhiteSpace(Description) && IsExpense
+            ? Categories.FirstOrDefault(c => c.Id == SelectedCategoryId)?.Name ?? "Expense"
+            : Description;
+
         if (IsEditing)
         {
             var transaction = new Transaction
             {
                 Id = TransactionId!.Value,
-                Description = string.IsNullOrWhiteSpace(Description) 
-                    ? Categories.First(c => c.Id == SelectedCategoryId).Name 
-                    : Description,
+                Description = description,
                 Amount = Amount,
                 Date = TransactionDate,
-                CategoryId = SelectedCategoryId,
+                CategoryId = IsExpense ? SelectedCategoryId : 0, // Income has no category
                 Type = IsExpense ? TransactionType.Expense : TransactionType.Income
             };
             BudgetService.UpdateTransaction(transaction);
@@ -151,12 +185,10 @@
         {
             var transaction = new Transaction
             {
-                Description = string.IsNullOrWhiteSpace(Description) 
-                    ? Categories.First(c => c.Id == SelectedCategoryId).Name 
-                    : Description,
+                Description = description,
                 Amount = Amount,
                 Date = TransactionDate,
-                CategoryId = SelectedCategoryId,
+                CategoryId = IsExpense ? SelectedCategoryId : 0, // Income has no category
                 Type = IsExpense ? TransactionType.Expense : TransactionType.Income
             };
             BudgetService.AddTransaction(transaction);

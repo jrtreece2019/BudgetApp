@@ -1,0 +1,171 @@
+@page "/sinking-funds"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<div class="sinking-funds-page">
+    <header class="page-header">
+        <h1>Sinking Funds</h1>
+        <p class="subtitle">Save for future expenses</p>
+    </header>
+
+    @if (Funds.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🎯</div>
+            <h3>No Sinking Funds Yet</h3>
+            <p>Create a fund to start saving for future expenses like vacations, car repairs, or holiday gifts.</p>
+            <button class="create-btn" @onclick="AddNew">
+                <span class="plus">+</span> Create Your First Fund
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- Summary Section -->
+        <div class="summary-card">
+            <div class="summary-row">
+                <span class="label">Total Goal</span>
+                <span class="value">@TotalGoal.ToString("C0")</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Total Saved</span>
+                <span class="value highlight">@TotalSaved.ToString("C0")</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: @(TotalPercentage)%"></div>
+            </div>
+            <div class="progress-text">@TotalPercentage.ToString("F0")% funded</div>
+        </div>
+
+        <!-- Active Funds -->
+        @if (ActiveFunds.Any())
+        {
+            <div class="section">
+                <h2 class="section-title">Active Funds</h2>
+                <div class="funds-list">
+                    @foreach (var fund in ActiveFunds)
+                    {
+                        <div class="fund-card" @onclick="() => ViewFund(fund.Id)">
+                            <div class="fund-icon" style="background: @fund.Color">@fund.Icon</div>
+                            <div class="fund-info">
+                                <div class="fund-name">@fund.Name</div>
+                                <div class="fund-amounts">
+                                    <span class="saved">@fund.CurrentBalance.ToString("C0")</span>
+                                    <span class="separator">/</span>
+                                    <span class="goal">@fund.GoalAmount.ToString("C0")</span>
+                                </div>
+                                <div class="fund-progress">
+                                    <div class="progress-bar-small">
+                                        <div class="progress-fill-small" 
+                                             style="width: @fund.ProgressPercentage%; background: @fund.Color"></div>
+                                    </div>
+                                    <span class="progress-percent">@fund.ProgressPercentage.ToString("F0")%</span>
+                                </div>
+                                @if (fund.MonthlyContribution > 0)
+                                {
+                                    <div class="fund-meta">
+                                        <span class="contribution">@fund.MonthlyContribution.ToString("C0")/mo</span>
+                                        @if (!fund.IsOnTrack)
+                                        {
+                                            <span class="status behind">Behind</span>
+                                        }
+                                        else if (fund.MonthsRemaining > 0)
+                                        {
+                                            <span class="status on-track">@fund.MonthsRemaining mo left</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="fund-chevron">›</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Paused Funds -->
+        @if (PausedFunds.Any())
+        {
+            <div class="section">
+                <h2 class="section-title">Paused</h2>
+                <div class="funds-list">
+                    @foreach (var fund in PausedFunds)
+                    {
+                        <div class="fund-card paused" @onclick="() => ViewFund(fund.Id)">
+                            <div class="fund-icon" style="background: @fund.Color; opacity: 0.5">@fund.Icon</div>
+                            <div class="fund-info">
+                                <div class="fund-name">@fund.Name</div>
+                                <div class="fund-amounts">
+                                    <span class="saved">@fund.CurrentBalance.ToString("C0")</span>
+                                    <span class="separator">/</span>
+                                    <span class="goal">@fund.GoalAmount.ToString("C0")</span>
+                                </div>
+                                <span class="status paused-badge">Paused</span>
+                            </div>
+                            <div class="fund-chevron">›</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Completed Funds -->
+        @if (CompletedFunds.Any())
+        {
+            <div class="section">
+                <h2 class="section-title">Completed 🎉</h2>
+                <div class="funds-list">
+                    @foreach (var fund in CompletedFunds)
+                    {
+                        <div class="fund-card completed" @onclick="() => ViewFund(fund.Id)">
+                            <div class="fund-icon" style="background: @fund.Color">@fund.Icon</div>
+                            <div class="fund-info">
+                                <div class="fund-name">@fund.Name</div>
+                                <div class="fund-amounts">
+                                    <span class="saved complete">@fund.CurrentBalance.ToString("C0")</span>
+                                    <span class="check">✓</span>
+                                </div>
+                            </div>
+                            <div class="fund-chevron">›</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+
+    <button class="fab" @onclick="AddNew">+</button>
+</div>
+
+@code {
+    private List<SinkingFund> Funds { get; set; } = new();
+    
+    private IEnumerable<SinkingFund> ActiveFunds => Funds.Where(f => f.Status == SinkingFundStatus.Active);
+    private IEnumerable<SinkingFund> PausedFunds => Funds.Where(f => f.Status == SinkingFundStatus.Paused);
+    private IEnumerable<SinkingFund> CompletedFunds => Funds.Where(f => f.Status == SinkingFundStatus.Completed);
+    
+    private decimal TotalGoal => Funds.Sum(f => f.GoalAmount);
+    private decimal TotalSaved => Funds.Sum(f => f.CurrentBalance);
+    private double TotalPercentage => TotalGoal > 0 ? Math.Min(100, (double)(TotalSaved / TotalGoal) * 100) : 0;
+
+    protected override void OnInitialized()
+    {
+        LoadFunds();
+    }
+
+    private void LoadFunds()
+    {
+        Funds = BudgetService.GetSinkingFunds();
+    }
+
+    private void AddNew()
+    {
+        Navigation.NavigateTo("/sinking-fund/new");
+    }
+
+    private void ViewFund(int id)
+    {
+        Navigation.NavigateTo($"/sinking-fund/{id}/detail");
+    }
+}
+

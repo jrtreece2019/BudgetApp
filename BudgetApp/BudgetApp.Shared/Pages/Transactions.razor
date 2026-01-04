@@ -30,16 +30,11 @@
         <div class="filter-row">
             <select class="filter-select" @bind="SelectedCategoryId">
                 <option value="0">All Categories</option>
+                <option value="-1">💰 Income</option>
                 @foreach (var category in Categories)
                 {
                     <option value="@category.Id">@category.Icon @category.Name</option>
                 }
-            </select>
-
-            <select class="filter-select" @bind="SelectedType">
-                <option value="">All Types</option>
-                <option value="Expense">Expenses</option>
-                <option value="Income">Income</option>
             </select>
         </div>
     </div>
@@ -54,16 +49,21 @@
     <!-- Summary -->
     <div class="summary-row">
         <div class="summary-item">
-            <span class="summary-label">Expenses</span>
-            <span class="summary-value expense">-@TotalExpenses.ToString("C2")</span>
+            <span class="summary-label">Expected</span>
+            <span class="summary-value">@ExpectedIncome.ToString("C0")</span>
         </div>
         <div class="summary-item">
-            <span class="summary-label">Income</span>
-            <span class="summary-value income">+@TotalIncome.ToString("C2")</span>
+            <span class="summary-label">Received</span>
+            <span class="summary-value income">@ActualIncome.ToString("C0")</span>
+            <span class="summary-detail">@PaycheckCount paycheck@(PaycheckCount != 1 ? "s" : "")</span>
         </div>
         <div class="summary-item">
-            <span class="summary-label">Net</span>
-            <span class="summary-value @(NetAmount >= 0 ? "income" : "expense")">@NetAmount.ToString("C2")</span>
+            <span class="summary-label">Spent</span>
+            <span class="summary-value expense">@TotalExpenses.ToString("C0")</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Remaining</span>
+            <span class="summary-value @(NetAmount >= 0 ? "income" : "expense")">@NetAmount.ToString("C0")</span>
         </div>
     </div>
 
@@ -81,19 +81,24 @@
                     var category = Categories.FirstOrDefault(c => c.Id == transaction.CategoryId);
                     var isIncome = transaction.Type == TransactionType.Income;
 
-                    <div class="transaction-item" @onclick="() => EditTransaction(txnId)">
-                        <div class="transaction-icon" style="background-color: @(category?.Color ?? "#6B7280")">
-                            @(category?.Icon ?? "💰")
+                    <div class="transaction-item">
+                        <div class="transaction-main" @onclick="() => EditTransaction(txnId)">
+                            <div class="transaction-icon" style="background-color: @(category?.Color ?? "#6B7280")">
+                                @(category?.Icon ?? "💰")
+                            </div>
+                            <div class="transaction-info">
+                                <span class="transaction-desc">@transaction.Description</span>
+                                <span class="transaction-meta">
+                                    @(category?.Name ?? (isIncome ? "Income" : "Unknown")) · @FormatDate(transaction.Date)
+                                </span>
+                            </div>
+                            <div class="transaction-amount @(isIncome ? "income" : "expense")">
+                                @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
+                            </div>
                         </div>
-                        <div class="transaction-info">
-                            <span class="transaction-desc">@transaction.Description</span>
-                            <span class="transaction-meta">
-                                @(category?.Name ?? "Unknown") · @FormatDate(transaction.Date)
-                            </span>
-                        </div>
-                        <div class="transaction-amount @(isIncome ? "income" : "expense")">
-                            @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
-                        </div>
+                        <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">
+                            🗑️
+                        </button>
                     </div>
                 }
             </div>
@@ -103,7 +108,7 @@
             <div class="empty-state">
                 <div class="empty-icon">📋</div>
                 <p class="empty-text">No transactions found</p>
-                @if (!string.IsNullOrEmpty(SearchQuery) || SelectedCategoryId > 0 || !string.IsNullOrEmpty(SelectedType))
+                @if (!string.IsNullOrEmpty(SearchQuery) || SelectedCategoryId != 0)
                 {
                     <button class="clear-filters-btn" @onclick="ClearFilters">Clear filters</button>
                 }
@@ -127,13 +132,13 @@
     
     private string SearchQuery { get; set; } = string.Empty;
     private int SelectedCategoryId { get; set; }
-    private string SelectedType { get; set; } = string.Empty;
 
     private List<Transaction> FilteredTransactions => AllTransactions
         .Where(t => string.IsNullOrEmpty(SearchQuery) || 
                     t.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-        .Where(t => SelectedCategoryId == 0 || t.CategoryId == SelectedCategoryId)
-        .Where(t => string.IsNullOrEmpty(SelectedType) || t.Type.ToString() == SelectedType)
+        .Where(t => SelectedCategoryId == 0 || // All categories
+                    (SelectedCategoryId == -1 && t.Type == TransactionType.Income) || // Income filter
+                    t.CategoryId == SelectedCategoryId) // Specific category
         .OrderByDescending(t => t.Date)
         .ThenByDescending(t => t.Id)
         .ToList();
@@ -142,11 +147,12 @@
         .Where(t => t.Type == TransactionType.Expense)
         .Sum(t => t.Amount);
 
-    private decimal TotalIncome => FilteredTransactions
-        .Where(t => t.Type == TransactionType.Income)
-        .Sum(t => t.Amount);
+    // Expected vs Actual Income
+    private decimal ExpectedIncome { get; set; }
+    private decimal ActualIncome { get; set; }
+    private int PaycheckCount { get; set; }
 
-    private decimal NetAmount => TotalIncome - TotalExpenses;
+    private decimal NetAmount => ExpectedIncome - TotalExpenses;
 
     protected override void OnInitialized()
     {
@@ -157,6 +163,14 @@
     {
         Categories = BudgetService.GetCategories();
         AllTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
+        
+        // Expected income from setting
+        ExpectedIncome = BudgetService.GetMonthlyIncome();
+        
+        // Actual income from paychecks
+        var paychecks = AllTransactions.Where(t => t.Type == TransactionType.Income).ToList();
+        ActualIncome = paychecks.Sum(t => t.Amount);
+        PaycheckCount = paychecks.Count;
     }
 
     private void GoBack()
@@ -178,12 +192,18 @@
 
     private void EditTransaction(int transactionId)
     {
-        Navigation.NavigateTo($"/edit/{transactionId}");
+        Navigation.NavigateTo($"/edit/{transactionId}?returnUrl=/transactions");
     }
 
     private void AddTransaction()
     {
-        Navigation.NavigateTo("/add");
+        Navigation.NavigateTo("/add?returnUrl=/transactions");
+    }
+
+    private void DeleteTransaction(int transactionId)
+    {
+        BudgetService.DeleteTransaction(transactionId);
+        LoadData();
     }
 
     private void ClearSearch()
@@ -195,7 +215,6 @@
     {
         SearchQuery = string.Empty;
         SelectedCategoryId = 0;
-        SelectedType = string.Empty;
     }
 
     private string FormatDate(DateTime date)

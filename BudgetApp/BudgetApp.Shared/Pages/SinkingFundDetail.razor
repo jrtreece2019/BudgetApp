@@ -1,0 +1,233 @@
+@page "/sinking-fund/{FundId:int}/detail"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+@if (Fund == null)
+{
+    <div class="fund-detail-page">
+        <p>Fund not found.</p>
+    </div>
+}
+else
+{
+    <div class="fund-detail-page">
+        <header class="page-header">
+            <button class="back-btn" @onclick="GoBack">← Back</button>
+            <div class="header-row">
+                <div class="fund-icon" style="background: @Fund.Color">@Fund.Icon</div>
+                <div class="header-info">
+                    <h1>@Fund.Name</h1>
+                    <span class="status-badge @GetStatusClass()">@Fund.Status</span>
+                </div>
+                <button class="edit-btn" @onclick="EditFund">✎</button>
+            </div>
+        </header>
+
+        <!-- Progress Card -->
+        <div class="progress-card">
+            <div class="amounts-row">
+                <div class="amount-item">
+                    <span class="amount-label">Saved</span>
+                    <span class="amount-value saved">@Fund.CurrentBalance.ToString("C0")</span>
+                </div>
+                <div class="amount-divider">/</div>
+                <div class="amount-item">
+                    <span class="amount-label">Goal</span>
+                    <span class="amount-value">@Fund.GoalAmount.ToString("C0")</span>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: @Fund.ProgressPercentage%; background: @Fund.Color"></div>
+            </div>
+            
+            <div class="progress-stats">
+                <span class="stat">@Fund.ProgressPercentage.ToString("F0")% complete</span>
+                <span class="stat">@Fund.RemainingAmount.ToString("C0") to go</span>
+            </div>
+
+            @if (Fund.Status == SinkingFundStatus.Active && Fund.MonthlyContribution > 0)
+            {
+                <div class="monthly-info">
+                    <span>Contributing <strong>@Fund.MonthlyContribution.ToString("C0")</strong>/month</span>
+                    @if (Fund.MonthsRemaining > 0)
+                    {
+                        <span class="eta">• @Fund.MonthsRemaining months remaining</span>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="actions-row">
+            <button class="action-btn contribute" @onclick="() => ShowAddTransaction(SinkingFundTransactionType.Contribution)">
+                <span class="action-icon">+</span>
+                Add Money
+            </button>
+            <button class="action-btn withdraw" @onclick="() => ShowAddTransaction(SinkingFundTransactionType.Withdrawal)">
+                <span class="action-icon">−</span>
+                Withdraw
+            </button>
+        </div>
+
+        <!-- Add Transaction Modal -->
+        @if (ShowTransactionModal)
+        {
+            <div class="modal-overlay" @onclick="CloseModal">
+                <div class="modal-card" @onclick:stopPropagation>
+                    <h3>@(NewTransactionType == SinkingFundTransactionType.Contribution ? "Add Contribution" : "Withdraw Funds")</h3>
+                    
+                    <div class="modal-form">
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <div class="input-with-prefix">
+                                <span class="prefix">$</span>
+                                <input type="number" @bind="NewTransactionAmount" min="0.01" step="0.01" placeholder="0.00" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" @bind="NewTransactionDate" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Note (optional)</label>
+                            <input type="text" @bind="NewTransactionNote" placeholder="e.g., Monthly contribution" />
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="cancel-btn" @onclick="CloseModal">Cancel</button>
+                        <button class="confirm-btn @(NewTransactionType == SinkingFundTransactionType.Withdrawal ? "withdraw" : "")" 
+                                @onclick="SaveTransaction" 
+                                disabled="@(NewTransactionAmount <= 0)">
+                            @(NewTransactionType == SinkingFundTransactionType.Contribution ? "Add" : "Withdraw")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Transaction History -->
+        <div class="history-section">
+            <h2 class="section-title">Transaction History</h2>
+            
+            @if (!Transactions.Any())
+            {
+                <div class="empty-history">
+                    <p>No transactions yet. Add your first contribution to get started!</p>
+                </div>
+            }
+            else
+            {
+                <div class="transactions-list">
+                    @foreach (var tx in Transactions)
+                    {
+                        <div class="transaction-item @(tx.Type == SinkingFundTransactionType.Withdrawal ? "withdrawal" : "")">
+                            <div class="tx-icon">
+                                @(tx.Type == SinkingFundTransactionType.Contribution ? "↑" : "↓")
+                            </div>
+                            <div class="tx-info">
+                                <span class="tx-note">@(string.IsNullOrEmpty(tx.Note) ? (tx.Type == SinkingFundTransactionType.Contribution ? "Contribution" : "Withdrawal") : tx.Note)</span>
+                                <span class="tx-date">@tx.Date.ToString("MMM d, yyyy")</span>
+                            </div>
+                            <div class="tx-amount @(tx.Type == SinkingFundTransactionType.Contribution ? "positive" : "negative")">
+                                @(tx.Type == SinkingFundTransactionType.Contribution ? "+" : "−")@tx.Amount.ToString("C2")
+                            </div>
+                            <button class="delete-tx-btn" @onclick="() => DeleteTransaction(tx.Id)">✕</button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int FundId { get; set; }
+
+    private SinkingFund? Fund { get; set; }
+    private List<SinkingFundTransaction> Transactions { get; set; } = new();
+    
+    private bool ShowTransactionModal { get; set; }
+    private SinkingFundTransactionType NewTransactionType { get; set; }
+    private decimal NewTransactionAmount { get; set; }
+    private DateTime NewTransactionDate { get; set; } = DateTime.Today;
+    private string NewTransactionNote { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Fund = BudgetService.GetSinkingFund(FundId);
+        if (Fund != null)
+        {
+            Transactions = BudgetService.GetSinkingFundTransactions(FundId);
+        }
+    }
+
+    private string GetStatusClass()
+    {
+        return Fund?.Status switch
+        {
+            SinkingFundStatus.Active => "active",
+            SinkingFundStatus.Paused => "paused",
+            SinkingFundStatus.Completed => "completed",
+            _ => ""
+        };
+    }
+
+    private void ShowAddTransaction(SinkingFundTransactionType type)
+    {
+        NewTransactionType = type;
+        NewTransactionAmount = 0;
+        NewTransactionDate = DateTime.Today;
+        NewTransactionNote = string.Empty;
+        ShowTransactionModal = true;
+    }
+
+    private void CloseModal()
+    {
+        ShowTransactionModal = false;
+    }
+
+    private void SaveTransaction()
+    {
+        if (NewTransactionAmount <= 0) return;
+
+        var transaction = new SinkingFundTransaction
+        {
+            SinkingFundId = FundId,
+            Amount = NewTransactionAmount,
+            Type = NewTransactionType,
+            Date = NewTransactionDate,
+            Note = NewTransactionNote
+        };
+
+        BudgetService.AddSinkingFundTransaction(transaction);
+        LoadData();
+        CloseModal();
+    }
+
+    private void DeleteTransaction(int transactionId)
+    {
+        BudgetService.DeleteSinkingFundTransaction(transactionId);
+        LoadData();
+    }
+
+    private void EditFund()
+    {
+        Navigation.NavigateTo($"/sinking-fund/{FundId}");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/sinking-funds");
+    }
+}
+

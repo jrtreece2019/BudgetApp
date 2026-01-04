@@ -1,0 +1,335 @@
+.sinking-funds-page {
+    padding: 60px 16px 100px;
+    min-height: 100vh;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    margin: 0 0 4px 0;
+}
+
+.page-header .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+    margin: 0;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    margin: 0 0 8px 0;
+}
+
+.empty-state p {
+    font-size: 14px;
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+    margin: 0 0 24px 0;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.create-btn {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.create-btn .plus {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+/* Summary Card */
+.summary-card {
+    background: var(--card-bg, rgba(255,255,255,0.08));
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.summary-row .label {
+    font-size: 14px;
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+}
+
+.summary-row .value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.summary-row .value.highlight {
+    color: #10B981;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 12px 0 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+    text-align: center;
+}
+
+/* Sections */
+.section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px 0;
+}
+
+/* Funds List */
+.funds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fund-card {
+    background: var(--card-bg, rgba(255,255,255,0.08));
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+}
+
+.fund-card:hover {
+    transform: translateX(4px);
+    background: var(--card-hover, rgba(255,255,255,0.12));
+}
+
+.fund-card.paused {
+    opacity: 0.7;
+}
+
+.fund-card.completed {
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.fund-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.fund-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.fund-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    margin-bottom: 4px;
+}
+
+.fund-amounts {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.fund-amounts .saved {
+    color: var(--text-primary, #fff);
+    font-weight: 600;
+}
+
+.fund-amounts .saved.complete {
+    color: #10B981;
+}
+
+.fund-amounts .separator {
+    color: var(--text-secondary, rgba(255,255,255,0.4));
+    margin: 0 4px;
+}
+
+.fund-amounts .goal {
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+}
+
+.fund-amounts .check {
+    color: #10B981;
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+.fund-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.progress-bar-small {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill-small {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.progress-percent {
+    font-size: 12px;
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+    min-width: 35px;
+    text-align: right;
+}
+
+.fund-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.fund-meta .contribution {
+    color: var(--text-secondary, rgba(255,255,255,0.6));
+}
+
+.status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.status.on-track {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.status.behind {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.status.paused-badge {
+    background: rgba(251, 191, 36, 0.15);
+    color: #FBB824;
+}
+
+.fund-chevron {
+    font-size: 20px;
+    color: var(--text-secondary, rgba(255,255,255,0.4));
+    font-weight: 300;
+}
+
+/* FAB */
+.fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: white;
+    border: none;
+    font-size: 28px;
+    font-weight: 300;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 100;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+@media (min-width: 768px) {
+    .sinking-funds-page {
+        padding: 80px 24px 100px;
+    }
+    
+    .fab {
+        bottom: 32px;
+        right: 32px;
+    }
+}
+

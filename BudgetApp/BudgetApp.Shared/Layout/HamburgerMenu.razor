@@ -27,6 +27,10 @@
                     <span class="menu-item-icon">🔄</span>
                     <span class="menu-item-label">Recurring</span>
                 </a>
+                <a class="menu-item @(IsActive("/sinking-funds") ? "active" : "")" href="/sinking-funds" @onclick="CloseMenu">
+                    <span class="menu-item-icon">🎯</span>
+                    <span class="menu-item-label">Sinking Funds</span>
+                </a>
                 <a class="menu-item @(IsActive("/reports") ? "active" : "")" href="/reports" @onclick="CloseMenu">
                     <span class="menu-item-icon">📊</span>
                     <span class="menu-item-label">Reports</span>
