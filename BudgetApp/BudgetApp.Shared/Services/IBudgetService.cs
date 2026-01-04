@@ -14,6 +14,9 @@ public interface IBudgetService
     decimal GetBudgetByCategory(int categoryId, int month, int year);
     
     void AddTransaction(Transaction transaction);
+    void UpdateTransaction(Transaction transaction);
     void DeleteTransaction(int transactionId);
+    Transaction? GetTransaction(int transactionId);
+    void UpdateBudget(int categoryId, int month, int year, decimal amount);
 }
 

@@ -1,14 +1,15 @@
 @page "/add"
+@page "/edit/{TransactionId:int}"
 @inject IBudgetService BudgetService
 @inject NavigationManager Navigation
 
-<PageTitle>Add Transaction</PageTitle>
+<PageTitle>@(IsEditing ? "Edit" : "Add") Transaction</PageTitle>
 
 <div class="add-transaction">
     <!-- Header -->
     <div class="header">
         <button class="back-btn" @onclick="GoBack">←</button>
-        <h1 class="header-title">Add Transaction</h1>
+        <h1 class="header-title">@(IsEditing ? "Edit" : "Add") Transaction</h1>
         <div class="header-spacer"></div>
     </div>
 
@@ -76,25 +77,45 @@
         <button class="save-btn @(!IsValid ? "disabled" : "")" 
                 @onclick="SaveTransaction" 
                 disabled="@(!IsValid)">
-            Save Transaction
+            @(IsEditing ? "Update" : "Save") Transaction
         </button>
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public int? TransactionId { get; set; }
+
+    private bool IsEditing => TransactionId.HasValue;
     private bool IsExpense { get; set; } = true;
     private decimal Amount { get; set; }
     private string Description { get; set; } = string.Empty;
     private int SelectedCategoryId { get; set; }
     private DateTime TransactionDate { get; set; } = DateTime.Today;
     private List<Category> Categories { get; set; } = new();
+    private string? ReturnUrl { get; set; }
 
     private bool IsValid => Amount > 0 && SelectedCategoryId > 0;
 
     protected override void OnInitialized()
     {
         Categories = BudgetService.GetCategories();
-        if (Categories.Any())
+        
+        if (IsEditing)
+        {
+            // Load existing transaction
+            var transaction = BudgetService.GetTransaction(TransactionId!.Value);
+            if (transaction != null)
+            {
+                Amount = transaction.Amount;
+                Description = transaction.Description;
+                SelectedCategoryId = transaction.CategoryId;
+                TransactionDate = transaction.Date;
+                IsExpense = transaction.Type == TransactionType.Expense;
+                ReturnUrl = $"/category/{transaction.CategoryId}";
+            }
+        }
+        else if (Categories.Any())
         {
             SelectedCategoryId = Categories.First().Id;
         }
@@ -102,26 +123,43 @@
 
     private void GoBack()
     {
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo(ReturnUrl ?? "/");
     }
 
     private void SaveTransaction()
     {
         if (!IsValid) return;
 
-        var transaction = new Transaction
+        if (IsEditing)
         {
-            Description = string.IsNullOrWhiteSpace(Description) 
-                ? Categories.First(c => c.Id == SelectedCategoryId).Name 
-                : Description,
-            Amount = Amount,
-            Date = TransactionDate,
-            CategoryId = SelectedCategoryId,
-            Type = IsExpense ? TransactionType.Expense : TransactionType.Income
-        };
+            var transaction = new Transaction
+            {
+                Id = TransactionId!.Value,
+                Description = string.IsNullOrWhiteSpace(Description) 
+                    ? Categories.First(c => c.Id == SelectedCategoryId).Name 
+                    : Description,
+                Amount = Amount,
+                Date = TransactionDate,
+                CategoryId = SelectedCategoryId,
+                Type = IsExpense ? TransactionType.Expense : TransactionType.Income
+            };
+            BudgetService.UpdateTransaction(transaction);
+        }
+        else
+        {
+            var transaction = new Transaction
+            {
+                Description = string.IsNullOrWhiteSpace(Description) 
+                    ? Categories.First(c => c.Id == SelectedCategoryId).Name 
+                    : Description,
+                Amount = Amount,
+                Date = TransactionDate,
+                CategoryId = SelectedCategoryId,
+                Type = IsExpense ? TransactionType.Expense : TransactionType.Income
+            };
+            BudgetService.AddTransaction(transaction);
+        }
 
-        BudgetService.AddTransaction(transaction);
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo(ReturnUrl ?? "/");
     }
 }
-

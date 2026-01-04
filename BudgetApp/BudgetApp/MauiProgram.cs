@@ -18,7 +18,11 @@ namespace BudgetApp
 
             // Add device-specific services used by the BudgetApp.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
-            builder.Services.AddSingleton<IBudgetService, BudgetService>();
+            
+            // SQLite database path for mobile/desktop
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "budget.db3");
+            builder.Services.AddSingleton(new DatabaseService(dbPath));
+            builder.Services.AddSingleton<IBudgetService, SqliteBudgetService>();
 
             builder.Services.AddMauiBlazorWebView();
 

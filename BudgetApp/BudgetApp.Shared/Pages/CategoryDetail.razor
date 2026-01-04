@@ -22,9 +22,26 @@
                     <span class="stat-label">Spent</span>
                     <span class="stat-value">@TotalSpent.ToString("C2")</span>
                 </div>
-                <div class="stat-row">
-                    <span class="stat-label">Budget</span>
-                    <span class="stat-value">@Budget.ToString("C2")</span>
+                <div class="stat-row editable" @onclick="StartEditingBudget">
+                    <span class="stat-label">Budget <span class="edit-hint">✎</span></span>
+                    @if (IsEditingBudget)
+                    {
+                        <div class="budget-edit" @onclick:stopPropagation="true">
+                            <span class="currency-prefix">$</span>
+                            <input type="number" 
+                                   class="budget-input" 
+                                   @bind="EditBudgetAmount" 
+                                   @bind:event="oninput"
+                                   step="1" 
+                                   min="0" />
+                            <button class="save-budget-btn" @onclick="SaveBudget">✓</button>
+                            <button class="cancel-budget-btn" @onclick="CancelEditBudget">✕</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="stat-value">@Budget.ToString("C2")</span>
+                    }
                 </div>
                 <div class="progress-container">
                     <div class="progress-bar" style="width: @ProgressPercentage%"></div>
@@ -57,7 +74,7 @@
                         var txnId = transaction.Id;
                         var isIncome = transaction.Type == TransactionType.Income;
 
-                        <div class="transaction-item">
+                        <div class="transaction-item clickable" @onclick="() => EditTransaction(txnId)">
                             <div class="transaction-icon" style="background-color: @Category.Color">
                                 @Category.Icon
                             </div>
@@ -106,6 +123,9 @@
     private decimal Budget { get; set; }
     private decimal Remaining => Budget - TotalSpent;
     private double ProgressPercentage => Budget > 0 ? Math.Min((double)(TotalSpent / Budget) * 100, 100) : 0;
+    
+    private bool IsEditingBudget { get; set; }
+    private decimal EditBudgetAmount { get; set; }
 
     protected override void OnInitialized()
     {
@@ -162,6 +182,35 @@
     {
         BudgetService.DeleteTransaction(transactionId);
         LoadData();
+    }
+
+    private void EditTransaction(int transactionId)
+    {
+        Navigation.NavigateTo($"/edit/{transactionId}");
+    }
+
+    private void StartEditingBudget()
+    {
+        if (!IsEditingBudget)
+        {
+            EditBudgetAmount = Budget;
+            IsEditingBudget = true;
+        }
+    }
+
+    private void SaveBudget()
+    {
+        if (EditBudgetAmount >= 0)
+        {
+            BudgetService.UpdateBudget(CategoryId, CurrentDate.Month, CurrentDate.Year, EditBudgetAmount);
+            LoadData();
+        }
+        IsEditingBudget = false;
+    }
+
+    private void CancelEditBudget()
+    {
+        IsEditingBudget = false;
     }
 
     private string FormatDate(DateTime date)

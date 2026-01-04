@@ -1,3 +1,5 @@
+using SQLite;
+
 namespace BudgetApp.Shared.Models;
 
 public enum TransactionType
@@ -8,6 +10,7 @@ public enum TransactionType
 
 public class Transaction
 {
+    [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }

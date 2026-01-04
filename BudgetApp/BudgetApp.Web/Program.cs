@@ -10,7 +10,12 @@ builder.Services.AddRazorComponents()
 
 // Add device-specific services used by the BudgetApp.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
-builder.Services.AddSingleton<IBudgetService, BudgetService>();
+
+// SQLite database path for web
+var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BudgetApp", "budget.db3");
+Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
+builder.Services.AddSingleton(new DatabaseService(dbPath));
+builder.Services.AddSingleton<IBudgetService, SqliteBudgetService>();
 
 var app = builder.Build();
 

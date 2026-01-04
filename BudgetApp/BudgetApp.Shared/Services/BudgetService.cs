@@ -99,12 +99,51 @@ public class BudgetService : IBudgetService
         _transactions.Add(transaction);
     }
 
+    public void UpdateTransaction(Transaction transaction)
+    {
+        var existing = _transactions.FirstOrDefault(t => t.Id == transaction.Id);
+        if (existing != null)
+        {
+            existing.Description = transaction.Description;
+            existing.Amount = transaction.Amount;
+            existing.Date = transaction.Date;
+            existing.CategoryId = transaction.CategoryId;
+            existing.Type = transaction.Type;
+        }
+    }
+
     public void DeleteTransaction(int transactionId)
     {
         var transaction = _transactions.FirstOrDefault(t => t.Id == transactionId);
         if (transaction != null)
         {
             _transactions.Remove(transaction);
+        }
+    }
+
+    public Transaction? GetTransaction(int transactionId)
+    {
+        return _transactions.FirstOrDefault(t => t.Id == transactionId);
+    }
+
+    public void UpdateBudget(int categoryId, int month, int year, decimal amount)
+    {
+        var budget = _budgets.FirstOrDefault(b => b.CategoryId == categoryId && b.Month == month && b.Year == year);
+        if (budget != null)
+        {
+            budget.Amount = amount;
+        }
+        else
+        {
+            // Create new budget if it doesn't exist
+            _budgets.Add(new Budget
+            {
+                Id = _budgets.Count + 1,
+                CategoryId = categoryId,
+                Month = month,
+                Year = year,
+                Amount = amount
+            });
         }
     }
 }
