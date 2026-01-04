@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject IBudgetService BudgetService
+@inject NavigationManager Navigation
 
 <PageTitle>Budget</PageTitle>
 
@@ -34,12 +35,13 @@
         <div class="category-list">
             @foreach (var category in Categories)
             {
+                var catId = category.Id;
                 var spent = BudgetService.GetSpentByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
                 var budget = BudgetService.GetBudgetByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
                 var percent = budget > 0 ? Math.Min((double)(spent / budget) * 100, 100) : 0;
                 var isOver = spent > budget;
 
-                <div class="category-item">
+                <div class="category-item" @onclick="() => OpenCategory(catId)">
                     <div class="category-icon" style="background-color: @category.Color">@category.Icon</div>
                     <div class="category-info">
                         <div class="category-header">
@@ -51,6 +53,7 @@
                                  style="width: @percent%; background-color: @category.Color"></div>
                         </div>
                     </div>
+                    <span class="category-chevron">›</span>
                 </div>
             }
         </div>
@@ -129,7 +132,12 @@
 
     private void OpenAddTransaction()
     {
-        // TODO: Navigate to add transaction page
+        Navigation.NavigateTo("/add");
+    }
+
+    private void OpenCategory(int categoryId)
+    {
+        Navigation.NavigateTo($"/category/{categoryId}");
     }
 
     private string FormatDate(DateTime date)

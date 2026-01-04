@@ -1,0 +1,127 @@
+@page "/add"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<PageTitle>Add Transaction</PageTitle>
+
+<div class="add-transaction">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" @onclick="GoBack">←</button>
+        <h1 class="header-title">Add Transaction</h1>
+        <div class="header-spacer"></div>
+    </div>
+
+    <!-- Transaction Type Toggle -->
+    <div class="type-toggle">
+        <button class="type-btn @(IsExpense ? "active" : "")" @onclick="() => IsExpense = true">
+            Expense
+        </button>
+        <button class="type-btn @(!IsExpense ? "active income" : "")" @onclick="() => IsExpense = false">
+            Income
+        </button>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="amount-section">
+        <span class="currency-symbol">$</span>
+        <input type="number" 
+               class="amount-input" 
+               placeholder="0.00" 
+               step="0.01" 
+               min="0"
+               @bind="Amount" 
+               @bind:event="oninput" />
+    </div>
+
+    <!-- Form Fields -->
+    <div class="form-section">
+        <!-- Description -->
+        <div class="form-field">
+            <label class="field-label">Description</label>
+            <input type="text" 
+                   class="field-input" 
+                   placeholder="What was this for?"
+                   @bind="Description" />
+        </div>
+
+        <!-- Category -->
+        <div class="form-field">
+            <label class="field-label">Category</label>
+            <div class="category-grid">
+                @foreach (var category in Categories)
+                {
+                    <button type="button"
+                            class="category-chip @(SelectedCategoryId == category.Id ? "selected" : "")"
+                            style="@(SelectedCategoryId == category.Id ? $"background-color: {category.Color}; border-color: {category.Color};" : "")"
+                            @onclick="() => SelectedCategoryId = category.Id">
+                        <span class="chip-icon">@category.Icon</span>
+                        <span class="chip-name">@category.Name</span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Date -->
+        <div class="form-field">
+            <label class="field-label">Date</label>
+            <input type="date" 
+                   class="field-input" 
+                   @bind="TransactionDate" />
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="save-section">
+        <button class="save-btn @(!IsValid ? "disabled" : "")" 
+                @onclick="SaveTransaction" 
+                disabled="@(!IsValid)">
+            Save Transaction
+        </button>
+    </div>
+</div>
+
+@code {
+    private bool IsExpense { get; set; } = true;
+    private decimal Amount { get; set; }
+    private string Description { get; set; } = string.Empty;
+    private int SelectedCategoryId { get; set; }
+    private DateTime TransactionDate { get; set; } = DateTime.Today;
+    private List<Category> Categories { get; set; } = new();
+
+    private bool IsValid => Amount > 0 && SelectedCategoryId > 0;
+
+    protected override void OnInitialized()
+    {
+        Categories = BudgetService.GetCategories();
+        if (Categories.Any())
+        {
+            SelectedCategoryId = Categories.First().Id;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void SaveTransaction()
+    {
+        if (!IsValid) return;
+
+        var transaction = new Transaction
+        {
+            Description = string.IsNullOrWhiteSpace(Description) 
+                ? Categories.First(c => c.Id == SelectedCategoryId).Name 
+                : Description,
+            Amount = Amount,
+            Date = TransactionDate,
+            CategoryId = SelectedCategoryId,
+            Type = IsExpense ? TransactionType.Expense : TransactionType.Income
+        };
+
+        BudgetService.AddTransaction(transaction);
+        Navigation.NavigateTo("/");
+    }
+}
+

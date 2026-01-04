@@ -1,4 +1,4 @@
-.budget-app {
+.category-detail {
     max-width: 480px;
     margin: 0 auto;
     padding: 0 1rem;
@@ -8,13 +8,122 @@
     color: #f8fafc;
 }
 
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 0;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #f8fafc;
+    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-spacer {
+    width: 40px;
+}
+
+/* Summary Card */
+.summary-card {
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.summary-icon {
+    font-size: 3rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.summary-stats {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-row.remaining {
+    margin-top: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.stat-value.negative {
+    color: #fca5a5;
+}
+
+.progress-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0.25rem 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #ffffff;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
 /* Month Navigation */
 .month-nav {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1.5rem;
-    padding: 1.5rem 0 1rem;
+    padding: 0.5rem 0 1rem;
 }
 
 .month-btn {
@@ -38,65 +147,14 @@
 }
 
 .month-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #f8fafc;
-    min-width: 160px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #94a3b8;
+    min-width: 140px;
     text-align: center;
 }
 
-/* Summary Card */
-.summary-card {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-radius: 20px;
-    padding: 1.75rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
-}
-
-.summary-label {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
-}
-
-.summary-amount {
-    font-size: 2.75rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 1.25rem;
-    letter-spacing: -0.02em;
-}
-
-.summary-amount.negative {
-    color: #fca5a5;
-}
-
-.progress-container {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
-}
-
-.progress-bar {
-    height: 100%;
-    background: #ffffff;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-}
-
-.progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-/* Sections */
+/* Section */
 .section {
     margin-bottom: 1.5rem;
 }
@@ -109,106 +167,11 @@
 }
 
 .section-title {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-}
-
-/* Category List */
-.category-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.category-item {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 0.875rem;
-    transition: background 0.2s;
-    cursor: pointer;
-}
-
-.category-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.category-item:active {
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.category-chevron {
-    color: #64748b;
-    font-size: 1.25rem;
-    font-weight: 300;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-}
-
-.category-item:hover .category-chevron {
-    color: #94a3b8;
-    transform: translateX(2px);
-}
-
-.category-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-
-.category-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.category-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.category-name {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #f8fafc;
-}
-
-.category-amount {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    font-weight: 500;
-}
-
-.category-amount.over {
-    color: #f87171;
-}
-
-.category-progress-container {
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.category-progress-bar {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.5s ease;
-}
-
-.category-progress-bar.over {
-    background: #f87171 !important;
 }
 
 /* Transaction List */
@@ -277,6 +240,28 @@
 
 .transaction-amount.income {
     color: #4ade80;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0;
 }
 
 /* Floating Action Button */

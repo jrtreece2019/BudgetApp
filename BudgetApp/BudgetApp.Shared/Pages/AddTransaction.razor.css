@@ -1,0 +1,240 @@
+.add-transaction {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    min-height: 100vh;
+    color: #f8fafc;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 0;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #f8fafc;
+    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-spacer {
+    width: 40px;
+}
+
+/* Type Toggle */
+.type-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 2rem;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.type-btn.active {
+    background: #f87171;
+    color: white;
+    box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
+}
+
+.type-btn.active.income {
+    background: #4ade80;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+/* Amount Section */
+.amount-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+}
+
+.currency-symbol {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #64748b;
+}
+
+.amount-input {
+    background: transparent;
+    border: none;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+    width: 200px;
+    text-align: left;
+    outline: none;
+}
+
+.amount-input::placeholder {
+    color: #475569;
+}
+
+.amount-input::-webkit-outer-spin-button,
+.amount-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.amount-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Form Section */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.field-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1rem;
+    color: #f8fafc;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.field-input:focus {
+    border-color: #6366f1;
+}
+
+.field-input::placeholder {
+    color: #64748b;
+}
+
+/* Category Grid */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.category-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.category-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.category-chip.selected {
+    color: white;
+}
+
+.chip-icon {
+    font-size: 1.25rem;
+}
+
+.chip-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Save Section */
+.save-section {
+    padding: 2rem 0;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 1.125rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+}
+
+.save-btn:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.45);
+}
+
+.save-btn:active:not(.disabled) {
+    transform: scale(0.98);
+}
+
+.save-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Date input styling for dark theme */
+input[type="date"] {
+    color-scheme: dark;
+}
+

@@ -1,0 +1,191 @@
+@page "/category/{CategoryId:int}"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<PageTitle>@(Category?.Name ?? "Category")</PageTitle>
+
+<div class="category-detail">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" @onclick="GoBack">←</button>
+        <h1 class="header-title">@Category?.Name</h1>
+        <div class="header-spacer"></div>
+    </div>
+
+    @if (Category != null)
+    {
+        <!-- Summary Card -->
+        <div class="summary-card" style="background: linear-gradient(135deg, @Category.Color 0%, @AdjustColor(Category.Color) 100%);">
+            <div class="summary-icon">@Category.Icon</div>
+            <div class="summary-stats">
+                <div class="stat-row">
+                    <span class="stat-label">Spent</span>
+                    <span class="stat-value">@TotalSpent.ToString("C2")</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Budget</span>
+                    <span class="stat-value">@Budget.ToString("C2")</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: @ProgressPercentage%"></div>
+                </div>
+                <div class="stat-row remaining">
+                    <span class="stat-label">Remaining</span>
+                    <span class="stat-value @(Remaining < 0 ? "negative" : "")">@Remaining.ToString("C2")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Month Navigation -->
+        <div class="month-nav">
+            <button class="month-btn" @onclick="PreviousMonth">‹</button>
+            <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
+            <button class="month-btn" @onclick="NextMonth">›</button>
+        </div>
+
+        <!-- Transactions -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Transactions (@Transactions.Count)</span>
+            </div>
+
+            @if (Transactions.Any())
+            {
+                <div class="transaction-list">
+                    @foreach (var transaction in Transactions)
+                    {
+                        var isIncome = transaction.Type == TransactionType.Income;
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon" style="background-color: @Category.Color">
+                                @Category.Icon
+                            </div>
+                            <div class="transaction-info">
+                                <span class="transaction-desc">@transaction.Description</span>
+                                <span class="transaction-date">@FormatDate(transaction.Date)</span>
+                            </div>
+                            <div class="transaction-amount @(isIncome ? "income" : "expense")">
+                                @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">@Category.Icon</div>
+                    <p class="empty-text">No transactions this month</p>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Spacer for floating button -->
+    <div class="bottom-spacer"></div>
+
+    <!-- Floating Add Button -->
+    <button class="fab" @onclick="AddTransaction">
+        <span class="fab-icon">+</span>
+        <span class="fab-text">Add @Category?.Name</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    private Category? Category { get; set; }
+    private List<Transaction> Transactions { get; set; } = new();
+    private DateTime CurrentDate { get; set; } = DateTime.Now;
+    private decimal TotalSpent { get; set; }
+    private decimal Budget { get; set; }
+    private decimal Remaining => Budget - TotalSpent;
+    private double ProgressPercentage => Budget > 0 ? Math.Min((double)(TotalSpent / Budget) * 100, 100) : 0;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    protected override void OnParametersSet()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        var categories = BudgetService.GetCategories();
+        Category = categories.FirstOrDefault(c => c.Id == CategoryId);
+
+        if (Category != null)
+        {
+            var allTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
+            Transactions = allTransactions
+                .Where(t => t.CategoryId == CategoryId)
+                .OrderByDescending(t => t.Date)
+                .ThenByDescending(t => t.Id)
+                .ToList();
+
+            TotalSpent = BudgetService.GetSpentByCategory(CategoryId, CurrentDate.Month, CurrentDate.Year);
+            Budget = BudgetService.GetBudgetByCategory(CategoryId, CurrentDate.Month, CurrentDate.Year);
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        LoadData();
+    }
+
+    private void NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        LoadData();
+    }
+
+    private void AddTransaction()
+    {
+        Navigation.NavigateTo("/add");
+    }
+
+    private string FormatDate(DateTime date)
+    {
+        if (date.Date == DateTime.Today)
+            return "Today";
+        if (date.Date == DateTime.Today.AddDays(-1))
+            return "Yesterday";
+        return date.ToString("MMM d, yyyy");
+    }
+
+    private string AdjustColor(string hexColor)
+    {
+        // Darken the color slightly for gradient effect
+        if (hexColor.StartsWith("#") && hexColor.Length == 7)
+        {
+            try
+            {
+                int r = Convert.ToInt32(hexColor.Substring(1, 2), 16);
+                int g = Convert.ToInt32(hexColor.Substring(3, 2), 16);
+                int b = Convert.ToInt32(hexColor.Substring(5, 2), 16);
+
+                r = Math.Max(0, r - 40);
+                g = Math.Max(0, g - 40);
+                b = Math.Max(0, b - 40);
+
+                return $"#{r:X2}{g:X2}{b:X2}";
+            }
+            catch
+            {
+                return hexColor;
+            }
+        }
+        return hexColor;
+    }
+}
+
