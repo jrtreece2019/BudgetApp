@@ -1,0 +1,210 @@
+@page "/transactions"
+@inject IBudgetService BudgetService
+@inject NavigationManager Navigation
+
+<PageTitle>All Transactions</PageTitle>
+
+<div class="transactions-page">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" @onclick="GoBack">←</button>
+        <h1 class="header-title">All Transactions</h1>
+        <div class="header-spacer"></div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="filters-section">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Search transactions..."
+                   @bind="SearchQuery"
+                   @bind:event="oninput" />
+            @if (!string.IsNullOrEmpty(SearchQuery))
+            {
+                <button class="clear-btn" @onclick="ClearSearch">✕</button>
+            }
+        </div>
+
+        <div class="filter-row">
+            <select class="filter-select" @bind="SelectedCategoryId">
+                <option value="0">All Categories</option>
+                @foreach (var category in Categories)
+                {
+                    <option value="@category.Id">@category.Icon @category.Name</option>
+                }
+            </select>
+
+            <select class="filter-select" @bind="SelectedType">
+                <option value="">All Types</option>
+                <option value="Expense">Expenses</option>
+                <option value="Income">Income</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Month Navigation -->
+    <div class="month-nav">
+        <button class="month-btn" @onclick="PreviousMonth">‹</button>
+        <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
+        <button class="month-btn" @onclick="NextMonth">›</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-row">
+        <div class="summary-item">
+            <span class="summary-label">Expenses</span>
+            <span class="summary-value expense">-@TotalExpenses.ToString("C2")</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Income</span>
+            <span class="summary-value income">+@TotalIncome.ToString("C2")</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Net</span>
+            <span class="summary-value @(NetAmount >= 0 ? "income" : "expense")">@NetAmount.ToString("C2")</span>
+        </div>
+    </div>
+
+    <!-- Transactions List -->
+    <div class="section">
+        @if (FilteredTransactions.Any())
+        {
+            <div class="section-header">
+                <span class="section-title">@FilteredTransactions.Count transactions</span>
+            </div>
+            <div class="transaction-list">
+                @foreach (var transaction in FilteredTransactions)
+                {
+                    var txnId = transaction.Id;
+                    var category = Categories.FirstOrDefault(c => c.Id == transaction.CategoryId);
+                    var isIncome = transaction.Type == TransactionType.Income;
+
+                    <div class="transaction-item" @onclick="() => EditTransaction(txnId)">
+                        <div class="transaction-icon" style="background-color: @(category?.Color ?? "#6B7280")">
+                            @(category?.Icon ?? "💰")
+                        </div>
+                        <div class="transaction-info">
+                            <span class="transaction-desc">@transaction.Description</span>
+                            <span class="transaction-meta">
+                                @(category?.Name ?? "Unknown") · @FormatDate(transaction.Date)
+                            </span>
+                        </div>
+                        <div class="transaction-amount @(isIncome ? "income" : "expense")">
+                            @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p class="empty-text">No transactions found</p>
+                @if (!string.IsNullOrEmpty(SearchQuery) || SelectedCategoryId > 0 || !string.IsNullOrEmpty(SelectedType))
+                {
+                    <button class="clear-filters-btn" @onclick="ClearFilters">Clear filters</button>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Spacer for floating button -->
+    <div class="bottom-spacer"></div>
+
+    <!-- Floating Add Button -->
+    <button class="fab" @onclick="AddTransaction">
+        <span class="fab-icon">+</span>
+    </button>
+</div>
+
+@code {
+    private DateTime CurrentDate { get; set; } = DateTime.Now;
+    private List<Category> Categories { get; set; } = new();
+    private List<Transaction> AllTransactions { get; set; } = new();
+    
+    private string SearchQuery { get; set; } = string.Empty;
+    private int SelectedCategoryId { get; set; }
+    private string SelectedType { get; set; } = string.Empty;
+
+    private List<Transaction> FilteredTransactions => AllTransactions
+        .Where(t => string.IsNullOrEmpty(SearchQuery) || 
+                    t.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+        .Where(t => SelectedCategoryId == 0 || t.CategoryId == SelectedCategoryId)
+        .Where(t => string.IsNullOrEmpty(SelectedType) || t.Type.ToString() == SelectedType)
+        .OrderByDescending(t => t.Date)
+        .ThenByDescending(t => t.Id)
+        .ToList();
+
+    private decimal TotalExpenses => FilteredTransactions
+        .Where(t => t.Type == TransactionType.Expense)
+        .Sum(t => t.Amount);
+
+    private decimal TotalIncome => FilteredTransactions
+        .Where(t => t.Type == TransactionType.Income)
+        .Sum(t => t.Amount);
+
+    private decimal NetAmount => TotalIncome - TotalExpenses;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Categories = BudgetService.GetCategories();
+        AllTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        LoadData();
+    }
+
+    private void NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        LoadData();
+    }
+
+    private void EditTransaction(int transactionId)
+    {
+        Navigation.NavigateTo($"/edit/{transactionId}");
+    }
+
+    private void AddTransaction()
+    {
+        Navigation.NavigateTo("/add");
+    }
+
+    private void ClearSearch()
+    {
+        SearchQuery = string.Empty;
+    }
+
+    private void ClearFilters()
+    {
+        SearchQuery = string.Empty;
+        SelectedCategoryId = 0;
+        SelectedType = string.Empty;
+    }
+
+    private string FormatDate(DateTime date)
+    {
+        if (date.Date == DateTime.Today)
+            return "Today";
+        if (date.Date == DateTime.Today.AddDays(-1))
+            return "Yesterday";
+        return date.ToString("MMM d");
+    }
+}
+

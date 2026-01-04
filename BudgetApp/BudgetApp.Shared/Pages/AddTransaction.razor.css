@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 0;
+    padding: 4.5rem 0 1.25rem;
 }
 
 .back-btn {
@@ -235,5 +235,9 @@
 /* Date input styling for dark theme */
 input[type="date"] {
     color-scheme: dark;
+}
+
+.bottom-spacer {
+    height: 80px;
 }
 
