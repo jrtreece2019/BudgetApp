@@ -197,6 +197,55 @@
         }
     </div>
 
+    <!-- Savings & Investments -->
+    <div class="section">
+        <div class="section-header-group savings" @onclick="() => SavingsExpanded = !SavingsExpanded">
+            <div class="section-header-left">
+                <span class="section-expand-icon">@(SavingsExpanded ? "▼" : "▶")</span>
+                <span class="section-type-icon">📈</span>
+                <span class="section-title">Savings & Investments</span>
+            </div>
+            <div class="section-header-right">
+                <span class="section-summary">@SavingsSpent.ToString("C0") / @SavingsBudget.ToString("C0")</span>
+                <span class="section-count">@SavingsCategories.Count</span>
+            </div>
+        </div>
+        @if (SavingsExpanded)
+        {
+            <div class="category-list">
+                @foreach (var category in SavingsCategories)
+                {
+                    var catId = category.Id;
+                    var spent = BudgetService.GetSpentByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var budget = BudgetService.GetBudgetByCategory(category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var percent = budget > 0 ? Math.Min((double)(spent / budget) * 100, 100) : 0;
+                    var isOver = spent > budget;
+
+                    <div class="category-item" @onclick="() => OpenCategory(catId)">
+                        <div class="category-icon" style="background-color: @category.Color">@category.Icon</div>
+                        <div class="category-info">
+                            <div class="category-header">
+                                <span class="category-name">@category.Name</span>
+                                <span class="category-amount @(isOver ? "over" : "")">@spent.ToString("C0") / @budget.ToString("C0")</span>
+                            </div>
+                            <div class="category-progress-container">
+                                <div class="category-progress-bar @(isOver ? "over" : "")" 
+                                     style="width: @percent%; background-color: @category.Color"></div>
+                            </div>
+                        </div>
+                        <span class="category-chevron">›</span>
+                    </div>
+                }
+                @if (SavingsCategories.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-text">No savings categories. <a href="/categories">Add one!</a></span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
     <!-- Sinking Funds -->
     @if (SinkingFunds.Any())
     {
@@ -478,16 +527,20 @@
     // Grouped categories
     private List<Category> FixedCategories => Categories.Where(c => c.Type == CategoryType.Fixed).ToList();
     private List<Category> DiscretionaryCategories => Categories.Where(c => c.Type == CategoryType.Discretionary).ToList();
+    private List<Category> SavingsCategories => Categories.Where(c => c.Type == CategoryType.Savings).ToList();
     
     // Section expand state
     private bool FixedExpanded { get; set; } = true;
     private bool DiscretionaryExpanded { get; set; } = true;
+    private bool SavingsExpanded { get; set; } = true;
     
     // Group totals
     private decimal FixedBudget { get; set; }
     private decimal FixedSpent { get; set; }
     private decimal DiscretionaryBudget { get; set; }
     private decimal DiscretionarySpent { get; set; }
+    private decimal SavingsBudget { get; set; }
+    private decimal SavingsSpent { get; set; }
     
     // Sinking Funds
     private List<SinkingFund> SinkingFunds { get; set; } = new();
@@ -545,6 +598,8 @@
         FixedSpent = FixedCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         DiscretionaryBudget = DiscretionaryCategories.Sum(c => BudgetService.GetBudgetByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         DiscretionarySpent = DiscretionaryCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+        SavingsBudget = SavingsCategories.Sum(c => BudgetService.GetBudgetByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
+        SavingsSpent = SavingsCategories.Sum(c => BudgetService.GetSpentByCategory(c.Id, CurrentDate.Month, CurrentDate.Year));
         
         // Load sinking funds
         SinkingFunds = BudgetService.GetSinkingFunds();

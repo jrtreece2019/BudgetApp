@@ -5,7 +5,8 @@ namespace BudgetApp.Shared.Models;
 public enum CategoryType
 {
     Fixed = 0,
-    Discretionary = 1
+    Discretionary = 1,
+    Savings = 2
 }
 
 public class Category

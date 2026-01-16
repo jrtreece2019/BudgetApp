@@ -350,6 +350,15 @@
     background: linear-gradient(90deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-card-hover) 30%);
 }
 
+.section-header-group.savings {
+    border-left-color: #3B82F6;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, var(--bg-card) 30%);
+}
+
+.section-header-group.savings:hover {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, var(--bg-card-hover) 30%);
+}
+
 .section-header-group.sinking-funds {
     border-left-color: #10B981;
     background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 30%);

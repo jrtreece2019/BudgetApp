@@ -86,6 +86,43 @@
         }
     </div>
 
+    <!-- Savings Categories Section -->
+    <div class="section">
+        <div class="section-header" @onclick="() => SavingsExpanded = !SavingsExpanded">
+            <div class="section-header-left">
+                <span class="section-expand-icon">@(SavingsExpanded ? "▼" : "▶")</span>
+                <span class="section-icon savings">📈</span>
+                <span class="section-title">Savings & Investments</span>
+            </div>
+            <span class="section-count">@SavingsCategories.Count</span>
+        </div>
+
+        @if (SavingsExpanded)
+        {
+            <div class="category-list">
+                @foreach (var category in SavingsCategories)
+                {
+                    <div class="category-item" @onclick="() => EditCategory(category)">
+                        <div class="category-icon" style="background-color: @category.Color">
+                            @category.Icon
+                        </div>
+                        <div class="category-info">
+                            <span class="category-name">@category.Name</span>
+                            <span class="category-budget">@category.DefaultBudget.ToString("C0")/month</span>
+                        </div>
+                        <span class="category-chevron">›</span>
+                    </div>
+                }
+                @if (SavingsCategories.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-text">No savings categories yet</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
     <!-- Spacer -->
     <div class="bottom-spacer"></div>
 
@@ -123,11 +160,19 @@
                             <span class="type-icon">🎯</span>
                             <span class="type-label">Discretionary</span>
                         </button>
+                        <button type="button" 
+                                class="type-btn @(EditType == CategoryType.Savings ? "selected" : "")"
+                                @onclick="() => EditType = CategoryType.Savings">
+                            <span class="type-icon">📈</span>
+                            <span class="type-label">Savings</span>
+                        </button>
                     </div>
                     <span class="type-hint">
                         @(EditType == CategoryType.Fixed 
                             ? "Predictable, recurring expenses (rent, bills, insurance)" 
-                            : "Variable, optional spending (dining, entertainment, shopping)")
+                            : EditType == CategoryType.Discretionary
+                                ? "Variable, optional spending (dining, entertainment, shopping)"
+                                : "Savings and investments (401k, IRA, brokerage)")
                     </span>
                 </div>
 
@@ -228,10 +273,12 @@
     // Grouped categories
     private List<Category> FixedCategories => CategoryList.Where(c => c.Type == CategoryType.Fixed).ToList();
     private List<Category> DiscretionaryCategories => CategoryList.Where(c => c.Type == CategoryType.Discretionary).ToList();
+    private List<Category> SavingsCategories => CategoryList.Where(c => c.Type == CategoryType.Savings).ToList();
     
     // Section expand state
     private bool FixedExpanded { get; set; } = true;
     private bool DiscretionaryExpanded { get; set; } = true;
+    private bool SavingsExpanded { get; set; } = true;
     
     // Modal state
     private bool ShowModal { get; set; }
@@ -252,7 +299,7 @@
         "🏠", "💼", "🎮", "📚", "✈️", "🎵",
         "💪", "🐕", "👶", "🎁", "💰", "📱",
         "☕", "🍺", "🛒", "⚡", "💳", "🎓",
-        "🛡️", "🎯", "📌"
+        "🛡️", "🎯", "📌", "📈", "🏦", "💵"
     };
 
     private readonly string[] ColorOptions = new[]
