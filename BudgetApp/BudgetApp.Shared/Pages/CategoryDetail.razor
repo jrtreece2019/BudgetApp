@@ -1,21 +1,13 @@
 @page "/category/{CategoryId:int}"
 @page "/category/{CategoryId:int}/{Month:int}/{Year:int}"
-@inject IBudgetService BudgetService
-@inject NavigationManager Navigation
 
 <PageTitle>@(Category?.Name ?? "Category")</PageTitle>
 
 <div class="category-detail">
-    <!-- Header -->
-    <div class="header">
-        <button class="back-btn" @onclick="GoBack">←</button>
-        <h1 class="header-title">@Category?.Name</h1>
-        <div class="header-spacer"></div>
-    </div>
+    <PageHeader Title="@(Category?.Name ?? "Category")" OnBack="GoBack" />
 
     @if (Category != null)
     {
-        <!-- Summary Card -->
         <div class="summary-card" style="background: linear-gradient(135deg, @Category.Color 0%, @AdjustColor(Category.Color) 100%);">
             <div class="summary-icon">@Category.Icon</div>
             <div class="summary-stats">
@@ -35,11 +27,11 @@
                     {
                         <div class="budget-edit" @onclick:stopPropagation="true">
                             <span class="currency-prefix">$</span>
-                            <input type="number" 
-                                   class="budget-input" 
-                                   @bind="EditBudgetAmount" 
+                            <input type="number"
+                                   class="budget-input"
+                                   @bind="EditBudgetAmount"
                                    @bind:event="oninput"
-                                   step="1" 
+                                   step="1"
                                    min="0" />
                             <button class="save-budget-btn" @onclick="SaveBudget">✓</button>
                             <button class="cancel-budget-btn" @onclick="CancelEditBudget">✕</button>
@@ -64,14 +56,8 @@
             </div>
         </div>
 
-        <!-- Month Navigation -->
-        <div class="month-nav">
-            <button class="month-btn" @onclick="PreviousMonth">‹</button>
-            <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
-            <button class="month-btn" @onclick="NextMonth">›</button>
-        </div>
+        <MonthNavigator CurrentDate="CurrentDate" OnPreviousMonth="PreviousMonth" OnNextMonth="NextMonth" />
 
-        <!-- Transactions -->
         <div class="section">
             <div class="section-header">
                 <span class="section-title">Transactions (@Transactions.Count)</span>
@@ -85,203 +71,28 @@
                         var txnId = transaction.Id;
                         var isIncome = transaction.Type == TransactionType.Income;
 
-                        <div class="transaction-item clickable" @onclick="() => EditTransaction(txnId)">
-                            <div class="transaction-icon" style="background-color: @Category.Color">
-                                @Category.Icon
-                            </div>
-                            <div class="transaction-info">
-                                <span class="transaction-desc">@transaction.Description</span>
-                                <span class="transaction-date">@FormatDate(transaction.Date)</span>
-                            </div>
-                            <div class="transaction-amount @(isIncome ? "income" : "expense")">
-                                @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
-                            </div>
-                            <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">
-                                ✕
-                            </button>
-                        </div>
+                        <TransactionListItem Icon="@Category.Icon"
+                                             IconColor="@Category.Color"
+                                             Description="@transaction.Description"
+                                             Date="transaction.Date"
+                                             Amount="transaction.Amount"
+                                             IsIncome="isIncome"
+                                             OnClick="() => EditTransaction(txnId)">
+                            <Actions>
+                                <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">✕</button>
+                            </Actions>
+                        </TransactionListItem>
                     }
                 </div>
             }
             else
             {
-                <div class="empty-state">
-                    <div class="empty-icon">@Category.Icon</div>
-                    <p class="empty-text">No transactions this month</p>
-                </div>
+                <EmptyState Icon="@Category.Icon" Message="No transactions this month" />
             }
         </div>
     }
 
-    <!-- Spacer for floating button -->
     <div class="bottom-spacer"></div>
 
-    <!-- Floating Add Button -->
-    <button class="fab" @onclick="AddTransaction">
-        <span class="fab-icon">+</span>
-        <span class="fab-text">Add @Category?.Name</span>
-    </button>
+    <FloatingActionButton Label="@("Add " + Category?.Name)" OnClick="AddTransaction" />
 </div>
-
-@code {
-    [Parameter]
-    public int CategoryId { get; set; }
-
-    [Parameter]
-    public int? Month { get; set; }
-
-    [Parameter]
-    public int? Year { get; set; }
-
-    private Category? Category { get; set; }
-    private List<Transaction> Transactions { get; set; } = new();
-    private DateTime CurrentDate { get; set; } = DateTime.Now;
-    private decimal TotalSpent { get; set; }
-    private decimal Budget { get; set; }
-    private bool IsBudgetCustom { get; set; }
-    private decimal Remaining => Budget - TotalSpent;
-    private double ProgressPercentage => Budget > 0 ? Math.Min((double)(TotalSpent / Budget) * 100, 100) : 0;
-    
-    private bool IsEditingBudget { get; set; }
-    private decimal EditBudgetAmount { get; set; }
-
-    protected override void OnInitialized()
-    {
-        // Use passed month/year if provided, otherwise use current date
-        if (Month.HasValue && Year.HasValue)
-        {
-            CurrentDate = new DateTime(Year.Value, Month.Value, 1);
-        }
-        LoadData();
-    }
-
-    protected override void OnParametersSet()
-    {
-        // Update date if parameters changed
-        if (Month.HasValue && Year.HasValue)
-        {
-            CurrentDate = new DateTime(Year.Value, Month.Value, 1);
-        }
-        LoadData();
-    }
-
-    private void LoadData()
-    {
-        var categories = BudgetService.GetCategories();
-        Category = categories.FirstOrDefault(c => c.Id == CategoryId);
-
-        if (Category != null)
-        {
-            var allTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
-            Transactions = allTransactions
-                .Where(t => t.CategoryId == CategoryId)
-                .OrderByDescending(t => t.Date)
-                .ThenByDescending(t => t.Id)
-                .ToList();
-
-            TotalSpent = BudgetService.GetSpentByCategory(CategoryId, CurrentDate.Month, CurrentDate.Year);
-            Budget = BudgetService.GetBudgetByCategory(CategoryId, CurrentDate.Month, CurrentDate.Year);
-            IsBudgetCustom = BudgetService.IsBudgetCustom(CategoryId, CurrentDate.Month, CurrentDate.Year);
-        }
-    }
-
-    private void GoBack()
-    {
-        // Navigate back to home with the current month/year context
-        Navigation.NavigateTo($"/?month={CurrentDate.Month}&year={CurrentDate.Year}");
-    }
-
-    private void PreviousMonth()
-    {
-        CurrentDate = CurrentDate.AddMonths(-1);
-        LoadData();
-    }
-
-    private void NextMonth()
-    {
-        CurrentDate = CurrentDate.AddMonths(1);
-        LoadData();
-    }
-
-    private void AddTransaction()
-    {
-        Navigation.NavigateTo("/add");
-    }
-
-    private void DeleteTransaction(int transactionId)
-    {
-        BudgetService.DeleteTransaction(transactionId);
-        LoadData();
-    }
-
-    private void EditTransaction(int transactionId)
-    {
-        Navigation.NavigateTo($"/edit/{transactionId}");
-    }
-
-    private void StartEditingBudget()
-    {
-        if (!IsEditingBudget)
-        {
-            EditBudgetAmount = Budget;
-            IsEditingBudget = true;
-        }
-    }
-
-    private void SaveBudget()
-    {
-        if (EditBudgetAmount >= 0)
-        {
-            BudgetService.UpdateBudget(CategoryId, CurrentDate.Month, CurrentDate.Year, EditBudgetAmount);
-            LoadData();
-        }
-        IsEditingBudget = false;
-    }
-
-    private void CancelEditBudget()
-    {
-        IsEditingBudget = false;
-    }
-
-    private void ResetBudgetToDefault()
-    {
-        BudgetService.ResetBudgetToDefault(CategoryId, CurrentDate.Month, CurrentDate.Year);
-        LoadData();
-        IsEditingBudget = false;
-    }
-
-    private string FormatDate(DateTime date)
-    {
-        if (date.Date == DateTime.Today)
-            return "Today";
-        if (date.Date == DateTime.Today.AddDays(-1))
-            return "Yesterday";
-        return date.ToString("MMM d, yyyy");
-    }
-
-    private string AdjustColor(string hexColor)
-    {
-        // Darken the color slightly for gradient effect
-        if (hexColor.StartsWith("#") && hexColor.Length == 7)
-        {
-            try
-            {
-                int r = Convert.ToInt32(hexColor.Substring(1, 2), 16);
-                int g = Convert.ToInt32(hexColor.Substring(3, 2), 16);
-                int b = Convert.ToInt32(hexColor.Substring(5, 2), 16);
-
-                r = Math.Max(0, r - 40);
-                g = Math.Max(0, g - 40);
-                b = Math.Max(0, b - 40);
-
-                return $"#{r:X2}{g:X2}{b:X2}";
-            }
-            catch
-            {
-                return hexColor;
-            }
-        }
-        return hexColor;
-    }
-}
-

@@ -1,5 +1,6 @@
-﻿using BudgetApp.Services;
+using BudgetApp.Services;
 using BudgetApp.Shared.Services;
+using BudgetApp.Shared.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace BudgetApp
@@ -18,11 +19,18 @@ namespace BudgetApp
 
             // Add device-specific services used by the BudgetApp.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
-            
-            // SQLite database path for mobile/desktop
+
+            // SQLite database — register via the IDatabaseService interface
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "budget.db3");
-            builder.Services.AddSingleton(new DatabaseService(dbPath));
+            builder.Services.AddSingleton<IDatabaseService>(new DatabaseService(dbPath));
+
+            // Split service registrations (one per domain concern)
+            builder.Services.AddSingleton<ICategoryService, SqliteCategoryService>();
+            builder.Services.AddSingleton<ITransactionService, SqliteTransactionService>();
             builder.Services.AddSingleton<IBudgetService, SqliteBudgetService>();
+            builder.Services.AddSingleton<IRecurringTransactionService, SqliteRecurringTransactionService>();
+            builder.Services.AddSingleton<ISettingsService, SqliteSettingsService>();
+            builder.Services.AddSingleton<ISinkingFundService, SqliteSinkingFundService>();
             builder.Services.AddSingleton<ThemeService>();
 
             builder.Services.AddMauiBlazorWebView();

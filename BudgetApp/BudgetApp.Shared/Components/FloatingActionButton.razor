@@ -1,0 +1,23 @@
+@*
+    Reusable floating action button (FAB) pinned to the bottom of the viewport.
+    Used on: Home, Categories, CategoryDetail, RecurringTransactions, SinkingFunds, Transactions
+*@
+
+<button class="fab" @onclick="OnClick">
+    <span class="fab-icon">@Icon</span>
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="fab-text">@Label</span>
+    }
+</button>
+
+@code {
+    [Parameter]
+    public string Icon { get; set; } = "+";
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnClick { get; set; }
+}

@@ -1,16 +1,9 @@
 @page "/transactions"
-@inject IBudgetService BudgetService
-@inject NavigationManager Navigation
 
 <PageTitle>All Transactions</PageTitle>
 
 <div class="transactions-page">
-    <!-- Header -->
-    <div class="header">
-        <button class="back-btn" @onclick="GoBack">←</button>
-        <h1 class="header-title">All Transactions</h1>
-        <div class="header-spacer"></div>
-    </div>
+    <PageHeader Title="All Transactions" OnBack="GoBack" />
 
     <!-- Search & Filters -->
     <div class="filters-section">
@@ -39,12 +32,7 @@
         </div>
     </div>
 
-    <!-- Month Navigation -->
-    <div class="month-nav">
-        <button class="month-btn" @onclick="PreviousMonth">‹</button>
-        <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
-        <button class="month-btn" @onclick="NextMonth">›</button>
-    </div>
+    <MonthNavigator CurrentDate="CurrentDate" OnPreviousMonth="PreviousMonth" OnNextMonth="NextMonth" />
 
     <!-- Summary -->
     <div class="summary-row">
@@ -81,149 +69,35 @@
                     var category = Categories.FirstOrDefault(c => c.Id == transaction.CategoryId);
                     var isIncome = transaction.Type == TransactionType.Income;
 
-                    <div class="transaction-item">
-                        <div class="transaction-main" @onclick="() => EditTransaction(txnId)">
-                            <div class="transaction-icon" style="background-color: @(category?.Color ?? "#6B7280")">
-                                @(category?.Icon ?? "💰")
-                            </div>
-                            <div class="transaction-info">
-                                <span class="transaction-desc">@transaction.Description</span>
-                                <span class="transaction-meta">
-                                    @(category?.Name ?? (isIncome ? "Income" : "Unknown")) · @FormatDate(transaction.Date)
-                                </span>
-                            </div>
-                            <div class="transaction-amount @(isIncome ? "income" : "expense")">
-                                @(isIncome ? "+" : "-")@transaction.Amount.ToString("C2")
-                            </div>
-                        </div>
-                        <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">
-                            🗑️
-                        </button>
-                    </div>
+                    <TransactionListItem
+                        Icon="@(category?.Icon ?? "💰")"
+                        IconColor="@(category?.Color ?? "#6B7280")"
+                        Description="@transaction.Description"
+                        Date="@transaction.Date"
+                        Amount="@transaction.Amount"
+                        IsIncome="@isIncome"
+                        OnClick="() => EditTransaction(txnId)">
+                        <Actions>
+                            <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">
+                                🗑️
+                            </button>
+                        </Actions>
+                    </TransactionListItem>
                 }
             </div>
         }
         else
         {
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <p class="empty-text">No transactions found</p>
+            <EmptyState Icon="📋" Message="No transactions found">
                 @if (!string.IsNullOrEmpty(SearchQuery) || SelectedCategoryId != 0)
                 {
                     <button class="clear-filters-btn" @onclick="ClearFilters">Clear filters</button>
                 }
-            </div>
+            </EmptyState>
         }
     </div>
 
-    <!-- Spacer for floating button -->
     <div class="bottom-spacer"></div>
 
-    <!-- Floating Add Button -->
-    <button class="fab" @onclick="AddTransaction">
-        <span class="fab-icon">+</span>
-    </button>
+    <FloatingActionButton OnClick="AddTransaction" />
 </div>
-
-@code {
-    private DateTime CurrentDate { get; set; } = DateTime.Now;
-    private List<Category> Categories { get; set; } = new();
-    private List<Transaction> AllTransactions { get; set; } = new();
-    
-    private string SearchQuery { get; set; } = string.Empty;
-    private int SelectedCategoryId { get; set; }
-
-    private List<Transaction> FilteredTransactions => AllTransactions
-        .Where(t => string.IsNullOrEmpty(SearchQuery) || 
-                    t.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-        .Where(t => SelectedCategoryId == 0 || // All categories
-                    (SelectedCategoryId == -1 && t.Type == TransactionType.Income) || // Income filter
-                    t.CategoryId == SelectedCategoryId) // Specific category
-        .OrderByDescending(t => t.Date)
-        .ThenByDescending(t => t.Id)
-        .ToList();
-
-    private decimal TotalExpenses => FilteredTransactions
-        .Where(t => t.Type == TransactionType.Expense)
-        .Sum(t => t.Amount);
-
-    // Expected vs Actual Income
-    private decimal ExpectedIncome { get; set; }
-    private decimal ActualIncome { get; set; }
-    private int PaycheckCount { get; set; }
-
-    private decimal NetAmount => ExpectedIncome - TotalExpenses;
-
-    protected override void OnInitialized()
-    {
-        LoadData();
-    }
-
-    private void LoadData()
-    {
-        Categories = BudgetService.GetCategories();
-        AllTransactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
-        
-        // Expected income from setting
-        ExpectedIncome = BudgetService.GetMonthlyIncome();
-        
-        // Actual income from paychecks
-        var paychecks = AllTransactions.Where(t => t.Type == TransactionType.Income).ToList();
-        ActualIncome = paychecks.Sum(t => t.Amount);
-        PaycheckCount = paychecks.Count;
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo("/");
-    }
-
-    private void PreviousMonth()
-    {
-        CurrentDate = CurrentDate.AddMonths(-1);
-        LoadData();
-    }
-
-    private void NextMonth()
-    {
-        CurrentDate = CurrentDate.AddMonths(1);
-        LoadData();
-    }
-
-    private void EditTransaction(int transactionId)
-    {
-        Navigation.NavigateTo($"/edit/{transactionId}?returnUrl=/transactions");
-    }
-
-    private void AddTransaction()
-    {
-        Navigation.NavigateTo("/add?returnUrl=/transactions");
-    }
-
-    private void DeleteTransaction(int transactionId)
-    {
-        BudgetService.DeleteTransaction(transactionId);
-        LoadData();
-    }
-
-    private void ClearSearch()
-    {
-        SearchQuery = string.Empty;
-    }
-
-    private void ClearFilters()
-    {
-        SearchQuery = string.Empty;
-        SelectedCategoryId = 0;
-    }
-
-    private string FormatDate(DateTime date)
-    {
-        if (date.Date == DateTime.Today)
-            return "Today";
-        if (date.Date == DateTime.Today.AddDays(-1))
-            return "Yesterday";
-        return date.ToString("MMM d");
-    }
-}
-

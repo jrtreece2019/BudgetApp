@@ -1,0 +1,35 @@
+@*
+    Reusable modal overlay with header (title + close), body, and optional footer.
+    Used on: Home (paycheck), Categories (edit), SinkingFundDetail (transaction)
+*@
+
+@if (IsVisible)
+{
+    <div class="modal-overlay" @onclick="OnClose">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2 class="modal-title">@Title</h2>
+                <button class="modal-close" @onclick="OnClose">✕</button>
+            </div>
+
+            <div class="modal-body">
+                @Body
+            </div>
+
+            @if (Footer != null)
+            {
+                <div class="modal-footer">
+                    @Footer
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnClose { get; set; }
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public RenderFragment Body { get; set; } = default!;
+    [Parameter] public RenderFragment? Footer { get; set; }
+}

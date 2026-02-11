@@ -1,7 +1,5 @@
 @page "/sinking-fund/new"
 @page "/sinking-fund/{FundId:int}"
-@inject IBudgetService BudgetService
-@inject NavigationManager Navigation
 
 <div class="edit-fund-page">
     <header class="page-header">
@@ -26,25 +24,12 @@
 
             <div class="form-group">
                 <label>Icon</label>
-                <div class="icon-grid">
-                    @foreach (var icon in Icons)
-                    {
-                        <button class="icon-btn @(Fund.Icon == icon ? "selected" : "")" 
-                                @onclick="() => Fund.Icon = icon">@icon</button>
-                    }
-                </div>
+                <IconPicker Options="Icons" @bind-SelectedValue="Fund.Icon" />
             </div>
 
             <div class="form-group">
                 <label>Color</label>
-                <div class="color-grid">
-                    @foreach (var color in Colors)
-                    {
-                        <button class="color-btn @(Fund.Color == color ? "selected" : "")"
-                                style="background: @color"
-                                @onclick="() => Fund.Color = color"></button>
-                    }
-                </div>
+                <ColorPicker Options="Colors" @bind-SelectedValue="Fund.Color" />
             </div>
         </div>
 
@@ -154,108 +139,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [Parameter]
-    public int? FundId { get; set; }
-
-    private SinkingFund Fund { get; set; } = new();
-    private bool IsNew => FundId == null || FundId == 0;
-    private bool IsValid => !string.IsNullOrWhiteSpace(Fund.Name) && Fund.GoalAmount > 0;
-
-    private DateTime? TargetDateValue
-    {
-        get => Fund.TargetDate;
-        set => Fund.TargetDate = value;
-    }
-
-    private int CalculatedMonths
-    {
-        get
-        {
-            if (Fund.MonthlyContribution <= 0) return 0;
-            return (int)Math.Ceiling(Fund.GoalAmount / Fund.MonthlyContribution);
-        }
-    }
-
-    private DateTime CalculatedDate => DateTime.Today.AddMonths(CalculatedMonths);
-
-    private decimal RequiredMonthlyContribution
-    {
-        get
-        {
-            if (!TargetDateValue.HasValue || Fund.GoalAmount <= 0) return 0;
-            var months = ((TargetDateValue.Value.Year - DateTime.Today.Year) * 12) 
-                       + TargetDateValue.Value.Month - DateTime.Today.Month;
-            if (months <= 0) return Fund.GoalAmount;
-            return Math.Ceiling(Fund.GoalAmount / months);
-        }
-    }
-
-    private readonly string[] Icons = new[]
-    {
-        "🎯", "✈️", "🚗", "🏠", "🎁", "💍",
-        "📱", "💻", "🎓", "🏥", "🛠️", "🎄",
-        "🏖️", "🎉", "👶", "🐕", "📚", "🎸",
-        "⚽", "🏋️", "🧳", "💄", "🪑", "🌴"
-    };
-
-    private readonly string[] Colors = new[]
-    {
-        "#6366F1", "#8B5CF6", "#EC4899", "#EF4444",
-        "#F97316", "#F59E0B", "#10B981", "#14B8A6",
-        "#06B6D4", "#3B82F6", "#6B7280", "#1F2937"
-    };
-
-    protected override void OnInitialized()
-    {
-        if (FundId.HasValue && FundId > 0)
-        {
-            var existing = BudgetService.GetSinkingFund(FundId.Value);
-            if (existing != null)
-            {
-                Fund = existing;
-            }
-        }
-        else
-        {
-            Fund.StartDate = DateTime.Today;
-        }
-    }
-
-    private void ApplySuggestedContribution()
-    {
-        Fund.MonthlyContribution = RequiredMonthlyContribution;
-    }
-
-    private void Save()
-    {
-        if (!IsValid) return;
-
-        if (IsNew)
-        {
-            BudgetService.AddSinkingFund(Fund);
-        }
-        else
-        {
-            BudgetService.UpdateSinkingFund(Fund);
-        }
-
-        Navigation.NavigateTo("/sinking-funds");
-    }
-
-    private void Delete()
-    {
-        if (FundId.HasValue)
-        {
-            BudgetService.DeleteSinkingFund(FundId.Value);
-        }
-        Navigation.NavigateTo("/sinking-funds");
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo("/sinking-funds");
-    }
-}
-

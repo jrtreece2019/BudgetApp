@@ -1,64 +1,26 @@
 .category-detail {
-    max-width: 480px;
+    max-width: var(--content-max-width);
     margin: 0 auto;
-    padding: 0 1rem;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 0 var(--space-md);
     min-height: 100vh;
-    color: #f8fafc;
-}
-
-/* Header */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4.5rem 0 1.25rem;
-}
-
-.back-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #f8fafc;
-    font-size: 1.25rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.back-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.header-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.header-spacer {
-    width: 40px;
+    color: var(--text-primary);
 }
 
 /* Summary Card */
 .summary-card {
-    border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
     display: flex;
     align-items: flex-start;
     gap: 1.25rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-lg);
 }
 
 .summary-icon {
-    font-size: 3rem;
+    font-size: var(--font-2xl);
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
     width: 72px;
     height: 72px;
     display: flex;
@@ -71,7 +33,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-sm);
 }
 
 .stat-row {
@@ -82,20 +44,20 @@
 
 .stat-row.editable {
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    margin: -0.25rem -0.5rem;
-    border-radius: 8px;
-    transition: background 0.2s;
+    padding: var(--space-xs) var(--space-sm);
+    margin: calc(var(--space-xs) * -1) calc(var(--space-sm) * -1);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
 }
 
 .stat-row.editable:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-card-active);
 }
 
 .edit-hint {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     opacity: 0.6;
-    margin-left: 0.25rem;
+    margin-left: var(--space-xs);
 }
 
 .budget-edit {
@@ -105,26 +67,26 @@
 }
 
 .currency-prefix {
-    font-size: 1rem;
+    font-size: var(--font-md);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .budget-input {
     background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 6px;
-    padding: 0.25rem 0.5rem;
-    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-md);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     width: 80px;
     text-align: right;
     outline: none;
 }
 
 .budget-input:focus {
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: var(--border-color-focus);
     background: rgba(255, 255, 255, 0.25);
 }
 
@@ -142,47 +104,47 @@
 .cancel-budget-btn {
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    color: #ffffff;
-    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-size: var(--font-sm);
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
 }
 
 .save-budget-btn:hover {
     background: rgba(74, 222, 128, 0.3);
-    color: #4ade80;
+    color: var(--income);
 }
 
 .cancel-budget-btn:hover {
     background: rgba(248, 113, 113, 0.3);
-    color: #f87171;
+    color: var(--expense);
 }
 
 .reset-budget-btn {
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    color: #ffffff;
-    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-size: var(--font-sm);
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
-    margin-left: 0.25rem;
+    transition: all var(--transition-fast);
+    margin-left: var(--space-xs);
 }
 
 .reset-budget-btn:hover {
     background: rgba(251, 191, 36, 0.3);
-    color: #fbbf24;
+    color: var(--warning);
 }
 
 .default-badge {
@@ -200,24 +162,24 @@
 }
 
 .stat-row.remaining {
-    margin-top: 0.25rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: var(--space-xs);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-color);
 }
 
 .stat-label {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
 }
 
 .stat-value {
-    font-size: 1rem;
+    font-size: var(--font-md);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .stat-value.negative {
-    color: #fca5a5;
+    color: var(--expense);
 }
 
 .progress-container {
@@ -225,56 +187,19 @@
     background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
     overflow: hidden;
-    margin: 0.25rem 0;
+    margin: var(--space-xs) 0;
 }
 
 .progress-bar {
     height: 100%;
-    background: #ffffff;
+    background: var(--text-primary);
     border-radius: 3px;
     transition: width 0.5s ease;
 }
 
-/* Month Navigation */
-.month-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    padding: 0.5rem 0 1rem;
-}
-
-.month-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #94a3b8;
-    font-size: 1.5rem;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.month-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #f8fafc;
-}
-
-.month-title {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #94a3b8;
-    min-width: 140px;
-    text-align: center;
-}
-
 /* Section */
 .section {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-lg);
 }
 
 .section-header {
@@ -285,9 +210,9 @@
 }
 
 .section-title {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     font-weight: 600;
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -296,90 +221,25 @@
 .transaction-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-sm);
 }
 
-.transaction-item {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 0.875rem;
-    transition: background 0.2s;
-}
-
-.transaction-item.clickable {
-    cursor: pointer;
-}
-
-.transaction-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.transaction-item.clickable:active {
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.transaction-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-
-.transaction-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
-}
-
-.transaction-desc {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #f8fafc;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.transaction-date {
-    font-size: 0.75rem;
-    color: #64748b;
-}
-
-.transaction-amount {
-    font-size: 0.95rem;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.transaction-amount.expense {
-    color: #f87171;
-}
-
-/* Delete Button */
+/* Delete Button (inside TransactionListItem Actions slot) */
 .delete-btn {
     background: rgba(239, 68, 68, 0.1);
     border: none;
-    color: #f87171;
-    font-size: 0.875rem;
+    color: var(--expense);
+    font-size: var(--font-sm);
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     opacity: 0;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
 }
 
 .transaction-item:hover .delete-btn {
@@ -388,7 +248,7 @@
 
 .delete-btn:hover {
     background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
+    color: var(--danger);
 }
 
 .delete-btn:active {
@@ -396,80 +256,12 @@
     transform: scale(0.95);
 }
 
-/* For touch devices, always show delete button */
 @media (hover: none) {
     .delete-btn {
         opacity: 1;
     }
 }
 
-.transaction-amount.income {
-    color: #4ade80;
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    text-align: center;
-}
-
-.empty-icon {
-    font-size: 4rem;
-    opacity: 0.3;
-    margin-bottom: 1rem;
-}
-
-.empty-text {
-    font-size: 1rem;
-    color: #64748b;
-    margin: 0;
-}
-
-/* Floating Action Button */
-.fab {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border: none;
-    border-radius: 50px;
-    padding: 1rem 1.75rem;
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
-    transition: all 0.3s ease;
-    z-index: 100;
-}
-
-.fab:hover {
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
-}
-
-.fab:active {
-    transform: translateX(-50%) scale(0.98);
-}
-
-.fab-icon {
-    font-size: 1.25rem;
-    font-weight: 400;
-}
-
-.fab-text {
-    white-space: nowrap;
-}
-
 .bottom-spacer {
     height: 100px;
 }
-

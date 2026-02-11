@@ -1,8 +1,12 @@
 using BudgetApp.Shared.Models;
 
-namespace BudgetApp.Shared.Services;
+namespace BudgetApp.Shared.Services.Interfaces;
 
-public interface IBudgetService
+/// <summary>
+/// Pure data-access layer for SQLite operations.
+/// Contains no business logic — only CRUD and simple queries.
+/// </summary>
+public interface IDatabaseService
 {
     // Categories
     List<Category> GetCategories();
@@ -10,37 +14,32 @@ public interface IBudgetService
     void AddCategory(Category category);
     void UpdateCategory(Category category);
     void DeleteCategory(int categoryId);
-    bool CanDeleteCategory(int categoryId);
-    
+    bool HasTransactionsForCategory(int categoryId);
+    bool HasRecurringTransactionsForCategory(int categoryId);
+
     // Transactions
     List<Transaction> GetTransactions(int month, int year);
     void AddTransaction(Transaction transaction);
     void UpdateTransaction(Transaction transaction);
     void DeleteTransaction(int transactionId);
     Transaction? GetTransaction(int transactionId);
-    
+
     // Budgets
     List<Budget> GetBudgets(int month, int year);
-    decimal GetTotalBudget(int month, int year);
-    decimal GetTotalSpent(int month, int year);
-    decimal GetSpentByCategory(int categoryId, int month, int year);
-    decimal GetBudgetByCategory(int categoryId, int month, int year);
-    bool IsBudgetCustom(int categoryId, int month, int year);
-    void UpdateBudget(int categoryId, int month, int year, decimal amount);
-    void ResetBudgetToDefault(int categoryId, int month, int year);
-    
+    Budget? GetBudget(int categoryId, int month, int year);
+    void UpsertBudget(int categoryId, int month, int year, decimal amount);
+    void DeleteBudget(int categoryId, int month, int year);
+
     // Recurring Transactions
     List<RecurringTransaction> GetRecurringTransactions();
     RecurringTransaction? GetRecurringTransaction(int id);
     void AddRecurringTransaction(RecurringTransaction recurring);
     void UpdateRecurringTransaction(RecurringTransaction recurring);
     void DeleteRecurringTransaction(int id);
-    void ProcessRecurringTransactions();
 
-    // Income & Settings
-    decimal GetMonthlyIncome();
-    void SetMonthlyIncome(decimal income);
-    decimal GetTotalIncome(int month, int year); // From income transactions
+    // User Settings
+    UserSettings GetSettings();
+    void UpdateSettings(UserSettings settings);
 
     // Sinking Funds
     List<SinkingFund> GetSinkingFunds();
@@ -48,9 +47,11 @@ public interface IBudgetService
     void AddSinkingFund(SinkingFund fund);
     void UpdateSinkingFund(SinkingFund fund);
     void DeleteSinkingFund(int id);
+
+    // Sinking Fund Transactions
     List<SinkingFundTransaction> GetSinkingFundTransactions(int fundId);
+    SinkingFundTransaction? GetSinkingFundTransaction(int transactionId);
     void AddSinkingFundTransaction(SinkingFundTransaction transaction);
     void DeleteSinkingFundTransaction(int transactionId);
     decimal GetTotalSinkingFundContributions(int month, int year);
 }
-

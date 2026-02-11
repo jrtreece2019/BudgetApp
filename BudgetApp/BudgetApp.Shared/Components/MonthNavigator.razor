@@ -1,0 +1,21 @@
+@*
+    Reusable month navigation bar with prev/next arrows and month label.
+    Used on: Home, CategoryDetail, Transactions, Reports
+*@
+
+<div class="month-nav">
+    <button class="month-btn" @onclick="OnPreviousMonth">‹</button>
+    <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
+    <button class="month-btn" @onclick="OnNextMonth">›</button>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public DateTime CurrentDate { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnPreviousMonth { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnNextMonth { get; set; }
+}

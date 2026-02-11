@@ -1,0 +1,30 @@
+@* 
+    Reusable page header with back button, title, and optional right-side actions.
+    Used on: Categories, AddTransaction, CategoryDetail, Transactions, 
+             RecurringTransactions, EditRecurring, Reports
+*@
+
+<div class="page-header-bar">
+    <button class="back-btn" @onclick="OnBack">←</button>
+    <h1 class="header-title">@Title</h1>
+    @if (Actions != null)
+    {
+        @Actions
+    }
+    else
+    {
+        <div class="header-spacer"></div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public EventCallback OnBack { get; set; }
+
+    /// <summary>Optional right-side slot (e.g. a delete button).</summary>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+}

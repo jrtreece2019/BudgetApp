@@ -1,4 +1,5 @@
 using BudgetApp.Shared.Services;
+using BudgetApp.Shared.Services.Interfaces;
 using BudgetApp.Web.Components;
 using BudgetApp.Web.Services;
 
@@ -11,11 +12,18 @@ builder.Services.AddRazorComponents()
 // Add device-specific services used by the BudgetApp.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
-// SQLite database path for web
+// SQLite database — register via the IDatabaseService interface
 var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BudgetApp", "budget.db3");
 Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-builder.Services.AddSingleton(new DatabaseService(dbPath));
+builder.Services.AddSingleton<IDatabaseService>(new DatabaseService(dbPath));
+
+// Split service registrations (one per domain concern)
+builder.Services.AddSingleton<ICategoryService, SqliteCategoryService>();
+builder.Services.AddSingleton<ITransactionService, SqliteTransactionService>();
 builder.Services.AddSingleton<IBudgetService, SqliteBudgetService>();
+builder.Services.AddSingleton<IRecurringTransactionService, SqliteRecurringTransactionService>();
+builder.Services.AddSingleton<ISettingsService, SqliteSettingsService>();
+builder.Services.AddSingleton<ISinkingFundService, SqliteSinkingFundService>();
 builder.Services.AddSingleton<ThemeService>();
 
 var app = builder.Build();
@@ -24,7 +32,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);

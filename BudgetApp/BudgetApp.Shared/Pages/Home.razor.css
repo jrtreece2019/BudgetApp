@@ -1,82 +1,45 @@
 .budget-app {
-    max-width: 480px;
+    max-width: var(--content-max-width);
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 var(--space-md);
     font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     min-height: 100vh;
     color: var(--text-primary);
 }
 
-/* Month Navigation */
-.month-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    padding: 4.5rem 0 1rem;
-}
-
-.month-btn {
-    background: var(--bg-card);
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1.5rem;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.month-btn:hover {
-    background: var(--bg-card-hover);
-    color: var(--text-primary);
-}
-
-.month-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    min-width: 160px;
-    text-align: center;
-}
-
 /* Summary Card */
 .summary-card {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+    background: var(--gradient-accent);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    box-shadow: var(--shadow-accent);
 }
 
 /* Income Section - Expected vs Actual */
 .income-section {
     display: flex;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 1rem;
+    gap: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--space-md);
 }
 
 .income-expected,
 .income-actual {
     flex: 1;
     padding: 0.75rem;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
 }
 
 .income-expected {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-input);
 }
 
 .income-expected:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--bg-input-focus);
 }
 
 .income-actual {
@@ -91,11 +54,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-xs);
 }
 
 .income-label {
-    font-size: 0.7rem;
+    font-size: var(--font-xs);
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -106,14 +69,14 @@
 }
 
 .edit-hint {
-    font-size: 0.7rem;
+    font-size: var(--font-xs);
     color: rgba(255, 255, 255, 0.5);
 }
 
 .income-amount {
-    font-size: 1.5rem;
+    font-size: var(--font-xl);
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .income-received-group {
@@ -122,27 +85,27 @@
 }
 
 .income-received-amount {
-    font-size: 1.5rem;
+    font-size: var(--font-xl);
     font-weight: 700;
     color: rgba(255, 255, 255, 0.9);
 }
 
 .income-received-amount.complete {
-    color: #4ade80;
+    color: var(--income);
 }
 
 .income-status {
-    font-size: 0.7rem;
+    font-size: var(--font-xs);
     color: rgba(255, 255, 255, 0.6);
     margin-top: 2px;
 }
 
 .status-complete {
-    color: #4ade80;
+    color: var(--income);
 }
 
 .status-pending {
-    color: rgba(251, 191, 36, 0.8);
+    color: var(--warning);
 }
 
 .income-edit {
@@ -152,27 +115,27 @@
 }
 
 .currency-prefix {
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .income-input {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    font-size: 1.25rem;
+    background: var(--bg-input-focus);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) 0.75rem;
+    font-size: var(--font-lg);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     width: 120px;
     text-align: right;
     outline: none;
 }
 
 .income-input:focus {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.25);
+    border-color: var(--border-color-focus);
+    background: var(--bg-input-focus);
 }
 
 .income-input::-webkit-outer-spin-button,
@@ -188,33 +151,33 @@
 
 .save-btn,
 .cancel-btn {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--bg-input-focus);
     border: none;
-    color: #ffffff;
-    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-size: var(--font-sm);
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
 }
 
 .save-btn:hover {
     background: rgba(74, 222, 128, 0.3);
-    color: #4ade80;
+    color: var(--income);
 }
 
 .cancel-btn:hover {
     background: rgba(248, 113, 113, 0.3);
-    color: #f87171;
+    color: var(--expense);
 }
 
 /* Allocation Section */
 .allocation-section {
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
 }
 
 .allocation-row {
@@ -225,19 +188,19 @@
 }
 
 .allocation-label {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     color: rgba(255, 255, 255, 0.8);
 }
 
 .allocation-value {
-    font-size: 1rem;
+    font-size: var(--font-md);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .allocation-row.warning .allocation-label,
 .allocation-row.warning .allocation-value {
-    color: #fca5a5;
+    color: var(--expense);
 }
 
 .allocation-row.success .allocation-label {
@@ -245,66 +208,66 @@
 }
 
 .allocation-row.success .allocation-value {
-    color: #86efac;
+    color: var(--income);
 }
 
 /* Spending Section */
 .spending-section {
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
 }
 
 .spending-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
 }
 
 .spending-label {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     color: rgba(255, 255, 255, 0.8);
 }
 
 .spending-value {
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .spending-value.over {
-    color: #fca5a5;
+    color: var(--expense);
 }
 
 .progress-container {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
+    height: var(--space-sm);
+    background: var(--bg-input-focus);
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
 }
 
 .progress-bar {
     height: 100%;
-    background: #ffffff;
+    background: var(--text-primary);
     border-radius: 4px;
     transition: width 0.5s ease;
 }
 
 .progress-bar.over {
-    background: #fca5a5;
+    background: var(--expense);
 }
 
 .progress-label {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Sections */
+/* Section (Recent Transactions) */
 .section {
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
 }
 
 .section-header {
@@ -314,26 +277,15 @@
     margin-bottom: 0.75rem;
 }
 
-.section-header-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.875rem 1rem;
-    background: var(--bg-card);
-    border-radius: 12px;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    border-left: 4px solid transparent;
+.section-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
-.section-header-group:hover {
-    background: var(--bg-card-hover);
-}
-
-/* Section type colors */
+/* Section type colors - augment ExpandableSection */
 .section-header-group.fixed {
-    border-left-color: #EF4444;
+    border-left: 4px solid var(--danger);
     background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 30%);
 }
 
@@ -342,16 +294,16 @@
 }
 
 .section-header-group.discretionary {
-    border-left-color: #8B5CF6;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, var(--bg-card) 30%);
+    border-left: 4px solid var(--border-color-focus);
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, var(--bg-card) 30%);
 }
 
 .section-header-group.discretionary:hover {
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.12) 0%, var(--bg-card-hover) 30%);
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, var(--bg-card-hover) 30%);
 }
 
 .section-header-group.savings {
-    border-left-color: #3B82F6;
+    border-left: 4px solid #3B82F6;
     background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, var(--bg-card) 30%);
 }
 
@@ -360,72 +312,12 @@
 }
 
 .section-header-group.sinking-funds {
-    border-left-color: #10B981;
+    border-left: 4px solid var(--income);
     background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 30%);
 }
 
 .section-header-group.sinking-funds:hover {
     background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, var(--bg-card-hover) 30%);
-}
-
-.section-header-left {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.section-header-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.section-expand-icon {
-    font-size: 0.625rem;
-    color: var(--text-muted);
-    width: 12px;
-    text-align: center;
-}
-
-.section-type-icon {
-    font-size: 1rem;
-}
-
-.section-title {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.section-summary {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-}
-
-.section-count {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    background: var(--bg-card);
-    padding: 0.1875rem 0.5rem;
-    border-radius: 10px;
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.25rem;
-    background: var(--bg-card);
-    border-radius: 12px;
-    border: 1px dashed var(--border-color);
-}
-
-.empty-text {
-    font-size: 0.875rem;
-    color: var(--text-muted);
 }
 
 /* Category List */
@@ -440,9 +332,9 @@
     align-items: center;
     gap: 0.875rem;
     background: var(--bg-card);
-    border-radius: 12px;
-    padding: 0.875rem;
-    transition: background 0.2s;
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    transition: background var(--transition-fast);
     cursor: pointer;
 }
 
@@ -456,10 +348,10 @@
 
 .category-chevron {
     color: var(--text-muted);
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 300;
     flex-shrink: 0;
-    transition: transform 0.2s;
+    transition: transform var(--transition-fast);
 }
 
 .category-item:hover .category-chevron {
@@ -474,7 +366,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     flex-shrink: 0;
 }
 
@@ -487,7 +379,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
 }
 
 .category-name {
@@ -527,68 +419,7 @@
 .transaction-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-}
-
-.transaction-item {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    background: var(--bg-card);
-    border-radius: 12px;
-    padding: 0.875rem;
-    transition: background 0.2s;
-}
-
-.transaction-item:hover {
-    background: var(--bg-card-hover);
-}
-
-.transaction-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-
-.transaction-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
-}
-
-.transaction-desc {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.transaction-date {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.transaction-amount {
-    font-size: 0.95rem;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.transaction-amount.expense {
-    color: var(--expense);
-}
-
-.transaction-amount.income {
-    color: var(--income);
+    gap: var(--space-sm);
 }
 
 /* Sinking Funds List */
@@ -603,9 +434,9 @@
     align-items: center;
     gap: 0.875rem;
     background: var(--bg-card);
-    border-radius: 12px;
-    padding: 0.875rem;
-    transition: background 0.2s;
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    transition: background var(--transition-fast);
     cursor: pointer;
 }
 
@@ -624,7 +455,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     flex-shrink: 0;
 }
 
@@ -669,7 +500,7 @@
 .fund-meta {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-sm);
     font-size: 0.7rem;
 }
 
@@ -679,25 +510,25 @@
 
 .fund-remaining {
     color: var(--text-muted);
-    background: rgba(255,255,255,0.1);
-    padding: 0.125rem 0.375rem;
+    background: var(--bg-input);
+    padding: var(--space-xs) 0.375rem;
     border-radius: 4px;
 }
 
 .fund-auto-badge {
-    color: #10B981;
+    color: var(--income);
     background: rgba(16, 185, 129, 0.15);
-    padding: 0.125rem 0.375rem;
+    padding: var(--space-xs) 0.375rem;
     border-radius: 4px;
     font-weight: 500;
 }
 
 .fund-chevron {
     color: var(--text-muted);
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 300;
     flex-shrink: 0;
-    transition: transform 0.2s;
+    transition: transform var(--transition-fast);
 }
 
 .fund-item:hover .fund-chevron {
@@ -705,174 +536,73 @@
     transform: translateX(2px);
 }
 
-/* Floating Action Button */
-.fab {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--gradient-accent);
-    border: none;
-    border-radius: 50px;
-    padding: 1rem 1.75rem;
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: var(--shadow-accent);
-    transition: all 0.3s ease;
-    z-index: 100;
-}
-
-.fab:hover {
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
-}
-
-.fab:active {
-    transform: translateX(-50%) scale(0.98);
-}
-
-.fab-icon {
-    font-size: 1.25rem;
-    font-weight: 400;
-}
-
-.fab-text {
-    white-space: nowrap;
-}
-
 .bottom-spacer {
     height: 100px;
 }
 
-/* Paycheck Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 1rem;
-}
-
-.modal-content {
-    background: var(--bg-card, #1e293b);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 400px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-    color: #f8fafc;
-}
-
-.modal-close {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #94a3b8;
-    font-size: 1rem;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.modal-close:hover {
-    background: rgba(248, 113, 113, 0.2);
-    color: #f87171;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
+/* Paycheck Modal Content (inside ModalBase) */
 .form-group {
     margin-bottom: 1.25rem;
 }
 
 .form-label {
     display: block;
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     font-weight: 500;
-    color: #94a3b8;
-    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
 }
 
 .form-input {
     width: 100%;
-    padding: 0.875rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    font-size: 1rem;
-    color: #f8fafc;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--font-md);
+    color: var(--text-primary);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-fast);
     box-sizing: border-box;
 }
 
 .form-input:focus {
-    border-color: #10B981;
+    border-color: var(--income);
 }
 
 .form-input::placeholder {
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 .amount-input-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-sm);
 }
 
 .amount-input-group .currency-symbol {
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 600;
-    color: #10B981;
+    color: var(--income);
 }
 
 .amount-input-group .form-input.amount {
     flex: 1;
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 600;
 }
 
 /* Recent Paychecks in Modal */
 .recent-paychecks {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
 }
 
 .paycheck-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-sm);
     max-height: 150px;
     overflow-y: auto;
 }
@@ -893,37 +623,37 @@
 }
 
 .paycheck-desc {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     font-weight: 500;
-    color: #f8fafc;
+    color: var(--text-primary);
 }
 
 .paycheck-date {
-    font-size: 0.75rem;
-    color: #64748b;
+    font-size: var(--font-xs);
+    color: var(--text-muted);
 }
 
 .paycheck-amount {
-    font-size: 1rem;
+    font-size: var(--font-md);
     font-weight: 600;
-    color: #10B981;
+    color: var(--income);
 }
 
 .paycheck-delete {
     background: transparent;
     border: none;
-    color: #64748b;
-    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-size: var(--font-sm);
     width: 24px;
     height: 24px;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    margin-left: 0.5rem;
+    margin-left: var(--space-sm);
     opacity: 0.5;
 }
 
@@ -933,7 +663,7 @@
 
 .paycheck-delete:hover {
     background: rgba(248, 113, 113, 0.2);
-    color: #f87171;
+    color: var(--expense);
 }
 
 .paycheck-item.recurring {
@@ -942,14 +672,14 @@
 }
 
 .recurring-section {
-    margin-top: 1rem;
+    margin-top: var(--space-md);
 }
 
 .recurring-label {
     display: block;
-    font-size: 0.75rem;
-    color: #94a3b8;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
 }
 
 /* Toggle Row */
@@ -957,23 +687,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.875rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
 }
 
 .toggle-row:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-card-hover);
 }
 
 .toggle-label {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: #f8fafc;
+    color: var(--text-primary);
     font-weight: 500;
 }
 
@@ -984,14 +714,14 @@
 .toggle-switch {
     width: 44px;
     height: 24px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
+    background: var(--bg-input-focus);
+    border-radius: var(--radius-md);
     position: relative;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
 }
 
 .toggle-switch.active {
-    background: #10B981;
+    background: var(--income);
 }
 
 .toggle-knob {
@@ -1000,9 +730,9 @@
     left: 2px;
     width: 20px;
     height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.2s;
+    background: var(--text-primary);
+    border-radius: var(--radius-full);
+    transition: transform var(--transition-fast);
 }
 
 .toggle-switch.active .toggle-knob {
@@ -1013,11 +743,11 @@
 .recurring-hint {
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: var(--space-sm);
     padding: 0.75rem;
     background: rgba(99, 102, 241, 0.1);
     border-radius: 10px;
-    margin-top: 0.5rem;
+    margin-top: var(--space-sm);
 }
 
 .recurring-hint .hint-icon {
@@ -1026,42 +756,42 @@
 
 .recurring-hint span:last-child {
     font-size: 0.8125rem;
-    color: #a5b4fc;
+    color: var(--border-color-focus);
     line-height: 1.4;
 }
 
 .modal-footer {
     display: flex;
     gap: 0.75rem;
-    padding: 1rem 1.5rem 1.5rem;
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
 }
 
 .btn-cancel,
 .btn-save {
     flex: 1;
-    padding: 0.875rem;
-    border-radius: 12px;
-    font-size: 1rem;
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     border: none;
 }
 
 .btn-cancel {
-    background: rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
+    background: var(--bg-input);
+    color: var(--text-secondary);
 }
 
 .btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #f8fafc;
+    background: var(--bg-input-focus);
+    color: var(--text-primary);
 }
 
 .btn-save {
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, var(--income) 0%, #059669 100%);
+    color: #fff;
+    box-shadow: var(--shadow-accent);
 }
 
 .btn-save:hover:not(:disabled) {
@@ -1079,4 +809,3 @@
 .form-input[type="date"] {
     color-scheme: dark;
 }
-

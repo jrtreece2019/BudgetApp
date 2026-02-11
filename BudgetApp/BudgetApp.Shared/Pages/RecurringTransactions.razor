@@ -1,16 +1,9 @@
 @page "/recurring"
-@inject IBudgetService BudgetService
-@inject NavigationManager Navigation
 
 <PageTitle>Recurring Transactions</PageTitle>
 
 <div class="recurring-page">
-    <!-- Header -->
-    <div class="header">
-        <button class="back-btn" @onclick="GoBack">←</button>
-        <h1 class="header-title">Recurring</h1>
-        <div class="header-spacer"></div>
-    </div>
+    <PageHeader Title="Recurring" OnBack="GoBack" />
 
     <!-- Info Card -->
     <div class="info-card">
@@ -59,66 +52,13 @@
         }
         else
         {
-            <div class="empty-state">
-                <div class="empty-icon">🔄</div>
-                <p class="empty-text">No recurring transactions yet</p>
+            <EmptyState Icon="🔄" Message="No recurring transactions yet">
                 <p class="empty-hint">Tap the + button to add your first recurring bill or subscription</p>
-            </div>
+            </EmptyState>
         }
     </div>
 
-    <!-- Spacer -->
     <div class="bottom-spacer"></div>
 
-    <!-- Floating Add Button -->
-    <button class="fab" @onclick="AddRecurring">
-        <span class="fab-icon">+</span>
-        <span class="fab-text">Add Recurring</span>
-    </button>
+    <FloatingActionButton Label="Add Recurring" OnClick="AddRecurring" />
 </div>
-
-@code {
-    private List<RecurringTransaction> RecurringList { get; set; } = new();
-    private List<Category> Categories { get; set; } = new();
-
-    protected override void OnInitialized()
-    {
-        LoadData();
-    }
-
-    private void LoadData()
-    {
-        Categories = BudgetService.GetCategories();
-        RecurringList = BudgetService.GetRecurringTransactions()
-            .OrderBy(r => r.NextDueDate)
-            .ToList();
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo("/");
-    }
-
-    private void AddRecurring()
-    {
-        Navigation.NavigateTo("/recurring/add");
-    }
-
-    private void EditRecurring(int id)
-    {
-        Navigation.NavigateTo($"/recurring/edit/{id}");
-    }
-
-    private string GetFrequencyText(RecurrenceFrequency frequency)
-    {
-        return frequency switch
-        {
-            RecurrenceFrequency.Weekly => "Weekly",
-            RecurrenceFrequency.Biweekly => "Every 2 weeks",
-            RecurrenceFrequency.Monthly => "Monthly",
-            RecurrenceFrequency.Yearly => "Yearly",
-            _ => "Monthly"
-        };
-    }
-}
-

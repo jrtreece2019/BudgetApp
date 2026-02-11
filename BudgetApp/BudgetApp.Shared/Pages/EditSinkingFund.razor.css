@@ -1,47 +1,47 @@
 .edit-fund-page {
-    padding: 60px 16px 40px;
+    padding: var(--space-2xl) var(--space-md) var(--space-xl);
     min-height: 100vh;
     max-width: 600px;
     margin: 0 auto;
 }
 
 .page-header {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-lg);
 }
 
 .back-btn {
     background: none;
     border: none;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
-    font-size: 14px;
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
     cursor: pointer;
     padding: 0;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-sm);
 }
 
 .back-btn:hover {
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
 }
 
 .page-header h1 {
-    font-size: 24px;
+    font-size: var(--font-xl);
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
     margin: 0;
 }
 
 /* Form Card */
 .form-card {
-    background: var(--card-bg, rgba(255,255,255,0.08));
-    border-radius: 20px;
-    padding: 24px;
-    border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    border: 1px solid var(--border-color);
 }
 
 .form-section {
-    margin-bottom: 28px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--card-border, rgba(255,255,255,0.1));
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .form-section:last-of-type {
@@ -51,45 +51,45 @@
 }
 
 .section-title {
-    font-size: 12px;
+    font-size: var(--font-xs);
     font-weight: 600;
-    color: var(--text-secondary, rgba(255,255,255,0.5));
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 0 0 16px 0;
+    margin: 0 0 var(--space-md) 0;
 }
 
 /* Preview */
 .preview-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 12px;
+    gap: var(--font-sm);
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
 }
 
 .fund-preview {
     width: 56px;
     height: 56px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: var(--font-xl);
     flex-shrink: 0;
 }
 
 .preview-name {
-    font-size: 18px;
+    font-size: var(--font-lg);
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
 }
 
 /* Form Groups */
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: var(--font-lg);
 }
 
 .form-group:last-child {
@@ -100,57 +100,57 @@
     display: block;
     font-size: 13px;
     font-weight: 500;
-    color: var(--text-secondary, rgba(255,255,255,0.7));
-    margin-bottom: 8px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
 }
 
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group input[type="date"] {
     width: 100%;
-    padding: 14px 16px;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--card-border, rgba(255,255,255,0.15));
-    border-radius: 12px;
-    color: var(--text-primary, #fff);
-    font-size: 16px;
+    padding: var(--font-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-md);
     box-sizing: border-box;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #6366F1;
+    border-color: var(--border-color-focus);
 }
 
 .form-group input::placeholder {
-    color: var(--text-secondary, rgba(255,255,255,0.4));
+    color: var(--text-muted);
 }
 
 .input-with-prefix {
     display: flex;
     align-items: center;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--card-border, rgba(255,255,255,0.15));
-    border-radius: 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     overflow: hidden;
 }
 
 .input-with-prefix .prefix {
-    padding: 14px 0 14px 16px;
-    color: var(--text-secondary, rgba(255,255,255,0.5));
-    font-size: 16px;
+    padding: var(--font-sm) 0 var(--font-sm) var(--space-md);
+    color: var(--text-muted);
+    font-size: var(--font-md);
 }
 
 .input-with-prefix input {
     flex: 1;
-    padding: 14px 16px 14px 4px;
+    padding: var(--font-sm) var(--space-md) var(--font-sm) var(--space-xs);
     background: none;
     border: none;
 }
 
 .form-row {
     display: flex;
-    gap: 12px;
+    gap: var(--font-sm);
 }
 
 .form-group.half {
@@ -159,179 +159,128 @@
 
 /* Calculation Helpers */
 .calc-helper {
-    margin-top: 8px;
-    padding: 10px 14px;
+    margin-top: var(--space-sm);
+    padding: var(--space-md) var(--font-sm);
     background: rgba(99, 102, 241, 0.1);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
-    color: var(--text-secondary, rgba(255,255,255,0.7));
+    color: var(--text-secondary);
 }
 
 .calc-helper strong {
-    color: #6366F1;
+    color: var(--border-color-focus);
 }
 
 .calc-helper.target-calc {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--space-sm);
 }
 
 .apply-btn {
-    background: #6366F1;
-    color: white;
+    background: var(--border-color-focus);
+    color: #fff;
     border: none;
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: var(--space-xs) var(--font-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
     font-weight: 500;
     cursor: pointer;
     margin-left: auto;
 }
 
 .apply-btn:hover {
-    background: #5558E3;
+    opacity: 0.9;
 }
 
-/* Icon Grid */
-.icon-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-
-.icon-btn {
-    aspect-ratio: 1;
-    background: rgba(0,0,0,0.2);
-    border: 2px solid transparent;
-    border-radius: 10px;
-    font-size: 22px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-btn:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-.icon-btn.selected {
-    border-color: #6366F1;
-    background: rgba(99, 102, 241, 0.2);
-}
-
-/* Color Grid */
-.color-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-
-.color-btn {
-    aspect-ratio: 1;
-    border: 3px solid transparent;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.color-btn:hover {
-    transform: scale(1.1);
-}
-
-.color-btn.selected {
-    border-color: white;
-    box-shadow: 0 0 0 2px #6366F1;
-}
+/* Icon Grid and Color Grid removed - in IconPicker.razor.css and ColorPicker.razor.css */
 
 /* Status Options */
 .status-options {
     display: flex;
-    gap: 10px;
+    gap: var(--space-md);
 }
 
 .status-btn {
     flex: 1;
-    padding: 12px;
-    background: rgba(0,0,0,0.2);
+    padding: var(--font-sm);
+    background: var(--bg-input);
     border: 2px solid transparent;
-    border-radius: 10px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    transition: all 0.2s;
+    gap: 0.375rem;
+    transition: all var(--transition-fast);
 }
 
 .status-btn:hover {
-    background: rgba(255,255,255,0.1);
+    background: var(--bg-card-hover);
 }
 
 .status-btn.selected.active {
-    border-color: #10B981;
-    color: #10B981;
+    border-color: var(--success);
+    color: var(--success);
     background: rgba(16, 185, 129, 0.1);
 }
 
 .status-btn.selected.paused {
-    border-color: #FBB824;
-    color: #FBB824;
+    border-color: var(--warning);
+    color: var(--warning);
     background: rgba(251, 191, 36, 0.1);
 }
 
 .status-btn.selected.completed {
-    border-color: #6366F1;
-    color: #6366F1;
+    border-color: var(--border-color-focus);
+    color: var(--border-color-focus);
     background: rgba(99, 102, 241, 0.1);
 }
 
 .status-icon {
-    font-size: 12px;
+    font-size: var(--font-xs);
 }
 
 .current-balance-info {
-    margin-top: 16px;
-    padding: 14px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 10px;
+    margin-top: var(--space-md);
+    padding: var(--font-sm);
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
 }
 
 .current-balance-info strong {
-    color: var(--text-primary, #fff);
-    font-size: 18px;
+    color: var(--text-primary);
+    font-size: var(--font-lg);
 }
 
 /* Actions */
 .form-actions {
-    margin-top: 28px;
+    margin-top: var(--space-xl);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--font-sm);
 }
 
 .save-btn {
     width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    padding: var(--space-md);
+    background: var(--gradient-accent);
     border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 16px;
+    border-radius: var(--radius-md);
+    color: #fff;
+    font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
 .save-btn:hover:not(:disabled) {
@@ -345,15 +294,15 @@
 
 .delete-btn {
     width: 100%;
-    padding: 14px;
+    padding: var(--font-sm);
     background: transparent;
     border: 1px solid rgba(239, 68, 68, 0.5);
-    border-radius: 12px;
-    color: #EF4444;
-    font-size: 14px;
+    border-radius: var(--radius-md);
+    color: var(--danger);
+    font-size: var(--font-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
 }
 
 .delete-btn:hover {
@@ -365,15 +314,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 12px;
+    padding: var(--space-md);
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
 }
 
 .auto-contribute-toggle:hover {
-    background: rgba(0,0,0,0.3);
+    background: var(--bg-card-hover);
 }
 
 .toggle-info {
@@ -382,43 +331,43 @@
 
 .toggle-label {
     display: block;
-    font-size: 14px;
+    font-size: var(--font-sm);
     font-weight: 500;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
     margin-bottom: 2px;
 }
 
 .toggle-description {
     display: block;
-    font-size: 12px;
-    color: var(--text-secondary, rgba(255,255,255,0.5));
+    font-size: var(--font-xs);
+    color: var(--text-muted);
 }
 
 .toggle-switch {
     width: 48px;
     height: 28px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 14px;
+    background: var(--border-color);
+    border-radius: var(--radius-md);
     position: relative;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
     flex-shrink: 0;
-    margin-left: 12px;
+    margin-left: var(--font-sm);
 }
 
 .toggle-switch.on {
-    background: #10B981;
+    background: var(--success);
 }
 
 .toggle-knob {
     width: 22px;
     height: 22px;
-    background: white;
-    border-radius: 50%;
+    background: var(--text-primary);
+    border-radius: var(--radius-full);
     position: absolute;
-    top: 3px;
-    left: 3px;
-    transition: transform 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    top: var(--space-xs);
+    left: var(--space-xs);
+    transition: transform var(--transition-fast);
+    box-shadow: var(--shadow-sm);
 }
 
 .toggle-switch.on .toggle-knob {
@@ -427,7 +376,6 @@
 
 @media (min-width: 768px) {
     .edit-fund-page {
-        padding: 80px 24px 60px;
+        padding: var(--space-2xl) var(--space-lg) var(--space-2xl);
     }
 }
-

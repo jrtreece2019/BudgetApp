@@ -1,7 +1,16 @@
-/* ===== THEME VARIABLES ===== */
+/* =============================================
+   DESIGN TOKENS
+   =============================================
+   All design decisions live here as CSS custom
+   properties.  Component .razor.css files should
+   reference these tokens instead of hard-coding
+   colours, spacing, radii, etc.
+   ============================================= */
 
-/* Dark Theme (Default) */
+/* ── Dark Theme (Default) ──────────────────── */
+
 :root, .theme-dark {
+    /* Backgrounds */
     --bg-primary: #0f172a;
     --bg-secondary: #1e293b;
     --bg-card: rgba(255, 255, 255, 0.05);
@@ -9,32 +18,70 @@
     --bg-card-active: rgba(255, 255, 255, 0.12);
     --bg-input: rgba(255, 255, 255, 0.05);
     --bg-input-focus: rgba(255, 255, 255, 0.08);
-    
+
+    /* Text */
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
-    
+
+    /* Borders */
     --border-color: rgba(255, 255, 255, 0.1);
     --border-color-focus: #6366f1;
-    
+
+    /* Gradients */
     --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    
+
+    /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
     --shadow-accent: 0 8px 30px rgba(99, 102, 241, 0.4);
-    
+
+    /* Overlays */
     --overlay-bg: rgba(0, 0, 0, 0.6);
-    
+
+    /* Semantic colours */
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
     --income: #10b981;
     --expense: #f87171;
+
+    /* ── Spacing scale ── */
+    --space-xs: 0.25rem;   /*  4px */
+    --space-sm: 0.5rem;    /*  8px */
+    --space-md: 1rem;      /* 16px */
+    --space-lg: 1.5rem;    /* 24px */
+    --space-xl: 2rem;      /* 32px */
+    --space-2xl: 3rem;     /* 48px */
+
+    /* ── Border radius ── */
+    --radius-sm: 0.5rem;   /*  8px */
+    --radius-md: 0.75rem;  /* 12px */
+    --radius-lg: 1rem;     /* 16px */
+    --radius-xl: 1.25rem;  /* 20px */
+    --radius-full: 50px;
+
+    /* ── Typography ── */
+    --font-xs: 0.75rem;    /* 12px */
+    --font-sm: 0.875rem;   /* 14px */
+    --font-md: 1rem;       /* 16px */
+    --font-lg: 1.25rem;    /* 20px */
+    --font-xl: 1.5rem;     /* 24px */
+    --font-2xl: 2rem;      /* 32px */
+
+    /* ── Transitions ── */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+
+    /* ── Layout ── */
+    --content-max-width: 480px;
+    --header-padding-top: 4.5rem;
 }
 
-/* Light Theme */
+/* ── Light Theme ───────────────────────────── */
+
 .theme-light {
     --bg-primary: #f8fafc;
     --bg-secondary: #ffffff;
@@ -43,24 +90,24 @@
     --bg-card-active: rgba(0, 0, 0, 0.09);
     --bg-input: rgba(0, 0, 0, 0.03);
     --bg-input-focus: rgba(0, 0, 0, 0.05);
-    
+
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #94a3b8;
-    
+
     --border-color: rgba(0, 0, 0, 0.1);
     --border-color-focus: #6366f1;
-    
+
     --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    
+
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
     --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
     --shadow-accent: 0 8px 30px rgba(99, 102, 241, 0.3);
-    
+
     --overlay-bg: rgba(0, 0, 0, 0.4);
-    
+
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -68,27 +115,29 @@
     --expense: #dc2626;
 }
 
-/* ===== BASE STYLES ===== */
+/* =============================================
+   BASE STYLES
+   ============================================= */
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: var(--gradient-bg);
     color: var(--text-primary);
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background var(--transition-normal), color var(--transition-normal);
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: var(--border-color-focus);
 }
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background: var(--gradient-accent);
+    border: none;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem var(--bg-primary), 0 0 0 0.25rem var(--border-color-focus);
 }
 
 .content {
@@ -100,36 +149,47 @@ h1:focus {
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid var(--success);
 }
 
 .invalid {
-    outline: 1px solid #e50000;
+    outline: 1px solid var(--danger);
 }
 
 .validation-message {
-    color: #e50000;
+    color: var(--danger);
 }
 
 .blazor-error-boundary {
     background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
-    padding: 1rem 1rem 1rem 3.7rem;
+    padding: var(--space-md) var(--space-md) var(--space-md) 3.7rem;
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
-
-.darker-border-checkbox.form-check-input {
-    border-color: #929292;
+.blazor-error-boundary::after {
+    content: "An error has occurred.";
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-    color: var(--bs-secondary-color);
+.darker-border-checkbox.form-check-input {
+    border-color: var(--text-muted);
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--text-muted);
     text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+/* =============================================
+   SHARED UTILITY CLASSES
+   ============================================= */
+
+/* Bottom spacer for pages with a FAB */
+.bottom-spacer {
+    height: 5rem;
 }

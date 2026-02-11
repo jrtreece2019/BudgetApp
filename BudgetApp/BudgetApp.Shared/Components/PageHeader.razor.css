@@ -1,0 +1,42 @@
+.page-header-bar {
+    display: flex;
+    align-items: center;
+    padding: 4.5rem 0 1.25rem;
+    gap: 0.75rem;
+}
+
+.back-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    background: var(--bg-card-hover);
+}
+
+.header-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.header-spacer {
+    width: 40px;
+    flex-shrink: 0;
+}

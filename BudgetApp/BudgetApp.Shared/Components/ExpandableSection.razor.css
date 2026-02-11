@@ -1,0 +1,64 @@
+.section {
+    margin-bottom: 0.5rem;
+}
+
+.section-header-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+}
+
+.section-header-group:hover {
+    background: var(--bg-card-hover);
+}
+
+.section-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-expand-icon {
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    width: 1rem;
+    text-align: center;
+}
+
+.section-type-icon {
+    font-size: 1rem;
+}
+
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-summary {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.section-count {
+    background: var(--bg-card-active);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    min-width: 1.25rem;
+    text-align: center;
+}

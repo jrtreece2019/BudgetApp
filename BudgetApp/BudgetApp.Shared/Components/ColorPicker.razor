@@ -1,0 +1,31 @@
+@*
+    Reusable color swatch grid picker.
+    Used on: Categories (edit modal), EditSinkingFund
+*@
+
+<div class="color-grid">
+    @foreach (var color in Options)
+    {
+        <button type="button"
+                class="color-btn @(SelectedValue == color ? "selected" : "")"
+                style="background-color: @color;"
+                @onclick="() => SelectColor(color)">
+            @if (SelectedValue == color)
+            {
+                <span class="check">✓</span>
+            }
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string[] Options { get; set; } = Array.Empty<string>();
+    [Parameter] public string SelectedValue { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
+
+    private async Task SelectColor(string color)
+    {
+        SelectedValue = color;
+        await SelectedValueChanged.InvokeAsync(color);
+    }
+}

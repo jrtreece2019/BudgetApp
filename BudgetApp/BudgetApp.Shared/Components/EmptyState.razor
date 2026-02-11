@@ -1,0 +1,28 @@
+@*
+    Reusable empty-state placeholder with icon, message, and optional child content.
+    Used across many pages when a list has no items.
+*@
+
+<div class="empty-state">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <div class="empty-icon">@Icon</div>
+    }
+    <p class="empty-text">@Message</p>
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Message { get; set; } = string.Empty;
+
+    /// <summary>Optional slot for action buttons, links, or extra text.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

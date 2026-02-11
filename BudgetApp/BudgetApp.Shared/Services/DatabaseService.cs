@@ -1,9 +1,14 @@
 using BudgetApp.Shared.Models;
+using BudgetApp.Shared.Services.Interfaces;
 using SQLite;
 
 namespace BudgetApp.Shared.Services;
 
-public class DatabaseService
+/// <summary>
+/// Pure data-access layer backed by SQLite.
+/// Contains no business logic — only CRUD and simple queries.
+/// </summary>
+public class DatabaseService : IDatabaseService
 {
     private SQLiteConnection? _database;
     private readonly string _dbPath;
@@ -51,7 +56,6 @@ public class DatabaseService
 
     private void SeedDefaultData()
     {
-        // Fixed categories - predictable, recurring expenses
         var fixedCategories = new List<Category>
         {
             new() { Name = "Rent/Mortgage", Icon = "🏠", Color = "#EF4444", DefaultBudget = 1500, Type = CategoryType.Fixed },
@@ -61,7 +65,6 @@ public class DatabaseService
             new() { Name = "Transport", Icon = "🚗", Color = "#06B6D4", DefaultBudget = 200, Type = CategoryType.Fixed }
         };
 
-        // Discretionary categories - variable, optional spending
         var discretionaryCategories = new List<Category>
         {
             new() { Name = "Food & Dining", Icon = "🍽️", Color = "#F59E0B", DefaultBudget = 500, Type = CategoryType.Discretionary },
@@ -72,58 +75,41 @@ public class DatabaseService
         };
 
         foreach (var category in fixedCategories)
-        {
             _database!.Insert(category);
-        }
         foreach (var category in discretionaryCategories)
-        {
             _database!.Insert(category);
-        }
     }
 
-    // Categories
+    // ── Categories ──────────────────────────────────────────────
+
     public List<Category> GetCategories()
-    {
-        return Database.Table<Category>().ToList();
-    }
+        => Database.Table<Category>().ToList();
 
     public Category? GetCategory(int categoryId)
-    {
-        return Database.Find<Category>(categoryId);
-    }
+        => Database.Find<Category>(categoryId);
 
     public void AddCategory(Category category)
-    {
-        Database.Insert(category);
-    }
+        => Database.Insert(category);
 
     public void UpdateCategory(Category category)
-    {
-        Database.Update(category);
-    }
+        => Database.Update(category);
 
     public void DeleteCategory(int categoryId)
-    {
-        Database.Delete<Category>(categoryId);
-    }
+        => Database.Delete<Category>(categoryId);
 
     public bool HasTransactionsForCategory(int categoryId)
-    {
-        return Database.Table<Transaction>().ToList().Any(t => t.CategoryId == categoryId);
-    }
+        => Database.Table<Transaction>().ToList().Any(t => t.CategoryId == categoryId);
 
     public bool HasRecurringTransactionsForCategory(int categoryId)
-    {
-        return Database.Table<RecurringTransaction>().ToList().Any(r => r.CategoryId == categoryId);
-    }
+        => Database.Table<RecurringTransaction>().ToList().Any(r => r.CategoryId == categoryId);
 
-    // Transactions
+    // ── Transactions ────────────────────────────────────────────
+
     public List<Transaction> GetTransactions(int month, int year)
     {
-        // Filter in memory since SQLite-net doesn't support DateTime.Month/Year in queries
         var startDate = new DateTime(year, month, 1);
         var endDate = startDate.AddMonths(1);
-        
+
         return Database.Table<Transaction>()
             .ToList()
             .Where(t => t.Date >= startDate && t.Date < endDate)
@@ -132,44 +118,31 @@ public class DatabaseService
     }
 
     public void AddTransaction(Transaction transaction)
-    {
-        Database.Insert(transaction);
-    }
+        => Database.Insert(transaction);
 
     public void UpdateTransaction(Transaction transaction)
-    {
-        Database.Update(transaction);
-    }
+        => Database.Update(transaction);
 
     public void DeleteTransaction(int transactionId)
-    {
-        Database.Delete<Transaction>(transactionId);
-    }
+        => Database.Delete<Transaction>(transactionId);
 
     public Transaction? GetTransaction(int transactionId)
-    {
-        return Database.Find<Transaction>(transactionId);
-    }
+        => Database.Find<Transaction>(transactionId);
 
-    // Budgets
+    // ── Budgets ─────────────────────────────────────────────────
+
     public List<Budget> GetBudgets(int month, int year)
-    {
-        // Filter in memory since SQLite-net has limitations with complex queries
-        return Database.Table<Budget>()
+        => Database.Table<Budget>()
             .ToList()
             .Where(b => b.Month == month && b.Year == year)
             .ToList();
-    }
 
     public Budget? GetBudget(int categoryId, int month, int year)
-    {
-        // Filter in memory
-        return Database.Table<Budget>()
+        => Database.Table<Budget>()
             .ToList()
             .FirstOrDefault(b => b.CategoryId == categoryId && b.Month == month && b.Year == year);
-    }
 
-    public void UpdateBudget(int categoryId, int month, int year, decimal amount)
+    public void UpsertBudget(int categoryId, int month, int year, decimal amount)
     {
         var budget = GetBudget(categoryId, month, year);
         if (budget != null)
@@ -193,171 +166,87 @@ public class DatabaseService
     {
         var budget = GetBudget(categoryId, month, year);
         if (budget != null)
-        {
             Database.Delete<Budget>(budget.Id);
-        }
     }
 
-    // Recurring Transactions
+    // ── Recurring Transactions ──────────────────────────────────
+
     public List<RecurringTransaction> GetRecurringTransactions()
-    {
-        return Database.Table<RecurringTransaction>().ToList();
-    }
+        => Database.Table<RecurringTransaction>().ToList();
 
     public RecurringTransaction? GetRecurringTransaction(int id)
-    {
-        return Database.Find<RecurringTransaction>(id);
-    }
+        => Database.Find<RecurringTransaction>(id);
 
     public void AddRecurringTransaction(RecurringTransaction recurring)
-    {
-        Database.Insert(recurring);
-    }
+        => Database.Insert(recurring);
 
     public void UpdateRecurringTransaction(RecurringTransaction recurring)
-    {
-        Database.Update(recurring);
-    }
+        => Database.Update(recurring);
 
     public void DeleteRecurringTransaction(int id)
-    {
-        Database.Delete<RecurringTransaction>(id);
-    }
+        => Database.Delete<RecurringTransaction>(id);
 
-    // User Settings
+    // ── User Settings ───────────────────────────────────────────
+
     public UserSettings GetSettings()
-    {
-        return Database.Find<UserSettings>(1) ?? new UserSettings { Id = 1, MonthlyIncome = 0 };
-    }
+        => Database.Find<UserSettings>(1) ?? new UserSettings { Id = 1, MonthlyIncome = 0 };
 
     public void UpdateSettings(UserSettings settings)
     {
-        settings.Id = 1; // Ensure we always use the same row
+        settings.Id = 1;
         Database.InsertOrReplace(settings);
     }
 
-    public decimal GetMonthlyIncome()
-    {
-        return GetSettings().MonthlyIncome;
-    }
+    // ── Sinking Funds ───────────────────────────────────────────
 
-    public void SetMonthlyIncome(decimal income)
-    {
-        var settings = GetSettings();
-        settings.MonthlyIncome = income;
-        UpdateSettings(settings);
-    }
-
-    // Sinking Funds
     public List<SinkingFund> GetSinkingFunds()
-    {
-        return Database.Table<SinkingFund>().ToList();
-    }
+        => Database.Table<SinkingFund>().ToList();
 
     public SinkingFund? GetSinkingFund(int id)
-    {
-        return Database.Find<SinkingFund>(id);
-    }
+        => Database.Find<SinkingFund>(id);
 
     public void AddSinkingFund(SinkingFund fund)
-    {
-        Database.Insert(fund);
-    }
+        => Database.Insert(fund);
 
     public void UpdateSinkingFund(SinkingFund fund)
-    {
-        Database.Update(fund);
-    }
+        => Database.Update(fund);
 
     public void DeleteSinkingFund(int id)
     {
         // Delete all associated transactions first
         var transactions = GetSinkingFundTransactions(id);
         foreach (var tx in transactions)
-        {
             Database.Delete<SinkingFundTransaction>(tx.Id);
-        }
         Database.Delete<SinkingFund>(id);
     }
 
-    // Sinking Fund Transactions
+    // ── Sinking Fund Transactions ───────────────────────────────
+
     public List<SinkingFundTransaction> GetSinkingFundTransactions(int fundId)
-    {
-        return Database.Table<SinkingFundTransaction>()
+        => Database.Table<SinkingFundTransaction>()
             .ToList()
             .Where(t => t.SinkingFundId == fundId)
             .OrderByDescending(t => t.Date)
             .ToList();
-    }
+
+    public SinkingFundTransaction? GetSinkingFundTransaction(int transactionId)
+        => Database.Find<SinkingFundTransaction>(transactionId);
 
     public void AddSinkingFundTransaction(SinkingFundTransaction transaction)
-    {
-        Database.Insert(transaction);
-        
-        // Update the fund's current balance
-        var fund = GetSinkingFund(transaction.SinkingFundId);
-        if (fund != null)
-        {
-            if (transaction.Type == SinkingFundTransactionType.Contribution)
-            {
-                fund.CurrentBalance += transaction.Amount;
-            }
-            else
-            {
-                fund.CurrentBalance -= transaction.Amount;
-            }
-            
-            // Check if goal is reached
-            if (fund.CurrentBalance >= fund.GoalAmount)
-            {
-                fund.Status = SinkingFundStatus.Completed;
-            }
-            
-            UpdateSinkingFund(fund);
-        }
-    }
+        => Database.Insert(transaction);
 
     public void DeleteSinkingFundTransaction(int transactionId)
-    {
-        var transaction = Database.Find<SinkingFundTransaction>(transactionId);
-        if (transaction != null)
-        {
-            // Reverse the balance change
-            var fund = GetSinkingFund(transaction.SinkingFundId);
-            if (fund != null)
-            {
-                if (transaction.Type == SinkingFundTransactionType.Contribution)
-                {
-                    fund.CurrentBalance -= transaction.Amount;
-                }
-                else
-                {
-                    fund.CurrentBalance += transaction.Amount;
-                }
-                
-                // Revert completed status if balance drops below goal
-                if (fund.CurrentBalance < fund.GoalAmount && fund.Status == SinkingFundStatus.Completed)
-                {
-                    fund.Status = SinkingFundStatus.Active;
-                }
-                
-                UpdateSinkingFund(fund);
-            }
-            
-            Database.Delete<SinkingFundTransaction>(transactionId);
-        }
-    }
+        => Database.Delete<SinkingFundTransaction>(transactionId);
 
     public decimal GetTotalSinkingFundContributions(int month, int year)
     {
         var startDate = new DateTime(year, month, 1);
         var endDate = startDate.AddMonths(1);
-        
+
         return Database.Table<SinkingFundTransaction>()
             .ToList()
-            .Where(t => t.Date >= startDate && t.Date < endDate 
+            .Where(t => t.Date >= startDate && t.Date < endDate
                      && t.Type == SinkingFundTransactionType.Contribution)
             .Sum(t => t.Amount);
     }
 }
-

@@ -1,167 +1,167 @@
 .sinking-funds-page {
-    padding: 60px 16px 100px;
+    padding: var(--space-2xl) var(--space-md) var(--space-2xl);
     min-height: 100vh;
     max-width: 600px;
     margin: 0 auto;
 }
 
 .page-header {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-lg);
 }
 
 .page-header h1 {
-    font-size: 28px;
+    font-size: var(--font-2xl);
     font-weight: 700;
-    color: var(--text-primary, #fff);
-    margin: 0 0 4px 0;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-xs) 0;
 }
 
 .page-header .subtitle {
-    font-size: 14px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
     margin: 0;
 }
 
-/* Empty State */
+/* Empty State - SinkingFunds uses custom empty markup, not EmptyState component */
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: var(--space-2xl) var(--space-lg);
 }
 
 .empty-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
 }
 
 .empty-state h3 {
-    font-size: 20px;
+    font-size: var(--font-lg);
     font-weight: 600;
-    color: var(--text-primary, #fff);
-    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-sm) 0;
 }
 
 .empty-state p {
-    font-size: 14px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
-    margin: 0 0 24px 0;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-lg) 0;
     max-width: 280px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .create-btn {
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
-    color: white;
+    background: var(--gradient-accent);
+    color: #fff;
     border: none;
-    padding: 14px 28px;
-    border-radius: 12px;
-    font-size: 16px;
+    padding: var(--font-sm) var(--font-xl);
+    border-radius: var(--radius-md);
+    font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    gap: var(--space-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .create-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    box-shadow: var(--shadow-accent);
 }
 
 .create-btn .plus {
-    font-size: 20px;
+    font-size: var(--font-lg);
     font-weight: 400;
 }
 
 /* Summary Card */
 .summary-card {
-    background: var(--card-bg, rgba(255,255,255,0.08));
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
-    border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--border-color);
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-sm);
 }
 
 .summary-row .label {
-    font-size: 14px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
 }
 
 .summary-row .value {
-    font-size: 16px;
+    font-size: var(--font-md);
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
 }
 
 .summary-row .value.highlight {
-    color: #10B981;
+    color: var(--success);
 }
 
 .progress-bar {
-    height: 8px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
+    height: var(--space-sm);
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    margin: 12px 0 8px;
+    margin: var(--font-sm) 0 var(--space-sm);
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #6366F1, #8B5CF6);
-    border-radius: 4px;
-    transition: width 0.3s ease;
+    background: var(--gradient-accent);
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-normal);
 }
 
 .progress-text {
-    font-size: 12px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
     text-align: center;
 }
 
 /* Sections */
 .section {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-lg);
 }
 
 .section-title {
-    font-size: 14px;
+    font-size: var(--font-sm);
     font-weight: 600;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 0 0 12px 0;
+    margin: 0 0 var(--font-sm) 0;
 }
 
 /* Funds List */
 .funds-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--font-sm);
 }
 
 .fund-card {
-    background: var(--card-bg, rgba(255,255,255,0.08));
-    border-radius: 16px;
-    padding: 16px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: var(--font-sm);
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+    transition: transform var(--transition-fast), background var(--transition-fast);
+    border: 1px solid var(--border-color);
 }
 
 .fund-card:hover {
-    transform: translateX(4px);
-    background: var(--card-hover, rgba(255,255,255,0.12));
+    transform: translateX(var(--space-xs));
+    background: var(--bg-card-hover);
 }
 
 .fund-card.paused {
@@ -175,11 +175,11 @@
 .fund-icon {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: var(--font-xl);
     flex-shrink: 0;
 }
 
@@ -189,52 +189,52 @@
 }
 
 .fund-name {
-    font-size: 16px;
+    font-size: var(--font-md);
     font-weight: 600;
-    color: var(--text-primary, #fff);
-    margin-bottom: 4px;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
 }
 
 .fund-amounts {
-    font-size: 14px;
-    margin-bottom: 6px;
+    font-size: var(--font-sm);
+    margin-bottom: 0.375rem;
 }
 
 .fund-amounts .saved {
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
     font-weight: 600;
 }
 
 .fund-amounts .saved.complete {
-    color: #10B981;
+    color: var(--success);
 }
 
 .fund-amounts .separator {
-    color: var(--text-secondary, rgba(255,255,255,0.4));
-    margin: 0 4px;
+    color: var(--text-muted);
+    margin: 0 var(--space-xs);
 }
 
 .fund-amounts .goal {
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    color: var(--text-secondary);
 }
 
 .fund-amounts .check {
-    color: #10B981;
-    margin-left: 8px;
+    color: var(--success);
+    margin-left: var(--space-sm);
     font-weight: bold;
 }
 
 .fund-progress {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
 }
 
 .progress-bar-small {
     flex: 1;
     height: 4px;
-    background: rgba(255,255,255,0.1);
+    background: var(--border-color);
     border-radius: 2px;
     overflow: hidden;
 }
@@ -242,12 +242,12 @@
 .progress-fill-small {
     height: 100%;
     border-radius: 2px;
-    transition: width 0.3s ease;
+    transition: width var(--transition-normal);
 }
 
 .progress-percent {
-    font-size: 12px;
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
     min-width: 35px;
     text-align: right;
 }
@@ -255,81 +255,44 @@
 .fund-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    gap: var(--space-sm);
+    font-size: var(--font-xs);
 }
 
 .fund-meta .contribution {
-    color: var(--text-secondary, rgba(255,255,255,0.6));
+    color: var(--text-secondary);
 }
 
 .status {
     font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
+    padding: 2px var(--space-sm);
+    border-radius: var(--radius-full);
     font-weight: 500;
 }
 
 .status.on-track {
     background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
+    color: var(--success);
 }
 
 .status.behind {
     background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
+    color: var(--danger);
 }
 
 .status.paused-badge {
     background: rgba(251, 191, 36, 0.15);
-    color: #FBB824;
+    color: var(--warning);
 }
 
 .fund-chevron {
-    font-size: 20px;
-    color: var(--text-secondary, rgba(255,255,255,0.4));
+    font-size: var(--font-lg);
+    color: var(--text-muted);
     font-weight: 300;
-}
-
-/* FAB */
-.fab {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
-    color: white;
-    border: none;
-    font-size: 28px;
-    font-weight: 300;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    z-index: 100;
-}
-
-.fab:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
-}
-
-.fab:active {
-    transform: scale(0.95);
 }
 
 @media (min-width: 768px) {
     .sinking-funds-page {
-        padding: 80px 24px 100px;
-    }
-    
-    .fab {
-        bottom: 32px;
-        right: 32px;
+        padding: var(--space-2xl) var(--space-lg) var(--space-2xl);
     }
 }
-

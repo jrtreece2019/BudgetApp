@@ -1,17 +1,10 @@
 @page "/add"
 @page "/edit/{TransactionId:int}"
-@inject IBudgetService BudgetService
-@inject NavigationManager Navigation
 
 <PageTitle>@(IsEditing ? "Edit" : "Add") Transaction</PageTitle>
 
 <div class="add-transaction">
-    <!-- Header -->
-    <div class="header">
-        <button class="back-btn" @onclick="GoBack">←</button>
-        <h1 class="header-title">@(IsEditing ? "Edit" : "Add") Transaction</h1>
-        <div class="header-spacer"></div>
-    </div>
+    <PageHeader Title="@((IsEditing ? "Edit" : "Add") + " Transaction")" OnBack="GoBack" />
 
     <!-- Transaction Type Toggle -->
     <div class="type-toggle">
@@ -93,107 +86,3 @@
 
     <div class="bottom-spacer"></div>
 </div>
-
-@code {
-    [Parameter]
-    public int? TransactionId { get; set; }
-
-    private bool IsEditing => TransactionId.HasValue;
-    private bool IsExpense { get; set; } = true;
-    private decimal Amount { get; set; }
-    private string Description { get; set; } = string.Empty;
-    private int SelectedCategoryId { get; set; }
-    private DateTime TransactionDate { get; set; } = DateTime.Today;
-    private List<Category> Categories { get; set; } = new();
-    private string? ReturnUrl { get; set; }
-
-    // For expenses: need amount and category. For income: just need amount and description
-    private bool IsValid => Amount > 0 && (IsExpense ? SelectedCategoryId > 0 : !string.IsNullOrWhiteSpace(Description));
-
-    protected override void OnInitialized()
-    {
-        Categories = BudgetService.GetCategories();
-        
-        // Check for returnUrl query parameter
-        var uri = new Uri(Navigation.Uri);
-        if (!string.IsNullOrEmpty(uri.Query))
-        {
-            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-            var returnUrlParam = queryParams["returnUrl"];
-            if (!string.IsNullOrEmpty(returnUrlParam))
-            {
-                ReturnUrl = returnUrlParam;
-            }
-        }
-        
-        if (IsEditing)
-        {
-            // Load existing transaction
-            var transaction = BudgetService.GetTransaction(TransactionId!.Value);
-            if (transaction != null)
-            {
-                Amount = transaction.Amount;
-                Description = transaction.Description;
-                SelectedCategoryId = transaction.CategoryId;
-                TransactionDate = transaction.Date;
-                IsExpense = transaction.Type == TransactionType.Expense;
-                
-                // Only set return URL if not already set from query param
-                if (string.IsNullOrEmpty(ReturnUrl))
-                {
-                    ReturnUrl = transaction.CategoryId > 0 
-                        ? $"/category/{transaction.CategoryId}" 
-                        : "/";
-                }
-            }
-        }
-        else if (Categories.Any())
-        {
-            SelectedCategoryId = Categories.First().Id;
-        }
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo(ReturnUrl ?? "/");
-    }
-
-    private void SaveTransaction()
-    {
-        if (!IsValid) return;
-
-        // For expenses, use category name as default description if empty
-        // For income, description is required so it will always have a value
-        var description = string.IsNullOrWhiteSpace(Description) && IsExpense
-            ? Categories.FirstOrDefault(c => c.Id == SelectedCategoryId)?.Name ?? "Expense"
-            : Description;
-
-        if (IsEditing)
-        {
-            var transaction = new Transaction
-            {
-                Id = TransactionId!.Value,
-                Description = description,
-                Amount = Amount,
-                Date = TransactionDate,
-                CategoryId = IsExpense ? SelectedCategoryId : 0, // Income has no category
-                Type = IsExpense ? TransactionType.Expense : TransactionType.Income
-            };
-            BudgetService.UpdateTransaction(transaction);
-        }
-        else
-        {
-            var transaction = new Transaction
-            {
-                Description = description,
-                Amount = Amount,
-                Date = TransactionDate,
-                CategoryId = IsExpense ? SelectedCategoryId : 0, // Income has no category
-                Type = IsExpense ? TransactionType.Expense : TransactionType.Income
-            };
-            BudgetService.AddTransaction(transaction);
-        }
-
-        Navigation.NavigateTo(ReturnUrl ?? "/");
-    }
-}

@@ -1,23 +1,11 @@
 @page "/reports"
-@inject IBudgetService BudgetService
-@inject NavigationManager Navigation
 
 <PageTitle>Reports</PageTitle>
 
 <div class="reports-page">
-    <!-- Header -->
-    <div class="header">
-        <button class="back-btn" @onclick="GoBack">←</button>
-        <h1 class="header-title">Reports</h1>
-        <div class="header-spacer"></div>
-    </div>
+    <PageHeader Title="Reports" OnBack="GoBack" />
 
-    <!-- Month Navigation -->
-    <div class="month-nav">
-        <button class="month-btn" @onclick="PreviousMonth">‹</button>
-        <span class="month-title">@CurrentDate.ToString("MMMM yyyy")</span>
-        <button class="month-btn" @onclick="NextMonth">›</button>
-    </div>
+    <MonthNavigator CurrentDate="CurrentDate" OnPreviousMonth="PreviousMonth" OnNextMonth="NextMonth" />
 
     <!-- Overview Cards -->
     <div class="overview-cards">
@@ -67,9 +55,7 @@
         }
         else
         {
-            <div class="empty-state">
-                <p class="empty-text">No spending data this month</p>
-            </div>
+            <EmptyState Message="No spending data this month" />
         }
     </div>
 
@@ -114,69 +100,5 @@
         </div>
     </div>
 
-    <!-- Spacer -->
     <div class="bottom-spacer"></div>
 </div>
-
-@code {
-    private DateTime CurrentDate { get; set; } = DateTime.Now;
-    private List<Category> Categories { get; set; } = new();
-    private List<Transaction> Transactions { get; set; } = new();
-    private List<CategorySpendingItem> CategorySpending { get; set; } = new();
-
-    private decimal TotalExpenses => Transactions
-        .Where(t => t.Type == TransactionType.Expense)
-        .Sum(t => t.Amount);
-
-    private decimal TotalIncome => Transactions
-        .Where(t => t.Type == TransactionType.Income)
-        .Sum(t => t.Amount);
-
-    private decimal NetAmount => TotalIncome - TotalExpenses;
-
-    protected override void OnInitialized()
-    {
-        LoadData();
-    }
-
-    private void LoadData()
-    {
-        Categories = BudgetService.GetCategories();
-        Transactions = BudgetService.GetTransactions(CurrentDate.Month, CurrentDate.Year);
-        
-        CategorySpending = Categories
-            .Select(c => new CategorySpendingItem
-            {
-                Category = c,
-                Amount = Transactions
-                    .Where(t => t.CategoryId == c.Id && t.Type == TransactionType.Expense)
-                    .Sum(t => t.Amount)
-            })
-            .Where(c => c.Amount > 0)
-            .ToList();
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo("/");
-    }
-
-    private void PreviousMonth()
-    {
-        CurrentDate = CurrentDate.AddMonths(-1);
-        LoadData();
-    }
-
-    private void NextMonth()
-    {
-        CurrentDate = CurrentDate.AddMonths(1);
-        LoadData();
-    }
-
-    private class CategorySpendingItem
-    {
-        public Category Category { get; set; } = null!;
-        public decimal Amount { get; set; }
-    }
-}
-

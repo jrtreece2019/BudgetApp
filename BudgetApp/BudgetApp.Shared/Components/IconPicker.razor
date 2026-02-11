@@ -1,0 +1,29 @@
+@*
+    Reusable icon grid picker.
+    Used on: Categories (edit modal), EditSinkingFund
+*@
+
+<div class="icon-grid">
+    @foreach (var icon in Options)
+    {
+        <button type="button"
+                class="icon-btn @(SelectedValue == icon ? "selected" : "")"
+                style="@(SelectedValue == icon && !string.IsNullOrEmpty(HighlightColor) ? $"background-color: {HighlightColor};" : "")"
+                @onclick="() => SelectIcon(icon)">
+            @icon
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string[] Options { get; set; } = Array.Empty<string>();
+    [Parameter] public string SelectedValue { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
+    [Parameter] public string? HighlightColor { get; set; }
+
+    private async Task SelectIcon(string icon)
+    {
+        SelectedValue = icon;
+        await SelectedValueChanged.InvokeAsync(icon);
+    }
+}

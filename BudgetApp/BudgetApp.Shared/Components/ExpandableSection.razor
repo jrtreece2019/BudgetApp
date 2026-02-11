@@ -1,0 +1,61 @@
+@*
+    Reusable collapsible section with icon, title, summary, and count badge.
+    Used on: Home (Fixed, Discretionary, Savings, Sinking Funds), Categories
+*@
+
+<div class="section">
+    <div class="section-header-group @CssClass" @onclick="Toggle">
+        <div class="section-header-left">
+            <span class="section-expand-icon">@(IsExpanded ? "▼" : "▶")</span>
+            <span class="section-type-icon">@Icon</span>
+            <span class="section-title">@Title</span>
+        </div>
+        <div class="section-header-right">
+            @if (!string.IsNullOrEmpty(Summary))
+            {
+                <span class="section-summary">@Summary</span>
+            }
+            @if (Count.HasValue)
+            {
+                <span class="section-count">@Count</span>
+            }
+        </div>
+    </div>
+    @if (IsExpanded)
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Icon { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Summary { get; set; }
+
+    [Parameter]
+    public int? Count { get; set; }
+
+    /// <summary>CSS class variant: "fixed", "discretionary", "savings", "sinking-funds".</summary>
+    [Parameter]
+    public string CssClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool IsExpanded { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<bool> IsExpandedChanged { get; set; }
+
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    private async Task Toggle()
+    {
+        IsExpanded = !IsExpanded;
+        await IsExpandedChanged.InvokeAsync(IsExpanded);
+    }
+}

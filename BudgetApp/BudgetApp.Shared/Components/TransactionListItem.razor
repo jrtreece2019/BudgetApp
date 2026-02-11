@@ -1,0 +1,32 @@
+@*
+    Reusable transaction row: icon, description, date, amount, optional actions.
+    Used on: Home, CategoryDetail, Transactions
+*@
+
+<div class="transaction-item @(OnClick.HasDelegate ? "clickable" : "")" @onclick="OnClick">
+    <div class="transaction-icon" style="background-color: @IconColor">@Icon</div>
+    <div class="transaction-info">
+        <span class="transaction-desc">@Description</span>
+        <span class="transaction-date">@DateHelpers.FormatDate(Date)</span>
+    </div>
+    <div class="transaction-amount @(IsIncome ? "income" : "expense")">
+        @(IsIncome ? "+" : "-")@Amount.ToString("C2")
+    </div>
+    @if (Actions != null)
+    {
+        @Actions
+    }
+</div>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "💰";
+    [Parameter] public string IconColor { get; set; } = "#6B7280";
+    [Parameter, EditorRequired] public string Description { get; set; } = string.Empty;
+    [Parameter] public DateTime Date { get; set; }
+    [Parameter] public decimal Amount { get; set; }
+    [Parameter] public bool IsIncome { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>Optional slot for delete/edit buttons on the right.</summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+}
