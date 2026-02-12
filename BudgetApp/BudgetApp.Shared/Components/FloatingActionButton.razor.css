@@ -3,7 +3,7 @@
     bottom: 2rem;
     right: 1.5rem;
     background: var(--gradient-accent);
-    color: #fff;
+    color: var(--text-on-accent);
     border: none;
     border-radius: 50px;
     padding: 0.875rem 1.5rem;

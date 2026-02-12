@@ -135,8 +135,8 @@
 }
 
 .menu-item.active {
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
+    background: var(--accent-bg-hover);
+    color: var(--accent-hover);
 }
 
 .menu-item-icon {

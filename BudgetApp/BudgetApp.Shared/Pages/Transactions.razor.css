@@ -129,7 +129,7 @@
 .summary-detail {
     display: block;
     font-size: 0.625rem;
-    color: rgba(74, 222, 128, 0.8);
+    color: var(--income);
     margin-top: 2px;
     font-weight: 400;
 }
@@ -179,14 +179,14 @@
 }
 
 .delete-btn:hover {
-    background: rgba(248, 113, 113, 0.2);
+    background: var(--danger-bg-hover);
     color: var(--expense);
 }
 
 .clear-filters-btn {
-    background: rgba(99, 102, 241, 0.2);
+    background: var(--accent-bg-strong);
     border: none;
-    color: #818cf8;
+    color: var(--accent-hover);
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-sm);
     font-size: var(--font-sm);
@@ -195,7 +195,7 @@
 }
 
 .clear-filters-btn:hover {
-    background: rgba(99, 102, 241, 0.3);
+    background: var(--accent-border);
 }
 
 .bottom-spacer {

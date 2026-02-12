@@ -43,11 +43,11 @@
 }
 
 .income-actual {
-    background: rgba(16, 185, 129, 0.15);
+    background: var(--income-bg-hover);
 }
 
 .income-actual:hover {
-    background: rgba(16, 185, 129, 0.2);
+    background: var(--income-bg-strong);
 }
 
 .income-label-row {
@@ -59,18 +59,18 @@
 
 .income-label {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-on-accent-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 .income-label.received {
-    color: rgba(16, 185, 129, 0.9);
+    color: var(--income);
 }
 
 .edit-hint {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-on-accent-muted);
 }
 
 .income-amount {
@@ -87,7 +87,7 @@
 .income-received-amount {
     font-size: var(--font-xl);
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-on-accent);
 }
 
 .income-received-amount.complete {
@@ -96,7 +96,7 @@
 
 .income-status {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-on-accent-muted);
     margin-top: 2px;
 }
 
@@ -166,12 +166,12 @@
 }
 
 .save-btn:hover {
-    background: rgba(74, 222, 128, 0.3);
+    background: var(--income-bg-strong);
     color: var(--income);
 }
 
 .cancel-btn:hover {
-    background: rgba(248, 113, 113, 0.3);
+    background: var(--danger-bg-hover);
     color: var(--expense);
 }
 
@@ -189,7 +189,7 @@
 
 .allocation-label {
     font-size: var(--font-sm);
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-on-accent-secondary);
 }
 
 .allocation-value {
@@ -204,7 +204,7 @@
 }
 
 .allocation-row.success .allocation-label {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-on-accent-secondary);
 }
 
 .allocation-row.success .allocation-value {
@@ -226,7 +226,7 @@
 
 .spending-label {
     font-size: var(--font-sm);
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-on-accent-secondary);
 }
 
 .spending-value {
@@ -262,7 +262,7 @@
     display: flex;
     justify-content: space-between;
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-on-accent-secondary);
 }
 
 /* Section (Recent Transactions) */
@@ -286,38 +286,38 @@
 /* Section type colors - augment ExpandableSection */
 .section-header-group.fixed {
     border-left: 4px solid var(--danger);
-    background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 30%);
+    background: linear-gradient(90deg, var(--danger-bg) 0%, var(--bg-card) 30%);
 }
 
 .section-header-group.fixed:hover {
-    background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, var(--bg-card-hover) 30%);
+    background: linear-gradient(90deg, var(--danger-bg-hover) 0%, var(--bg-card-hover) 30%);
 }
 
 .section-header-group.discretionary {
     border-left: 4px solid var(--border-color-focus);
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, var(--bg-card) 30%);
+    background: linear-gradient(90deg, var(--accent-bg) 0%, var(--bg-card) 30%);
 }
 
 .section-header-group.discretionary:hover {
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, var(--bg-card-hover) 30%);
+    background: linear-gradient(90deg, var(--accent-bg-hover) 0%, var(--bg-card-hover) 30%);
 }
 
 .section-header-group.savings {
-    border-left: 4px solid #3B82F6;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, var(--bg-card) 30%);
+    border-left: 4px solid var(--savings-accent);
+    background: linear-gradient(90deg, var(--savings-bg) 0%, var(--bg-card) 30%);
 }
 
 .section-header-group.savings:hover {
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, var(--bg-card-hover) 30%);
+    background: linear-gradient(90deg, var(--savings-bg-hover) 0%, var(--bg-card-hover) 30%);
 }
 
 .section-header-group.sinking-funds {
     border-left: 4px solid var(--income);
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 30%);
+    background: linear-gradient(90deg, var(--income-bg) 0%, var(--bg-card) 30%);
 }
 
 .section-header-group.sinking-funds:hover {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, var(--bg-card-hover) 30%);
+    background: linear-gradient(90deg, var(--income-bg-hover) 0%, var(--bg-card-hover) 30%);
 }
 
 /* Category List */
@@ -517,7 +517,7 @@
 
 .fund-auto-badge {
     color: var(--income);
-    background: rgba(16, 185, 129, 0.15);
+    background: var(--income-bg-hover);
     padding: var(--space-xs) 0.375rem;
     border-radius: 4px;
     font-weight: 500;
@@ -612,7 +612,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem;
-    background: rgba(16, 185, 129, 0.1);
+    background: var(--income-bg);
     border-radius: 10px;
 }
 
@@ -662,13 +662,13 @@
 }
 
 .paycheck-delete:hover {
-    background: rgba(248, 113, 113, 0.2);
+    background: var(--danger-bg-hover);
     color: var(--expense);
 }
 
 .paycheck-item.recurring {
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px dashed rgba(99, 102, 241, 0.3);
+    background: var(--accent-bg);
+    border: 1px dashed var(--accent-border);
 }
 
 .recurring-section {
@@ -745,7 +745,7 @@
     align-items: flex-start;
     gap: var(--space-sm);
     padding: 0.75rem;
-    background: rgba(99, 102, 241, 0.1);
+    background: var(--accent-bg);
     border-radius: 10px;
     margin-top: var(--space-sm);
 }
@@ -790,7 +790,7 @@
 
 .btn-save {
     background: linear-gradient(135deg, var(--income) 0%, #059669 100%);
-    color: #fff;
+    color: var(--text-on-accent);
     box-shadow: var(--shadow-accent);
 }
 
@@ -807,5 +807,5 @@
 
 /* Date input styling */
 .form-input[type="date"] {
-    color-scheme: dark;
+    color-scheme: var(--color-scheme);
 }

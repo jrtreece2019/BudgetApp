@@ -11,8 +11,8 @@
     display: flex;
     align-items: flex-start;
     gap: var(--space-md);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg, var(--accent-bg-hover) 0%, var(--accent-bg) 100%);
+    border: 1px solid var(--accent-border);
     border-radius: var(--radius-lg);
     padding: 1.25rem;
     margin-bottom: var(--space-lg);
@@ -146,12 +146,12 @@
 }
 
 .recurring-status.active {
-    background: rgba(74, 222, 128, 0.2);
+    background: var(--income-bg-strong);
     color: var(--income);
 }
 
 .recurring-status.paused {
-    background: rgba(148, 163, 184, 0.2);
+    background: var(--muted-bg);
     color: var(--text-secondary);
 }
 

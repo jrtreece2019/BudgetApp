@@ -51,7 +51,7 @@
 
 .create-btn {
     background: var(--gradient-accent);
-    color: #fff;
+    color: var(--text-on-accent);
     border: none;
     padding: var(--font-sm) var(--font-xl);
     border-radius: var(--radius-md);
@@ -169,7 +169,7 @@
 }
 
 .fund-card.completed {
-    border-color: rgba(16, 185, 129, 0.3);
+    border-color: var(--income-bg-strong);
 }
 
 .fund-icon {
@@ -271,17 +271,17 @@
 }
 
 .status.on-track {
-    background: rgba(16, 185, 129, 0.15);
+    background: var(--income-bg-hover);
     color: var(--success);
 }
 
 .status.behind {
-    background: rgba(239, 68, 68, 0.15);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 
 .status.paused-badge {
-    background: rgba(251, 191, 36, 0.15);
+    background: var(--warning-bg);
     color: var(--warning);
 }
 

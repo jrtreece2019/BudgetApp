@@ -1,0 +1,33 @@
+---
+description: SOLID and DRY principles enforcement for all code changes
+alwaysApply: true
+---
+
+# SOLID and DRY Principles
+
+Apply these principles to every code change in this project.
+
+## SOLID
+
+- **SRP (Single Responsibility)**: Each class does one thing. Services handle business logic; DatabaseService handles data access; components handle UI. Do not mix concerns.
+- **OCP (Open/Closed)**: Add features by creating new services, interfaces, or components. Avoid modifying existing service contracts unless genuinely extending domain capability.
+- **LSP (Liskov Substitution)**: Every service implementation must fully and correctly satisfy its interface. No method should throw NotImplementedException.
+- **ISP (Interface Segregation)**: If a new method does not belong on an existing interface, create a new interface. Pages should inject only the interfaces they use.
+- **DIP (Dependency Inversion)**: Depend on abstractions (`ICategoryService`), never concrete classes (`SqliteCategoryService`). Register and inject via interfaces.
+
+## DRY (Don't Repeat Yourself)
+
+Before writing new code, check:
+
+1. `Helpers/` -- does `DateHelpers` or `RecurrenceCalculator` already handle this?
+2. `Components/` -- does a shared component already render this pattern?
+3. `Services/` -- does an existing service already expose this data?
+
+If you find yourself copying logic or markup from another file, extract it into a shared helper or component instead.
+
+## Checklist for New Features
+
+- [ ] New service? Create an interface in `Services/Interfaces/` first
+- [ ] New UI pattern used in 2+ pages? Extract to `Components/`
+- [ ] New date/math utility? Add to `Helpers/`, not inline in a page
+- [ ] Registered in DI in both `Program.cs` and `MauiProgram.cs`?

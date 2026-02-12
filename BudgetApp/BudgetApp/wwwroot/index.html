@@ -18,6 +18,14 @@
 
     <div id="app">Loading...</div>
 
+    <script src="_content/BudgetApp.Shared/theme.js"></script>
+    <script>
+        // Apply saved theme immediately to prevent flash of wrong theme (FOUC).
+        (function() {
+            var theme = localStorage.getItem('app-theme') || 'dark';
+            document.documentElement.classList.add('theme-' + theme);
+        })();
+    </script>
     <script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>

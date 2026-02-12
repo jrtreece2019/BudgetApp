@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,6 +18,15 @@
     <Routes @rendermode="InteractiveServer" />
     <ReconnectModal />
     <script src="_content/BudgetApp.Shared/theme.js"></script>
+    <script>
+        // Apply saved theme immediately to prevent flash of wrong theme (FOUC).
+        // Reads localStorage before Blazor boots so the correct CSS class is on
+        // the root element from the very first paint.
+        (function() {
+            var theme = localStorage.getItem('app-theme') || 'dark';
+            document.documentElement.classList.add('theme-' + theme);
+        })();
+    </script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 

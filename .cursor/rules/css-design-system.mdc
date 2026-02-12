@@ -1,0 +1,39 @@
+---
+description: CSS design token system -- always use variables, never hardcode values
+globs: "**/*.css"
+alwaysApply: false
+---
+
+# CSS Design System
+
+All design tokens are defined in `BudgetApp.Shared/wwwroot/app.css`. Never hardcode colours, spacing, radii, or font sizes.
+
+## Variable Reference
+
+### Colours (theme-aware -- light mode works automatically)
+- Backgrounds: `--bg-primary`, `--bg-secondary`, `--bg-card`, `--bg-card-hover`, `--bg-card-active`, `--bg-input`, `--bg-input-focus`
+- Text: `--text-primary`, `--text-secondary`, `--text-muted`
+- Borders: `--border-color`, `--border-color-focus`
+- Gradients: `--gradient-bg`, `--gradient-accent`
+- Shadows: `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-accent`
+- Semantic: `--success`, `--danger`, `--warning`, `--income`, `--expense`
+
+### Spacing
+`--space-xs` (0.25rem), `--space-sm` (0.5rem), `--space-md` (1rem), `--space-lg` (1.5rem), `--space-xl` (2rem), `--space-2xl` (3rem)
+
+### Border Radius
+`--radius-sm` (8px), `--radius-md` (12px), `--radius-lg` (16px), `--radius-xl` (20px), `--radius-full` (50px)
+
+### Typography
+`--font-xs` (0.75rem), `--font-sm` (0.875rem), `--font-md` (1rem), `--font-lg` (1.25rem), `--font-xl` (1.5rem), `--font-2xl` (2rem)
+
+### Transitions
+`--transition-fast` (0.15s ease), `--transition-normal` (0.3s ease)
+
+## Rules
+
+1. **Never hardcode hex colours or rgba values** -- use `var(--bg-card)`, `var(--text-primary)`, etc.
+2. **Prefer `rem` for spacing** -- avoid `px` except for 1px borders
+3. **Use radius tokens** -- `var(--radius-md)` not `12px`
+4. **Component CSS isolation** -- styles for shared components live in their own `.razor.css`; page-specific styles live in `Pages/*.razor.css`
+5. **No inline colour overrides** in `.razor.css` that break light theme

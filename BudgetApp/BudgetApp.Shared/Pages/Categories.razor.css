@@ -17,7 +17,7 @@
 }
 
 .section-header-group.savings {
-    border-left: 4px solid #3B82F6;
+    border-left: 4px solid var(--savings-accent);
 }
 
 /* Category List */
@@ -227,7 +227,7 @@
 }
 
 .type-btn.selected {
-    background: rgba(99, 102, 241, 0.15);
+    background: var(--accent-bg-hover);
     border-color: var(--border-color-focus);
 }
 
@@ -401,8 +401,8 @@
 .delete-category-btn {
     flex: 1;
     padding: var(--space-sm);
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
     border-radius: var(--radius-md);
     color: var(--expense);
     font-size: var(--font-md);
@@ -412,7 +412,7 @@
 }
 
 .delete-category-btn:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: var(--danger-bg-hover);
 }
 
 .save-category-btn {
@@ -421,7 +421,7 @@
     background: var(--gradient-accent);
     border: none;
     border-radius: var(--radius-md);
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;

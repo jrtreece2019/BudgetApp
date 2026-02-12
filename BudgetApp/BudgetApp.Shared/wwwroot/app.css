@@ -48,6 +48,49 @@
     --income: #10b981;
     --expense: #f87171;
 
+    /* ── Tinted backgrounds ── */
+    /* Green tints (income / success) */
+    --income-bg: rgba(16, 185, 129, 0.1);
+    --income-bg-hover: rgba(16, 185, 129, 0.15);
+    --income-bg-strong: rgba(16, 185, 129, 0.2);
+
+    /* Red tints (expense / danger) */
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    --danger-bg-hover: rgba(239, 68, 68, 0.2);
+    --danger-bg-strong: rgba(239, 68, 68, 0.3);
+    --danger-border: rgba(239, 68, 68, 0.3);
+
+    /* Indigo tints (accent) */
+    --accent-bg: rgba(99, 102, 241, 0.1);
+    --accent-bg-hover: rgba(99, 102, 241, 0.15);
+    --accent-bg-strong: rgba(99, 102, 241, 0.2);
+    --accent-border: rgba(99, 102, 241, 0.25);
+    --accent-hover: #818cf8;
+
+    /* Blue tints (savings) */
+    --savings-accent: #3B82F6;
+    --savings-bg: rgba(59, 130, 246, 0.08);
+    --savings-bg-hover: rgba(59, 130, 246, 0.12);
+
+    /* Amber tints (warning) */
+    --warning-bg: rgba(251, 191, 36, 0.15);
+    --warning-bg-hover: rgba(251, 191, 36, 0.3);
+
+    /* Neutral tint (paused / muted states) */
+    --muted-bg: rgba(148, 163, 184, 0.2);
+
+    /* ── Text on coloured surfaces ── */
+    --text-on-accent: #ffffff;
+    --text-on-accent-secondary: rgba(255, 255, 255, 0.75);
+    --text-on-accent-muted: rgba(255, 255, 255, 0.5);
+
+    /* ── Glass effect (translucent overlay on coloured cards) ── */
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-bg-hover: rgba(255, 255, 255, 0.25);
+
+    /* ── Input colour scheme (for native date pickers etc.) ── */
+    --color-scheme: dark;
+
     /* ── Spacing scale ── */
     --space-xs: 0.25rem;   /*  4px */
     --space-sm: 0.5rem;    /*  8px */
@@ -83,36 +126,80 @@
 /* ── Light Theme ───────────────────────────── */
 
 .theme-light {
-    --bg-primary: #f8fafc;
-    --bg-secondary: #ffffff;
-    --bg-card: rgba(0, 0, 0, 0.03);
-    --bg-card-hover: rgba(0, 0, 0, 0.06);
-    --bg-card-active: rgba(0, 0, 0, 0.09);
-    --bg-input: rgba(0, 0, 0, 0.03);
-    --bg-input-focus: rgba(0, 0, 0, 0.05);
+    /* Backgrounds – warm linen / off-white instead of stark white */
+    --bg-primary: #f5f0eb;
+    --bg-secondary: #faf7f4;
+    --bg-card: rgba(0, 0, 0, 0.04);
+    --bg-card-hover: rgba(0, 0, 0, 0.07);
+    --bg-card-active: rgba(0, 0, 0, 0.10);
+    --bg-input: rgba(0, 0, 0, 0.04);
+    --bg-input-focus: rgba(0, 0, 0, 0.06);
 
-    --text-primary: #0f172a;
+    /* Text – warm dark slate instead of pure black */
+    --text-primary: #1e293b;
     --text-secondary: #475569;
     --text-muted: #94a3b8;
 
+    /* Borders */
     --border-color: rgba(0, 0, 0, 0.1);
     --border-color-focus: #6366f1;
 
-    --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    /* Gradients – warm tones */
+    --gradient-bg: linear-gradient(135deg, #f5f0eb 0%, #ece5dd 100%);
     --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
-    --shadow-accent: 0 8px 30px rgba(99, 102, 241, 0.3);
+    /* Shadows – slightly warm tint */
+    --shadow-sm: 0 2px 8px rgba(120, 100, 80, 0.08);
+    --shadow-md: 0 4px 16px rgba(120, 100, 80, 0.10);
+    --shadow-lg: 0 8px 30px rgba(120, 100, 80, 0.12);
+    --shadow-accent: 0 8px 30px rgba(99, 102, 241, 0.25);
 
-    --overlay-bg: rgba(0, 0, 0, 0.4);
+    /* Overlays */
+    --overlay-bg: rgba(0, 0, 0, 0.35);
 
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
+    /* Semantic colours – slightly deeper for legibility on warm bg */
+    --success: #059669;
+    --danger: #dc2626;
+    --warning: #d97706;
     --income: #059669;
     --expense: #dc2626;
+
+    /* ── Tinted backgrounds ── */
+    --income-bg: rgba(5, 150, 105, 0.08);
+    --income-bg-hover: rgba(5, 150, 105, 0.12);
+    --income-bg-strong: rgba(5, 150, 105, 0.18);
+
+    --danger-bg: rgba(185, 28, 28, 0.07);
+    --danger-bg-hover: rgba(185, 28, 28, 0.12);
+    --danger-bg-strong: rgba(185, 28, 28, 0.18);
+    --danger-border: rgba(185, 28, 28, 0.2);
+
+    --accent-bg: rgba(79, 70, 229, 0.07);
+    --accent-bg-hover: rgba(79, 70, 229, 0.12);
+    --accent-bg-strong: rgba(79, 70, 229, 0.15);
+    --accent-border: rgba(79, 70, 229, 0.2);
+    --accent-hover: #4f46e5;
+
+    --savings-accent: #2563eb;
+    --savings-bg: rgba(37, 99, 235, 0.06);
+    --savings-bg-hover: rgba(37, 99, 235, 0.1);
+
+    --warning-bg: rgba(180, 83, 9, 0.1);
+    --warning-bg-hover: rgba(180, 83, 9, 0.18);
+
+    --muted-bg: rgba(100, 116, 139, 0.12);
+
+    /* Text on coloured surfaces – same as dark */
+    --text-on-accent: #ffffff;
+    --text-on-accent-secondary: rgba(255, 255, 255, 0.8);
+    --text-on-accent-muted: rgba(255, 255, 255, 0.55);
+
+    /* Glass – slightly stronger on light backgrounds for visibility */
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-bg-hover: rgba(255, 255, 255, 0.55);
+
+    /* Input colour scheme */
+    --color-scheme: light;
 }
 
 /* =============================================
@@ -131,7 +218,7 @@ a, .btn-link {
 }
 
 .btn-primary {
-    color: #fff;
+    color: var(--text-on-accent);
     background: var(--gradient-accent);
     border: none;
 }

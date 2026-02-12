@@ -60,17 +60,17 @@
 }
 
 .status-badge.active {
-    background: rgba(16, 185, 129, 0.15);
+    background: var(--income-bg-hover);
     color: var(--success);
 }
 
 .status-badge.paused {
-    background: rgba(251, 191, 36, 0.15);
+    background: var(--warning-bg);
     color: var(--warning);
 }
 
 .status-badge.completed {
-    background: rgba(99, 102, 241, 0.15);
+    background: var(--accent-bg-hover);
     color: var(--border-color-focus);
 }
 
@@ -201,7 +201,7 @@
 
 .action-btn.contribute {
     background: linear-gradient(135deg, var(--success), #059669);
-    color: #fff;
+    color: var(--text-on-accent);
     border: none;
 }
 
@@ -257,7 +257,7 @@
     width: 36px;
     height: 36px;
     border-radius: var(--radius-md);
-    background: rgba(16, 185, 129, 0.15);
+    background: var(--income-bg-hover);
     color: var(--success);
     display: flex;
     align-items: center;
@@ -267,7 +267,7 @@
 }
 
 .transaction-item.withdrawal .tx-icon {
-    background: rgba(239, 68, 68, 0.15);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 
@@ -434,14 +434,14 @@
     background: linear-gradient(135deg, var(--success), #059669);
     border: none;
     border-radius: var(--radius-md);
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
 }
 
 .confirm-btn.withdraw {
-    background: linear-gradient(135deg, var(--danger), #DC2626);
+    background: linear-gradient(135deg, var(--danger), #dc2626);
 }
 
 .confirm-btn:disabled {

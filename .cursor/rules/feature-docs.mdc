@@ -1,0 +1,19 @@
+---
+description: Prompt to update feature documentation when pages, services, or components change
+globs: "**/Pages/**,**/Services/**,**/Components/**"
+alwaysApply: false
+---
+
+# Feature Documentation Updates
+
+When you have implemented a new feature or materially changed an existing feature (examples: new page, new service method, new shared component, changed page behavior, new model), **ask the user**:
+
+> "Would you like me to update the feature documentation in `docs/FEATURES.md`?"
+
+If the user says yes:
+1. Open `docs/FEATURES.md`
+2. Add or update the relevant section to reflect the change
+3. Keep the same style and level of detail as existing entries
+4. Include: what the feature does, which files are involved, and any notable behavior
+
+Do NOT update the doc silently -- always ask first.

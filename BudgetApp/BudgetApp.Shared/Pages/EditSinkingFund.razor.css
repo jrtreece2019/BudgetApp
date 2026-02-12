@@ -161,7 +161,7 @@
 .calc-helper {
     margin-top: var(--space-sm);
     padding: var(--space-md) var(--font-sm);
-    background: rgba(99, 102, 241, 0.1);
+    background: var(--accent-bg);
     border-radius: var(--radius-sm);
     font-size: 13px;
     color: var(--text-secondary);
@@ -180,7 +180,7 @@
 
 .apply-btn {
     background: var(--border-color-focus);
-    color: #fff;
+    color: var(--text-on-accent);
     border: none;
     padding: var(--space-xs) var(--font-sm);
     border-radius: var(--radius-sm);
@@ -226,19 +226,19 @@
 .status-btn.selected.active {
     border-color: var(--success);
     color: var(--success);
-    background: rgba(16, 185, 129, 0.1);
+    background: var(--income-bg);
 }
 
 .status-btn.selected.paused {
     border-color: var(--warning);
     color: var(--warning);
-    background: rgba(251, 191, 36, 0.1);
+    background: var(--warning-bg);
 }
 
 .status-btn.selected.completed {
     border-color: var(--border-color-focus);
     color: var(--border-color-focus);
-    background: rgba(99, 102, 241, 0.1);
+    background: var(--accent-bg);
 }
 
 .status-icon {
@@ -276,7 +276,7 @@
     background: var(--gradient-accent);
     border: none;
     border-radius: var(--radius-md);
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
@@ -296,7 +296,7 @@
     width: 100%;
     padding: var(--font-sm);
     background: transparent;
-    border: 1px solid rgba(239, 68, 68, 0.5);
+    border: 1px solid var(--danger-border);
     border-radius: var(--radius-md);
     color: var(--danger);
     font-size: var(--font-sm);
@@ -306,7 +306,7 @@
 }
 
 .delete-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: var(--danger-bg);
 }
 
 /* Auto-contribute Toggle */

@@ -8,7 +8,7 @@
 
 /* Delete Button (in PageHeader Actions slot) */
 .delete-btn {
-    background: rgba(239, 68, 68, 0.1);
+    background: var(--danger-bg);
     border: none;
     color: var(--expense);
     font-size: 1.1rem;
@@ -23,7 +23,7 @@
 }
 
 .delete-btn:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: var(--danger-bg-hover);
 }
 
 /* Type Toggle */
@@ -50,7 +50,7 @@
 
 .type-btn.active {
     background: var(--expense);
-    color: white;
+    color: var(--text-on-accent);
     box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
 }
 
@@ -179,7 +179,7 @@ select.field-input option {
 }
 
 .category-chip.selected {
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .chip-icon {
@@ -218,9 +218,9 @@ select.field-input option {
 }
 
 .freq-btn.active {
-    background: rgba(99, 102, 241, 0.2);
+    background: var(--accent-bg-strong);
     border-color: var(--border-color-focus);
-    color: #818cf8;
+    color: var(--accent-hover);
 }
 
 /* Toggle Field */
@@ -289,7 +289,7 @@ select.field-input option {
     background: var(--gradient-accent);
     border: none;
     border-radius: var(--radius-lg);
-    color: white;
+    color: var(--text-on-accent);
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
@@ -313,5 +313,5 @@ select.field-input option {
 }
 
 input[type="date"] {
-    color-scheme: dark;
+    color-scheme: var(--color-scheme);
 }

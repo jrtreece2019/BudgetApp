@@ -96,13 +96,13 @@
 }
 
 .overview-card.expense {
-    background: linear-gradient(135deg, rgba(248, 113, 113, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
-    border: 1px solid rgba(248, 113, 113, 0.2);
+    background: linear-gradient(135deg, var(--danger-bg-hover) 0%, var(--danger-bg) 100%);
+    border: 1px solid var(--danger-bg-hover);
 }
 
 .overview-card.income {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%);
-    border: 1px solid rgba(74, 222, 128, 0.2);
+    background: linear-gradient(135deg, var(--income-bg-strong) 0%, var(--income-bg) 100%);
+    border: 1px solid var(--income-bg-strong);
 }
 
 .card-label {
@@ -138,13 +138,13 @@
 }
 
 .net-card.positive {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
-    border: 1px solid rgba(74, 222, 128, 0.2);
+    background: linear-gradient(135deg, var(--income-bg-hover) 0%, var(--income-bg) 100%);
+    border: 1px solid var(--income-bg-strong);
 }
 
 .net-card.negative {
-    background: linear-gradient(135deg, rgba(248, 113, 113, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%);
-    border: 1px solid rgba(248, 113, 113, 0.2);
+    background: linear-gradient(135deg, var(--danger-bg-hover) 0%, var(--danger-bg) 100%);
+    border: 1px solid var(--danger-bg-hover);
 }
 
 .net-label {
@@ -264,8 +264,8 @@
 }
 
 .budget-item.over {
-    background: rgba(248, 113, 113, 0.1);
-    border: 1px solid rgba(248, 113, 113, 0.2);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-bg-hover);
 }
 
 .budget-header {

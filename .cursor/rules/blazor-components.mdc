@@ -1,0 +1,62 @@
+---
+description: Blazor component patterns, reusable components, and code-behind conventions
+globs: "**/*.razor,**/*.razor.cs"
+alwaysApply: false
+---
+
+# Blazor Component Conventions
+
+## Reusable Components (check before duplicating)
+
+Before writing inline markup, check `BudgetApp.Shared/Components/` for an existing component:
+
+| Component | Use for |
+|-----------|---------|
+| `PageHeader` | Back button + title + optional right-side actions |
+| `MonthNavigator` | Month prev/next arrows with label |
+| `FloatingActionButton` | FAB pinned to bottom-right |
+| `EmptyState` | Icon + message when a list is empty |
+| `ExpandableSection` | Collapsible section with icon, title, summary, count |
+| `TransactionListItem` | Transaction row: icon, description, date, amount |
+| `ModalBase` | Modal overlay with header, body, footer slots |
+| `IconPicker` | Grid of emoji icons with selection |
+| `ColorPicker` | Grid of color swatches with selection |
+
+## Component API Conventions
+
+- Data in: `[Parameter]` properties
+- Events out: `EventCallback` or `EventCallback<T>`
+- Content slots: `RenderFragment` or `RenderFragment<T>`
+- Two-way binding: `@bind-PropertyName` with matching `PropertyNameChanged` callback
+
+## Code-Behind Pattern
+
+Every page uses a code-behind partial class:
+
+- `.razor` file -- `@page` directive and markup only (no `@code` block, no `@inject`)
+- `.razor.cs` file -- `partial class PageName : ComponentBase` with:
+  - `[Inject]` attributes for services
+  - All properties, fields, and methods
+  - `[Parameter]` route parameters
+
+```csharp
+// Example: Pages/MyPage.razor.cs
+public partial class MyPage : ComponentBase
+{
+    [Inject] private ICategoryService CategoryService { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    [Parameter] public int Id { get; set; }
+
+    private List<Category> Categories { get; set; } = new();
+
+    protected override void OnInitialized() { /* ... */ }
+}
+```
+
+## New Pages Checklist
+
+1. Create `PageName.razor` (markup), `PageName.razor.cs` (logic), `PageName.razor.css` (styles)
+2. Use shared components for header, month nav, FAB, empty states, modals
+3. Inject only the specific service interfaces the page needs
+4. Use CSS variables from `app.css` in the stylesheet

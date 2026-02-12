@@ -1,0 +1,53 @@
+---
+description: Core architecture conventions for the BudgetApp Blazor Hybrid project
+alwaysApply: true
+---
+
+# BudgetApp Architecture
+
+## Project Structure
+
+This is a .NET 10 Blazor Hybrid app with three projects:
+
+- `BudgetApp.Shared` -- shared Razor pages, components, services, and models (the bulk of the code)
+- `BudgetApp.Web` -- ASP.NET Core host for the web version
+- `BudgetApp` -- .NET MAUI host for mobile/desktop
+
+All UI and business logic lives in `BudgetApp.Shared`. The Web and MAUI projects are thin hosts that register DI services and provide platform-specific `IFormFactor` implementations.
+
+## Folder Layout (BudgetApp.Shared)
+
+```
+Components/   -- reusable Blazor components (PageHeader, ModalBase, etc.)
+Helpers/      -- static utility classes (DateHelpers, RecurrenceCalculator)
+Layout/       -- MainLayout, HamburgerMenu
+Models/       -- SQLite entity models (Category, Transaction, Budget, etc.)
+Pages/        -- page components (.razor markup + .razor.cs code-behind + .razor.css)
+Services/
+  Interfaces/ -- one interface per domain concern
+  Sqlite*.cs  -- service implementations
+  DatabaseService.cs -- pure data-access layer
+wwwroot/      -- app.css (design tokens), bootstrap, theme.js
+```
+
+## Service Layer Rules
+
+- **Split interfaces** -- never create a monolithic service. Each domain has its own interface:
+  `ICategoryService`, `ITransactionService`, `IBudgetService`,
+  `IRecurringTransactionService`, `ISettingsService`, `ISinkingFundService`
+- **IDatabaseService** is the pure data-access layer (CRUD only, no business logic)
+- **Business logic lives in Sqlite*Service classes**, not in DatabaseService
+- Pages inject only the interfaces they actually need
+
+## Dependency Injection
+
+When adding a new service:
+1. Create an interface in `Services/Interfaces/`
+2. Create an implementation in `Services/`
+3. Register it in **both** `BudgetApp.Web/Program.cs` and `BudgetApp/MauiProgram.cs`
+4. All services are registered as Singletons via `IDatabaseService`
+
+## Shared Helpers
+
+- `DateHelpers.FormatDate()` and `DateHelpers.GetOrdinal()` -- use these instead of writing local date helpers
+- `RecurrenceCalculator.CalculateNextDueDate()` -- centralised recurring-transaction math
