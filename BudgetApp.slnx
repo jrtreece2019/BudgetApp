@@ -1,8 +1,8 @@
 <Solution>
-  <Folder Name="/BudgetApp/">
-    <Project Path="BudgetApp/BudgetApp.Api/BudgetApp.Api.csproj" />
-  </Folder>
+  <Project Path="BudgetApp/BudgetApp.Api/BudgetApp.Api.csproj" />
   <Project Path="BudgetApp/BudgetApp.Shared/BudgetApp.Shared.csproj" />
   <Project Path="BudgetApp/BudgetApp.Web/BudgetApp.Web.csproj" />
-  <Project Path="BudgetApp/BudgetApp/BudgetApp.csproj" />
+  <Project Path="BudgetApp/BudgetApp/BudgetApp.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

@@ -89,18 +89,41 @@ public partial class CategoryDetail : ComponentBase
 
     private void AddTransaction()
     {
-        Navigation.NavigateTo("/add");
+        var returnUrl = $"/category/{CategoryId}/{CurrentDate.Month}/{CurrentDate.Year}";
+        Navigation.NavigateTo($"/add?categoryId={CategoryId}&returnUrl={Uri.EscapeDataString(returnUrl)}");
     }
 
-    private void DeleteTransaction(int transactionId)
+    // Confirm delete state
+    private bool ShowDeleteConfirm { get; set; }
+    private int? PendingDeleteTransactionId { get; set; }
+
+    private void ConfirmDeleteTransaction(int transactionId)
     {
-        TransactionService.DeleteTransaction(transactionId);
-        LoadData();
+        PendingDeleteTransactionId = transactionId;
+        ShowDeleteConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+        PendingDeleteTransactionId = null;
+    }
+
+    private void DeleteTransaction()
+    {
+        if (PendingDeleteTransactionId.HasValue)
+        {
+            TransactionService.DeleteTransaction(PendingDeleteTransactionId.Value);
+            LoadData();
+        }
+        ShowDeleteConfirm = false;
+        PendingDeleteTransactionId = null;
     }
 
     private void EditTransaction(int transactionId)
     {
-        Navigation.NavigateTo($"/edit/{transactionId}");
+        var returnUrl = $"/category/{CategoryId}/{CurrentDate.Month}/{CurrentDate.Year}";
+        Navigation.NavigateTo($"/edit/{transactionId}?returnUrl={Uri.EscapeDataString(returnUrl)}");
     }
 
     private void StartEditingBudget()

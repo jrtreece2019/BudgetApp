@@ -19,6 +19,7 @@ public interface IDatabaseService
 
     // Transactions
     List<Transaction> GetTransactions(int month, int year);
+    List<Transaction> SearchTransactions(string query, int? categoryId = null, int maxResults = 100);
     void AddTransaction(Transaction transaction);
     void UpdateTransaction(Transaction transaction);
     void DeleteTransaction(int transactionId);
@@ -54,4 +55,14 @@ public interface IDatabaseService
     void AddSinkingFundTransaction(SinkingFundTransaction transaction);
     void DeleteSinkingFundTransaction(int transactionId);
     decimal GetTotalSinkingFundContributions(int month, int year);
+
+    // Sync — used by ISyncService to exchange data with the server.
+    // GetChangesSince includes soft-deleted records so deletions propagate.
+    // ApplyServerChanges uses SyncId matching with last-write-wins resolution.
+    SyncPayload GetChangesSince(DateTime since);
+    void ApplyServerChanges(SyncPayload changes);
+
+    // Persisted sync timestamp — survives app restarts.
+    DateTime GetLastSyncedAt();
+    void SetLastSyncedAt(DateTime value);
 }

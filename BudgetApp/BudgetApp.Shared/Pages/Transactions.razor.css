@@ -198,6 +198,70 @@
     background: var(--accent-border);
 }
 
+/* ── Search All Months Toggle ─────────────────────────────── */
+
+.search-all-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    cursor: pointer;
+}
+
+.search-all-toggle .toggle-label {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.mini-toggle {
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 0.625rem;
+    background: var(--border-color);
+    position: relative;
+    transition: background 0.2s ease;
+}
+
+.mini-toggle.on {
+    background: #6366f1;
+}
+
+.mini-toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.mini-toggle.on .mini-toggle-knob {
+    transform: translateX(1rem);
+}
+
+/* Export button */
+.export-btn {
+    background: var(--bg-card);
+    border: none;
+    font-size: 1.1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast);
+}
+
+.export-btn:hover {
+    background: var(--bg-card-hover);
+}
+
 .bottom-spacer {
     height: 100px;
 }

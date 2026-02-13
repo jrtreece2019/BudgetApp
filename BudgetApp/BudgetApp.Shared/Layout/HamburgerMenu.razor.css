@@ -155,41 +155,25 @@
     margin: 0.5rem 0;
 }
 
-/* Theme Toggle Switch */
-.theme-toggle {
-    margin-top: auto;
+/* Disabled / greyed-out menu item (e.g. premium-only features) */
+.menu-item.disabled {
+    opacity: 0.5;
+    color: var(--text-muted);
 }
 
-.toggle-switch {
-    width: 48px;
-    height: 26px;
-    border-radius: 13px;
-    padding: 3px;
-    transition: all 0.3s ease;
-    position: relative;
+.menu-item.disabled:hover {
+    opacity: 0.65;
 }
 
-.toggle-switch.dark {
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+.premium-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    background: var(--gradient-accent);
+    color: white;
+    line-height: 1.4;
 }
 
-.toggle-switch.light {
-    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-}
-
-.toggle-knob {
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-switch.dark .toggle-knob {
-    transform: translateX(22px);
-}
-
-.toggle-switch.light .toggle-knob {
-    transform: translateX(0);
-}

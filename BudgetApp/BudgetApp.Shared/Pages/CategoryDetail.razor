@@ -79,7 +79,7 @@
                                              IsIncome="isIncome"
                                              OnClick="() => EditTransaction(txnId)">
                             <Actions>
-                                <button class="delete-btn" @onclick="() => DeleteTransaction(txnId)" @onclick:stopPropagation="true">✕</button>
+                                <button class="delete-btn" @onclick="() => ConfirmDeleteTransaction(txnId)" @onclick:stopPropagation="true">✕</button>
                             </Actions>
                         </TransactionListItem>
                     }
@@ -95,4 +95,12 @@
     <div class="bottom-spacer"></div>
 
     <FloatingActionButton Label="@("Add " + Category?.Name)" OnClick="AddTransaction" />
+
+    <ConfirmDialog IsVisible="ShowDeleteConfirm"
+                   Title="Delete Transaction"
+                   Message="Are you sure you want to delete this transaction? This cannot be undone."
+                   ConfirmText="Delete"
+                   IsDanger="true"
+                   OnConfirm="DeleteTransaction"
+                   OnCancel="CancelDelete" />
 </div>

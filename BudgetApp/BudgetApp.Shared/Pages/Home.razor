@@ -2,6 +2,11 @@
 
 <PageTitle>Budget</PageTitle>
 
+@if (_redirectToOnboarding)
+{
+    return;
+}
+
 <div class="budget-app">
     <!-- Month Navigation -->
     <MonthNavigator CurrentDate="CurrentDate" OnPreviousMonth="PreviousMonth" OnNextMonth="NextMonth" />
@@ -92,6 +97,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Tip: no categories set up yet -->
+    @if (Categories.Count == 0)
+    {
+        <div class="tip-banner">
+            <span class="tip-banner-icon">🏷️</span>
+            <div class="tip-banner-text">
+                <strong>No categories yet</strong>
+                <span>Set up spending categories to start tracking your budget.</span>
+            </div>
+            <a class="tip-banner-link" href="/categories">Set Up</a>
+        </div>
+    }
 
     <!-- Fixed Expenses -->
     <ExpandableSection Icon="📌" Title="Fixed Expenses" 

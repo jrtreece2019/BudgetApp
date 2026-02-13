@@ -329,3 +329,108 @@
 }
 
 /* Empty State removed - in EmptyState.razor.css */
+
+/* ── Category Deep-Dive ────────────────────────────────────── */
+
+.deep-dive-picker {
+    margin-bottom: var(--space-md);
+}
+
+.deep-dive-select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.deep-dive-select:focus {
+    outline: none;
+    border-color: var(--border-color-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.deep-dive-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-md);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-md);
+}
+
+.deep-dive-avg-label {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.deep-dive-avg-value {
+    font-size: var(--font-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: var(--space-xs) 0;
+}
+
+.deep-dive-count {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+}
+
+.deep-dive-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.deep-dive-row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.deep-dive-month {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 70px;
+    flex-shrink: 0;
+}
+
+.deep-dive-bar-container {
+    flex: 1;
+    height: var(--space-sm);
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.deep-dive-bar {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    transition: width 0.5s ease;
+}
+
+.deep-dive-amount {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 60px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* Bottom spacer */
+.bottom-spacer {
+    height: 2rem;
+}

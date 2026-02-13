@@ -25,6 +25,38 @@ builder.Services.AddSingleton<IRecurringTransactionService, SqliteRecurringTrans
 builder.Services.AddSingleton<ISettingsService, SqliteSettingsService>();
 builder.Services.AddSingleton<ISinkingFundService, SqliteSinkingFundService>();
 builder.Services.AddSingleton<ThemeService>();
+builder.Services.AddSingleton<IExportService, ExportService>();
+
+// Backend API client — used by IAuthService (and future ISyncService) to call BudgetApp.Api.
+// The base URL should match where the API is running (check BudgetApp.Api/Properties/launchSettings.json).
+builder.Services.AddHttpClient("BudgetApi", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7012/");
+});
+builder.Services.AddSingleton<IAuthService>(sp =>
+{
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return new ApiAuthService(factory.CreateClient("BudgetApi"));
+});
+builder.Services.AddSingleton<ISyncService>(sp =>
+{
+    var db = sp.GetRequiredService<IDatabaseService>();
+    var auth = sp.GetRequiredService<IAuthService>();
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return new BudgetApp.Shared.Services.SyncService(db, auth, factory.CreateClient("BudgetApi"));
+});
+builder.Services.AddSingleton<IBankConnectionService>(sp =>
+{
+    var auth = sp.GetRequiredService<IAuthService>();
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return new ApiBankConnectionService(factory.CreateClient("BudgetApi"), auth);
+});
+builder.Services.AddSingleton<ISubscriptionService>(sp =>
+{
+    var auth = sp.GetRequiredService<IAuthService>();
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return new ApiSubscriptionService(factory.CreateClient("BudgetApi"), auth);
+});
 
 var app = builder.Build();
 

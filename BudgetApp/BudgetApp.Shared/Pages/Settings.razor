@@ -1,0 +1,218 @@
+@page "/settings"
+
+<PageTitle>Settings</PageTitle>
+
+<div class="settings-page">
+    <PageHeader Title="Settings" OnBack="GoBack" />
+
+    <!-- Account Section -->
+    <div class="settings-section">
+        <h2 class="section-title">Account</h2>
+        <div class="settings-group">
+            @if (AuthService.IsAuthenticated)
+            {
+                <div class="settings-item">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">📧</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Email</span>
+                            <span class="settings-value">@AuthService.UserEmail</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-item clickable" @onclick="ToggleChangePassword">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🔒</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Change Password</span>
+                            <span class="settings-value">Update your password</span>
+                        </div>
+                    </div>
+                    <span class="settings-chevron">@(ShowChangePassword ? "▾" : "›")</span>
+                </div>
+
+                @if (ShowChangePassword)
+                {
+                    <div class="password-form">
+                        @if (!string.IsNullOrEmpty(PasswordMessage))
+                        {
+                            <div class="message-banner @(PasswordSuccess ? "success" : "error")">
+                                @PasswordMessage
+                            </div>
+                        }
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password"
+                                   class="form-input"
+                                   placeholder="At least 8 characters"
+                                   @bind="NewPassword"
+                                   @bind:event="oninput" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password"
+                                   class="form-input"
+                                   placeholder="Re-enter your password"
+                                   @bind="ConfirmPassword"
+                                   @bind:event="oninput" />
+                        </div>
+                        <button class="action-btn primary" @onclick="ChangePassword"
+                                disabled="@(!IsPasswordValid || IsChangingPassword)">
+                            @if (IsChangingPassword)
+                            {
+                                <span class="spinner"></span>
+                                <span>Updating...</span>
+                            }
+                            else
+                            {
+                                <span>Update Password</span>
+                            }
+                        </button>
+                    </div>
+                }
+
+                <div class="settings-item clickable danger" @onclick="HandleLogout">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🚪</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Sign Out</span>
+                            <span class="settings-value">You'll need to sign in again to sync</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="settings-item clickable" @onclick="GoToLogin">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🔑</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Sign In</span>
+                            <span class="settings-value">Sign in to sync your data across devices</span>
+                        </div>
+                    </div>
+                    <span class="settings-chevron">›</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Sync Section (only when authenticated) -->
+    @if (AuthService.IsAuthenticated)
+    {
+        <div class="settings-section">
+            <h2 class="section-title">Sync</h2>
+            <div class="settings-group">
+                <div class="settings-item">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">☁️</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Last Synced</span>
+                            <span class="settings-value">@FormatLastSynced()</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-item clickable" @onclick="ManualSync">
+                    <div class="settings-item-left">
+                        <span class="settings-icon @(SyncService.IsSyncing ? "spinning" : "")">🔄</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Sync Now</span>
+                            <span class="settings-value">@(SyncService.IsSyncing ? "Syncing..." : "Push and pull latest changes")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Subscription Section -->
+    <div class="settings-section">
+        <h2 class="section-title">Subscription</h2>
+        <div class="settings-group">
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <span class="settings-icon">@(SubscriptionService.IsPremium ? "⭐" : "🆓")</span>
+                    <div class="settings-text">
+                        <span class="settings-label">Plan</span>
+                        <span class="settings-value">@(SubscriptionService.IsPremium ? "Premium" : "Free")</span>
+                    </div>
+                </div>
+            </div>
+
+            @if (!SubscriptionService.IsPremium)
+            {
+                <div class="settings-item clickable" @onclick="GoToUpgrade">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">✨</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Upgrade to Premium</span>
+                            <span class="settings-value">Unlock automatic bank imports</span>
+                        </div>
+                    </div>
+                    <span class="settings-chevron">›</span>
+                </div>
+            }
+            else
+            {
+                <div class="settings-item clickable" @onclick="GoToConnectBank">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🏦</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Connected Banks</span>
+                            <span class="settings-value">Manage bank connections</span>
+                        </div>
+                    </div>
+                    <span class="settings-chevron">›</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Appearance Section -->
+    <div class="settings-section">
+        <h2 class="section-title">Appearance</h2>
+        <div class="settings-group">
+            <div class="settings-item clickable" @onclick="ToggleTheme">
+                <div class="settings-item-left">
+                    <span class="settings-icon">@(ThemeService.IsDarkMode ? "🌙" : "☀️")</span>
+                    <div class="settings-text">
+                        <span class="settings-label">Theme</span>
+                        <span class="settings-value">@(ThemeService.IsDarkMode ? "Dark Mode" : "Light Mode")</span>
+                    </div>
+                </div>
+                <div class="toggle-switch @(ThemeService.IsDarkMode ? "dark" : "light")">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="settings-section">
+        <h2 class="section-title">About</h2>
+        <div class="settings-group">
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <span class="settings-icon">📱</span>
+                    <div class="settings-text">
+                        <span class="settings-label">Version</span>
+                        <span class="settings-value">1.0.0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <span class="settings-icon">💰</span>
+                    <div class="settings-text">
+                        <span class="settings-label">Budget App</span>
+                        <span class="settings-value">Take control of your finances</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-spacer"></div>
+</div>

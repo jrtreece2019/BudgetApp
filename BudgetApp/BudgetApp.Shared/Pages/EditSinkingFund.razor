@@ -134,8 +134,16 @@
             
             @if (!IsNew)
             {
-                <button class="delete-btn" @onclick="Delete">Delete Fund</button>
+                <button class="delete-btn" @onclick="ConfirmDelete">Delete Fund</button>
             }
         </div>
     </div>
+
+    <ConfirmDialog IsVisible="ShowDeleteConfirm"
+                   Title="Delete Sinking Fund"
+                   Message="Are you sure you want to delete this sinking fund and all its transactions? This cannot be undone."
+                   ConfirmText="Delete"
+                   IsDanger="true"
+                   OnConfirm="Delete"
+                   OnCancel="CancelDelete" />
 </div>

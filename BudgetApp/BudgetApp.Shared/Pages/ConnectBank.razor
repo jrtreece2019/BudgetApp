@@ -1,0 +1,138 @@
+@page "/connect-bank"
+
+<PageTitle>Connect Bank</PageTitle>
+
+<div class="connect-page">
+    <PageHeader Title="Bank Connections" OnBack="GoBack" />
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-banner">
+            <span class="error-icon">!</span>
+            <span>@ErrorMessage</span>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="success-banner">
+            <span>@SuccessMessage</span>
+        </div>
+    }
+
+    @* ── Connected Banks Section ──────────────────────────────── *@
+    <div class="section">
+        <h2 class="section-title">Connected Banks</h2>
+
+        @if (IsLoading)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <span>Loading bank connections...</span>
+            </div>
+        }
+        else if (ConnectedBanks.Count == 0)
+        {
+            <div class="empty-state">
+                <span class="empty-icon">🏦</span>
+                <p class="empty-text">No banks connected yet</p>
+                <p class="empty-hint">Connect your bank to automatically import transactions</p>
+            </div>
+        }
+        else
+        {
+            <div class="bank-list">
+                @foreach (var bank in ConnectedBanks)
+                {
+                    <div class="bank-card @(!bank.IsActive ? "bank-error" : "")">
+                        <div class="bank-header">
+                            <div class="bank-info">
+                                <span class="bank-icon">🏦</span>
+                                <div class="bank-details">
+                                    <span class="bank-name">@bank.InstitutionName</span>
+                                    <span class="bank-status @(bank.IsActive ? "status-active" : "status-error")">
+                                        @(bank.IsActive ? "Connected" : bank.ErrorCode ?? "Disconnected")
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="disconnect-btn" @onclick="() => DisconnectBank(bank)"
+                                    disabled="@IsProcessing">
+                                Disconnect
+                            </button>
+                        </div>
+
+                        @if (bank.Accounts.Count > 0)
+                        {
+                            <div class="account-list">
+                                @foreach (var account in bank.Accounts)
+                                {
+                                    <div class="account-item">
+                                        <div class="account-info">
+                                            <span class="account-name">@account.Name</span>
+                                            @if (!string.IsNullOrEmpty(account.Mask))
+                                            {
+                                                <span class="account-mask">····@account.Mask</span>
+                                            }
+                                        </div>
+                                        <div class="account-balance">
+                                            @if (account.CurrentBalance.HasValue)
+                                            {
+                                                <span class="balance-amount">@account.CurrentBalance.Value.ToString("C2")</span>
+                                            }
+                                            <span class="account-type">@(account.SubType ?? account.Type)</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @* ── Pending Transactions Section ─────────────────────────── *@
+    @if (UnprocessedTransactions.Count > 0)
+    {
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Pending Import (@UnprocessedTransactions.Count)</h2>
+                <button class="process-btn" @onclick="ProcessAllTransactions" disabled="@IsProcessing">
+                    @if (IsProcessing)
+                    {
+                        <span class="spinner-sm"></span>
+                        <span>Processing...</span>
+                    }
+                    else
+                    {
+                        <span>Import All</span>
+                    }
+                </button>
+            </div>
+
+            <div class="transaction-list">
+                @foreach (var txn in UnprocessedTransactions)
+                {
+                    <div class="transaction-item @(txn.IsPending ? "txn-pending" : "")">
+                        <div class="txn-info">
+                            <span class="txn-name">@(txn.MerchantName ?? txn.Name)</span>
+                            <span class="txn-detail">@txn.AccountName · @txn.Date.ToString("MMM d")</span>
+                            @if (!string.IsNullOrEmpty(txn.PlaidCategory))
+                            {
+                                <span class="txn-category">@txn.PlaidCategory</span>
+                            }
+                        </div>
+                        <div class="txn-amount @(txn.Amount >= 0 ? "amount-expense" : "amount-income")">
+                            @(txn.Amount >= 0 ? "-" : "+")@Math.Abs(txn.Amount).ToString("C2")
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="bottom-spacer"></div>
+
+    @* ── Connect Bank Button ──────────────────────────────────── *@
+    <FloatingActionButton Label="Connect Bank" OnClick="StartBankConnection" />
+</div>

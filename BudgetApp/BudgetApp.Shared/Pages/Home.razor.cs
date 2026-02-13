@@ -73,6 +73,11 @@ public partial class Home : ComponentBase
     private decimal TotalGoal => SinkingFunds.Sum(f => f.GoalAmount);
     private decimal TotalSaved => SinkingFunds.Sum(f => f.CurrentBalance);
 
+    // Flag to defer navigation until after the first render.  Calling
+    // NavigateTo() inside OnInitialized() on Blazor Server throws a
+    // NavigationException because the component hasn't finished rendering yet.
+    private bool _redirectToOnboarding;
+
     protected override void OnInitialized()
     {
         // Check for month/year query parameters (when returning from category detail)
@@ -87,10 +92,30 @@ public partial class Home : ComponentBase
             }
         }
 
+        // First-run detection: redirect to the onboarding wizard if the user
+        // hasn't completed (or skipped) it yet.  Uses an explicit database flag
+        // instead of the old "income == 0" heuristic, so users who skip setup
+        // or genuinely have $0 income aren't stuck in a loop.
+        if (!SettingsService.HasCompletedOnboarding())
+        {
+            // Don't call NavigateTo here -- on Blazor Server it throws a
+            // NavigationException.  Set a flag and redirect in OnAfterRenderAsync.
+            _redirectToOnboarding = true;
+            return;
+        }
+
         // Process any pending recurring transactions
         RecurringTransactionService.ProcessRecurringTransactions();
 
         LoadData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _redirectToOnboarding)
+        {
+            Navigation.NavigateTo("/onboarding");
+        }
     }
 
     private void LoadData()

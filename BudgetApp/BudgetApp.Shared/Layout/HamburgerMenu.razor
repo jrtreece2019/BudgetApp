@@ -1,5 +1,6 @@
 @inject NavigationManager Navigation
-@inject ThemeService ThemeService
+@inject BudgetApp.Shared.Services.Interfaces.IAuthService AuthService
+@inject BudgetApp.Shared.Services.Interfaces.ISubscriptionService SubscriptionService
 
 <div class="menu-container">
     <button class="hamburger-btn" @onclick="ToggleMenu">
@@ -45,14 +46,22 @@
 
                 <div class="menu-divider"></div>
 
-                <!-- Theme Toggle -->
-                <div class="menu-item theme-toggle" @onclick="ToggleTheme">
-                    <span class="menu-item-icon">@(ThemeService.IsDarkMode ? "🌙" : "☀️")</span>
-                    <span class="menu-item-label">@(ThemeService.IsDarkMode ? "Dark Mode" : "Light Mode")</span>
-                    <div class="toggle-switch @(ThemeService.IsDarkMode ? "dark" : "light")">
-                        <div class="toggle-knob"></div>
-                    </div>
-                </div>
+                <a class="menu-item @(SubscriptionService.IsPremium ? "" : "disabled") @(IsActive("/connect-bank") ? "active" : "")"
+                   href="@(SubscriptionService.IsPremium ? "/connect-bank" : "/upgrade")" @onclick="CloseMenu">
+                    <span class="menu-item-icon">🏦</span>
+                    <span class="menu-item-label">Connected Banks</span>
+                    @if (!SubscriptionService.IsPremium)
+                    {
+                        <span class="premium-badge">Premium</span>
+                    }
+                </a>
+
+                <div class="menu-divider"></div>
+
+                <a class="menu-item @(IsActive("/settings") ? "active" : "")" href="/settings" @onclick="CloseMenu">
+                    <span class="menu-item-icon">⚙️</span>
+                    <span class="menu-item-label">Settings</span>
+                </a>
             </div>
         </nav>
     }
@@ -70,11 +79,6 @@
     private void CloseMenu()
     {
         IsOpen = false;
-    }
-
-    private void ToggleTheme()
-    {
-        ThemeService.ToggleTheme();
     }
 
     private bool IsActive(string path)

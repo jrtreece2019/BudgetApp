@@ -1,0 +1,82 @@
+@page "/register"
+@layout BudgetApp.Shared.Layout.AuthLayout
+
+<PageTitle>Create Account</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Start tracking your budget across all your devices</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="auth-error">
+                <span class="error-icon">!</span>
+                <span>@ErrorMessage</span>
+            </div>
+        }
+
+        <div class="auth-form">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email"
+                       class="form-input"
+                       placeholder="you@example.com"
+                       @bind="Email"
+                       @bind:event="oninput"
+                       disabled="@IsLoading" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password"
+                       class="form-input"
+                       placeholder="At least 8 characters"
+                       @bind="Password"
+                       @bind:event="oninput"
+                       disabled="@IsLoading" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password"
+                       class="form-input"
+                       placeholder="Re-enter your password"
+                       @bind="ConfirmPassword"
+                       @bind:event="oninput"
+                       disabled="@IsLoading" />
+            </div>
+
+            @if (Password.Length > 0 && ConfirmPassword.Length > 0 && Password != ConfirmPassword)
+            {
+                <div class="auth-error">
+                    <span class="error-icon">!</span>
+                    <span>Passwords don't match.</span>
+                </div>
+            }
+
+            <button class="auth-btn" @onclick="HandleRegister" disabled="@(!IsFormValid || IsLoading)">
+                @if (IsLoading)
+                {
+                    <span class="spinner"></span>
+                    <span>Creating account...</span>
+                }
+                else
+                {
+                    <span>Create Account</span>
+                }
+            </button>
+        </div>
+
+        <div class="auth-footer">
+            <span class="auth-footer-text">Already have an account?</span>
+            <a href="/login" class="auth-link">Sign in</a>
+        </div>
+
+        <div class="auth-skip">
+            <a href="/" class="skip-link">Continue without an account</a>
+        </div>
+    </div>
+</div>

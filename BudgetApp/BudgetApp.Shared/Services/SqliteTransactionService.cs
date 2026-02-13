@@ -25,6 +25,9 @@ public class SqliteTransactionService : ITransactionService
             .ToList();
     }
 
+    public List<Transaction> SearchTransactions(string query, int? categoryId = null, int maxResults = 100)
+        => _db.SearchTransactions(query, categoryId, maxResults);
+
     public void AddTransaction(Transaction transaction)
         => _db.AddTransaction(transaction);
 

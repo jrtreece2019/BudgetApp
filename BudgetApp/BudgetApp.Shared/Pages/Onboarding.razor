@@ -1,0 +1,162 @@
+@page "/onboarding"
+@layout BudgetApp.Shared.Layout.AuthLayout
+
+<PageTitle>Welcome to Budget App</PageTitle>
+
+<div class="onboarding-page">
+    @if (CurrentStep == 1)
+    {
+        <!-- Step 1: Welcome + Set Income -->
+        <div class="step-content">
+            <div class="step-header">
+                <span class="step-icon">💰</span>
+                <h1 class="step-title">Welcome to Budget App</h1>
+                <p class="step-subtitle">Let's get your budget set up in a few quick steps.</p>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">What's your monthly income?</label>
+                    <div class="income-input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number"
+                               class="income-input"
+                               placeholder="0"
+                               step="100"
+                               min="0"
+                               @bind="MonthlyIncome"
+                               @bind:event="oninput" />
+                    </div>
+                    <span class="form-hint">This is your expected take-home pay each month. You can change it anytime.</span>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="next-btn" @onclick="NextStep" disabled="@(MonthlyIncome <= 0)">
+                    Continue
+                </button>
+                <button class="skip-link" @onclick="SkipOnboarding">Skip setup</button>
+            </div>
+        </div>
+    }
+    else if (CurrentStep == 2)
+    {
+        <!-- Step 2: Choose & Configure Categories -->
+        <div class="step-content">
+            <div class="step-header">
+                <span class="step-icon">🏷️</span>
+                <h1 class="step-title">Choose Your Categories</h1>
+                <p class="step-subtitle">Toggle categories on or off and set a monthly budget for each. You can always change these later.</p>
+            </div>
+
+            <div class="category-preview-section">
+                @foreach (var group in CategoryGroups)
+                {
+                    <div class="category-group">
+                        <h3 class="group-title">@group.Title</h3>
+                        <div class="category-list">
+                            @foreach (var cat in group.Categories)
+                            {
+                                var catId = cat.Id;
+                                var isSelected = IsCategorySelected(catId);
+                                <div class="category-row @(!isSelected ? "deselected" : "")" @onclick="() => ToggleCategory(catId)">
+                                    <div class="category-check">
+                                        <span class="check-box @(isSelected ? "checked" : "")">
+                                            @if (isSelected) { <span>✓</span> }
+                                        </span>
+                                    </div>
+                                    <span class="chip-icon" style="background: @cat.Color">@cat.Icon</span>
+                                    <span class="chip-name">@cat.Name</span>
+                                    <div class="budget-input-wrapper" @onclick:stopPropagation="true">
+                                        <span class="budget-dollar">$</span>
+                                        <input type="number"
+                                               class="budget-input"
+                                               min="0"
+                                               step="25"
+                                               disabled="@(!isSelected)"
+                                               value="@GetCategoryBudget(catId)"
+                                               @onchange="@(e => OnBudgetChanged(catId, Convert.ToDecimal(e.Value)))" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="budget-summary">
+                <div class="summary-row">
+                    <span class="summary-label">Total Budgeted</span>
+                    <span class="summary-value">@TotalBudgeted.ToString("C0")</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Monthly Income</span>
+                    <span class="summary-value">@MonthlyIncome.ToString("C0")</span>
+                </div>
+                <div class="summary-row @(Remaining >= 0 ? "positive" : "negative")">
+                    <span class="summary-label">@(Remaining >= 0 ? "Unallocated" : "Over Budget")</span>
+                    <span class="summary-value">@Math.Abs(Remaining).ToString("C0")</span>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="next-btn" @onclick="NextStep">Looks Good!</button>
+                <button class="back-link" @onclick="PreviousStep">← Go back</button>
+                <button class="skip-link" @onclick="SkipCategories">Skip — I'll set up categories later</button>
+            </div>
+        </div>
+    }
+    else if (CurrentStep == 3)
+    {
+        <!-- Step 3: Done -->
+        <div class="step-content">
+            <div class="step-header">
+                <span class="step-icon">🎉</span>
+                <h1 class="step-title">You're All Set!</h1>
+                <p class="step-subtitle">Your budget is ready. Here's what you can do next:</p>
+            </div>
+
+            <div class="tips-section">
+                <div class="tip-card">
+                    <span class="tip-icon">📝</span>
+                    <div class="tip-text">
+                        <strong>Add transactions</strong>
+                        <span>Log your spending as you go using the + button</span>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">🔄</span>
+                    <div class="tip-text">
+                        <strong>Set up recurring bills</strong>
+                        <span>Automate rent, subscriptions, and other regular expenses</span>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">🎯</span>
+                    <div class="tip-text">
+                        <strong>Create sinking funds</strong>
+                        <span>Save for big goals like vacations or emergency funds</span>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">📊</span>
+                    <div class="tip-text">
+                        <strong>Check your reports</strong>
+                        <span>See where your money goes each month</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="next-btn" @onclick="FinishOnboarding">Go to My Budget</button>
+            </div>
+        </div>
+    }
+
+    <!-- Progress dots -->
+    <div class="progress-dots">
+        <span class="dot @(CurrentStep == 1 ? "active" : CurrentStep > 1 ? "completed" : "")"></span>
+        <span class="dot @(CurrentStep == 2 ? "active" : CurrentStep > 2 ? "completed" : "")"></span>
+        <span class="dot @(CurrentStep == 3 ? "active" : "")"></span>
+    </div>
+</div>

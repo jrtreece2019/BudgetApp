@@ -33,4 +33,14 @@ public class SqliteSettingsService : ISettingsService
         => _db.GetTransactions(month, year)
             .Where(t => t.Type == TransactionType.Income)
             .Sum(t => t.Amount);
+
+    public bool HasCompletedOnboarding()
+        => _db.GetSettings().HasCompletedOnboarding;
+
+    public void SetOnboardingComplete()
+    {
+        var settings = _db.GetSettings();
+        settings.HasCompletedOnboarding = true;
+        _db.UpdateSettings(settings);
+    }
 }

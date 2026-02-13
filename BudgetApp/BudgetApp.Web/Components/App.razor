@@ -27,6 +27,12 @@
             document.documentElement.classList.add('theme-' + theme);
         })();
     </script>
+    <!-- Plaid Link SDK: renders the bank login UI widget -->
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <!-- Our JS interop bridge between Blazor and Plaid Link -->
+    <script src="_content/BudgetApp.Shared/plaid-link.js"></script>
+    <!-- CSV/file download helper for export feature -->
+    <script src="_content/BudgetApp.Shared/file-download.js"></script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 

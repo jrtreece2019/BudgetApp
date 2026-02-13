@@ -1,0 +1,59 @@
+/* Confirmation dialog action buttons.
+   Placed inside the ModalBase footer slot. */
+
+.confirm-body {
+    padding: 0.25rem 0;
+}
+
+.confirm-message {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.confirm-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.625rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.confirm-btn.cancel {
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.confirm-btn.cancel:hover {
+    background: var(--bg-input);
+}
+
+.confirm-btn.primary {
+    background: var(--gradient-accent);
+    color: white;
+}
+
+.confirm-btn.danger {
+    background: var(--danger);
+    color: white;
+}
+
+.confirm-btn.danger:hover {
+    opacity: 0.9;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+}
+
+.confirm-btn.primary:hover {
+    box-shadow: var(--shadow-accent);
+}

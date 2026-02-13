@@ -1,0 +1,264 @@
+/* Settings page styles.
+   Uses the same design tokens (--bg-*, --text-*, etc.) as the rest of the app.
+   Organized in iOS-style grouped settings sections. */
+
+.settings-page {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding-bottom: 2rem;
+}
+
+/* ── Section Layout ─────────────────────────────────────────── */
+
+.settings-section {
+    padding: 0 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.5rem 0.25rem;
+}
+
+/* ── Settings Group (rounded card) ──────────────────────────── */
+
+.settings-group {
+    background: var(--bg-secondary);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.15s ease;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item.clickable {
+    cursor: pointer;
+}
+
+.settings-item.clickable:hover {
+    background: var(--bg-card);
+}
+
+.settings-item.danger .settings-label {
+    color: var(--danger);
+}
+
+.settings-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.settings-icon {
+    font-size: 1.35rem;
+    flex-shrink: 0;
+    width: 2rem;
+    text-align: center;
+}
+
+.settings-icon.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.settings-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.settings-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.settings-value {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.settings-chevron {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+/* ── Change Password Form ───────────────────────────────────── */
+
+.password-form {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-input {
+    padding: 0.625rem 0.875rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 0.625rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    background: var(--bg-input-focus);
+    border-color: var(--border-color-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ── Action Button ──────────────────────────────────────────── */
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.625rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn.primary {
+    background: var(--gradient-accent);
+    color: white;
+}
+
+.action-btn.primary:hover:not(:disabled) {
+    box-shadow: var(--shadow-accent);
+    transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ── Message Banner ─────────────────────────────────────────── */
+
+.message-banner {
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.625rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.message-banner.success {
+    background: var(--income-bg);
+    color: var(--income);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.message-banner.error {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid var(--danger-border);
+}
+
+/* ── Theme Toggle Switch ────────────────────────────────────── */
+
+.toggle-switch {
+    width: 3rem;
+    height: 1.625rem;
+    border-radius: 1rem;
+    position: relative;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+}
+
+.toggle-switch.dark {
+    background: #6366f1;
+}
+
+.toggle-switch.light {
+    background: var(--border-color);
+}
+
+.toggle-knob {
+    position: absolute;
+    top: 0.1875rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.dark .toggle-knob {
+    transform: translateX(1.375rem);
+}
+
+.toggle-switch.light .toggle-knob {
+    transform: translateX(0.1875rem);
+}
+
+/* ── Spinner ────────────────────────────────────────────────── */
+
+.spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* ── Bottom Spacer ──────────────────────────────────────────── */
+
+.bottom-spacer {
+    height: 2rem;
+}

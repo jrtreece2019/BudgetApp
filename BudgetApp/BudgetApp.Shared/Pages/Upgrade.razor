@@ -1,0 +1,177 @@
+@page "/upgrade"
+
+<PageTitle>Upgrade to Premium</PageTitle>
+
+<div class="upgrade-page">
+    <PageHeader Title="Premium" OnBack="GoBack" />
+
+    @* ── Already Premium ────────────────────────────────────── *@
+    @if (Status.IsPremium)
+    {
+        <div class="premium-active-card">
+            <div class="premium-badge">PREMIUM</div>
+            <h2 class="premium-title">You're on Premium!</h2>
+            <p class="premium-detail">
+                Status: <strong>@Status.Status</strong>
+            </p>
+            @if (Status.ExpiresAt.HasValue)
+            {
+                <p class="premium-detail">
+                    @(Status.AutoRenewing ? "Renews" : "Expires"):
+                    <strong>@Status.ExpiresAt.Value.ToString("MMMM d, yyyy")</strong>
+                </p>
+            }
+            <p class="premium-hint">
+                Manage your subscription in your device's app store settings.
+            </p>
+        </div>
+
+        <div class="features-section">
+            <h3 class="features-title">Your Premium Features</h3>
+            <div class="feature-list">
+                <div class="feature-item unlocked">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Automatic bank transaction import</span>
+                </div>
+                <div class="feature-item unlocked">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Connect unlimited bank accounts</span>
+                </div>
+                <div class="feature-item unlocked">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Smart transaction categorization</span>
+                </div>
+                <div class="feature-item unlocked">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Priority support</span>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* ── Not Premium — Show Upgrade Offer ───────────────── *@
+        <div class="hero-section">
+            <span class="hero-icon">&#9733;</span>
+            <h2 class="hero-title">Upgrade to Premium</h2>
+            <p class="hero-subtitle">
+                Connect your bank accounts and let your transactions import automatically.
+                No more manual entry.
+            </p>
+        </div>
+
+        <div class="features-section">
+            <h3 class="features-title">What You Get</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-icon">&#127974;</span>
+                    <div class="feature-text">
+                        <span class="feature-name">Automatic Import</span>
+                        <span class="feature-desc">Bank transactions appear in your budget automatically</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">&#128279;</span>
+                    <div class="feature-text">
+                        <span class="feature-name">Unlimited Banks</span>
+                        <span class="feature-desc">Connect Chase, Wells Fargo, Bank of America, and more</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">&#128218;</span>
+                    <div class="feature-text">
+                        <span class="feature-name">Smart Categories</span>
+                        <span class="feature-desc">Transactions are auto-categorized based on merchant</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">&#128274;</span>
+                    <div class="feature-text">
+                        <span class="feature-name">Bank-Level Security</span>
+                        <span class="feature-desc">256-bit encryption, powered by Plaid</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="plans-section">
+            <h3 class="plans-title">Choose Your Plan</h3>
+            <div class="plan-cards">
+                @foreach (var plan in Plans)
+                {
+                    <div class="plan-card @(SelectedPlan?.ProductId == plan.ProductId ? "plan-selected" : "") @(plan.IsPopular ? "plan-popular" : "")"
+                         @onclick="() => SelectPlan(plan)">
+                        @if (plan.IsPopular)
+                        {
+                            <div class="popular-badge">BEST VALUE</div>
+                        }
+                        <span class="plan-price">@plan.Price</span>
+                        <span class="plan-period">per @plan.Period</span>
+                        @if (!string.IsNullOrEmpty(plan.Savings))
+                        {
+                            <span class="plan-savings">@plan.Savings</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="error-banner">
+                <span>@ErrorMessage</span>
+            </div>
+        }
+
+        <div class="subscribe-section">
+            <button class="subscribe-btn" @onclick="HandleSubscribe"
+                    disabled="@(SelectedPlan == null || IsProcessing)">
+                @if (IsProcessing)
+                {
+                    <span class="spinner"></span>
+                    <span>Processing...</span>
+                }
+                else
+                {
+                    <span>Subscribe Now</span>
+                }
+            </button>
+            <p class="subscribe-hint">
+                Cancel anytime. Subscription auto-renews unless turned off
+                at least 24 hours before the end of the current period.
+            </p>
+        </div>
+
+        <div class="free-features">
+            <h3 class="free-title">Already Included for Free</h3>
+            <div class="feature-list compact">
+                <div class="feature-item free">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Unlimited categories &amp; budgets</span>
+                </div>
+                <div class="feature-item free">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Transaction tracking</span>
+                </div>
+                <div class="feature-item free">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Recurring transactions</span>
+                </div>
+                <div class="feature-item free">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Sinking funds</span>
+                </div>
+                <div class="feature-item free">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Cloud sync across devices</span>
+                </div>
+                <div class="feature-item free">
+                    <span class="feature-check">&#10003;</span>
+                    <span>Reports &amp; spending insights</span>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="bottom-spacer"></div>
+</div>

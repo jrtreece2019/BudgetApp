@@ -128,11 +128,19 @@ else
                             <div class="tx-amount @(tx.Type == SinkingFundTransactionType.Contribution ? "positive" : "negative")">
                                 @(tx.Type == SinkingFundTransactionType.Contribution ? "+" : "−")@tx.Amount.ToString("C2")
                             </div>
-                            <button class="delete-tx-btn" @onclick="() => DeleteTransaction(tx.Id)">✕</button>
+                            <button class="delete-tx-btn" @onclick="() => ConfirmDeleteTransaction(tx.Id)">✕</button>
                         </div>
                     }
                 </div>
             }
         </div>
+
+        <ConfirmDialog IsVisible="ShowDeleteConfirm"
+                       Title="Delete Transaction"
+                       Message="Are you sure you want to delete this transaction? The fund balance will be adjusted."
+                       ConfirmText="Delete"
+                       IsDanger="true"
+                       OnConfirm="DeleteTransaction"
+                       OnCancel="CancelDelete" />
     </div>
 }

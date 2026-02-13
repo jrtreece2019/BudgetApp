@@ -25,7 +25,7 @@ public partial class EditRecurring : ComponentBase
     private bool IsActive { get; set; } = true;
     private List<Category> Categories { get; set; } = new();
 
-    private bool IsValid => Amount > 0 && SelectedCategoryId > 0 && !string.IsNullOrWhiteSpace(Description);
+    private bool IsValid => Amount > 0 && (IsExpense ? SelectedCategoryId > 0 : true) && !string.IsNullOrWhiteSpace(Description);
 
     protected override void OnInitialized()
     {
@@ -63,6 +63,9 @@ public partial class EditRecurring : ComponentBase
 
         var nextDueDate = CalculateInitialNextDueDate();
 
+        var categoryId = IsExpense ? SelectedCategoryId : 0;
+        var transactionType = IsExpense ? TransactionType.Expense : TransactionType.Income;
+
         if (IsEditing)
         {
             var recurring = new RecurringTransaction
@@ -70,8 +73,8 @@ public partial class EditRecurring : ComponentBase
                 Id = RecurringId!.Value,
                 Description = Description,
                 Amount = Amount,
-                CategoryId = SelectedCategoryId,
-                Type = IsExpense ? TransactionType.Expense : TransactionType.Income,
+                CategoryId = categoryId,
+                Type = transactionType,
                 Frequency = Frequency,
                 DayOfMonth = DayOfMonth,
                 StartDate = StartDate,
@@ -86,8 +89,8 @@ public partial class EditRecurring : ComponentBase
             {
                 Description = Description,
                 Amount = Amount,
-                CategoryId = SelectedCategoryId,
-                Type = IsExpense ? TransactionType.Expense : TransactionType.Income,
+                CategoryId = categoryId,
+                Type = transactionType,
                 Date = DateTime.Today
             };
             TransactionService.AddTransaction(firstTransaction);
@@ -96,8 +99,8 @@ public partial class EditRecurring : ComponentBase
             {
                 Description = Description,
                 Amount = Amount,
-                CategoryId = SelectedCategoryId,
-                Type = IsExpense ? TransactionType.Expense : TransactionType.Income,
+                CategoryId = categoryId,
+                Type = transactionType,
                 Frequency = Frequency,
                 DayOfMonth = DayOfMonth,
                 StartDate = StartDate,
@@ -131,11 +134,25 @@ public partial class EditRecurring : ComponentBase
         };
     }
 
+    // Confirm delete state
+    private bool ShowDeleteConfirm { get; set; }
+
+    private void ConfirmDelete()
+    {
+        ShowDeleteConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+    }
+
     private void DeleteRecurring()
     {
         if (IsEditing)
         {
             RecurringTransactionService.DeleteRecurringTransaction(RecurringId!.Value);
+            ShowDeleteConfirm = false;
             Navigation.NavigateTo("/recurring");
         }
     }

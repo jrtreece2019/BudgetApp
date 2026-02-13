@@ -1,0 +1,52 @@
+@*
+    Reusable confirmation dialog for destructive actions (delete, etc.).
+    Built on ModalBase to keep consistent styling.
+    
+    Usage:
+        <ConfirmDialog IsVisible="showConfirm"
+                       Title="Delete Transaction"
+                       Message="Are you sure? This cannot be undone."
+                       ConfirmText="Delete"
+                       IsDanger="true"
+                       OnConfirm="HandleDelete"
+                       OnCancel="() => showConfirm = false" />
+*@
+
+<ModalBase IsVisible="@IsVisible" Title="@Title" OnClose="OnCancel">
+    <Body>
+        <div class="confirm-body">
+            <p class="confirm-message">@Message</p>
+        </div>
+    </Body>
+    <Footer>
+        <div class="confirm-actions">
+            <button class="confirm-btn cancel" @onclick="OnCancel">Cancel</button>
+            <button class="confirm-btn @(IsDanger ? "danger" : "primary")" @onclick="OnConfirm">
+                @ConfirmText
+            </button>
+        </div>
+    </Footer>
+</ModalBase>
+
+@code {
+    /// <summary>Whether the dialog is visible.</summary>
+    [Parameter] public bool IsVisible { get; set; }
+
+    /// <summary>Title shown in the modal header.</summary>
+    [Parameter, EditorRequired] public string Title { get; set; } = "Confirm";
+
+    /// <summary>The message body explaining the action.</summary>
+    [Parameter, EditorRequired] public string Message { get; set; } = "Are you sure?";
+
+    /// <summary>Text on the confirm button (e.g. "Delete", "Remove").</summary>
+    [Parameter] public string ConfirmText { get; set; } = "Confirm";
+
+    /// <summary>If true, the confirm button is styled as danger (red).</summary>
+    [Parameter] public bool IsDanger { get; set; }
+
+    /// <summary>Called when the user confirms the action.</summary>
+    [Parameter, EditorRequired] public EventCallback OnConfirm { get; set; }
+
+    /// <summary>Called when the user cancels or closes the dialog.</summary>
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+}

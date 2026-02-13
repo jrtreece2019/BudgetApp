@@ -97,12 +97,26 @@ public partial class EditSinkingFund : ComponentBase
         Navigation.NavigateTo("/sinking-funds");
     }
 
+    // Confirm delete state
+    private bool ShowDeleteConfirm { get; set; }
+
+    private void ConfirmDelete()
+    {
+        ShowDeleteConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+    }
+
     private void Delete()
     {
         if (FundId.HasValue)
         {
             SinkingFundService.DeleteSinkingFund(FundId.Value);
         }
+        ShowDeleteConfirm = false;
         Navigation.NavigateTo("/sinking-funds");
     }
 

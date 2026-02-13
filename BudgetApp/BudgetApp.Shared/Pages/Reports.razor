@@ -3,101 +3,152 @@
 <PageTitle>Reports</PageTitle>
 
 <div class="reports-page">
-    <PageHeader Title="Reports" OnBack="GoBack" />
+    <PageHeader Title="Reports" OnBack="GoBack">
+        <Actions>
+            <button class="export-btn" @onclick="ExportReport" title="Export CSV">📥</button>
+        </Actions>
+    </PageHeader>
 
     <MonthNavigator CurrentDate="CurrentDate" OnPreviousMonth="PreviousMonth" OnNextMonth="NextMonth" />
 
-    <!-- Overview Cards -->
-    <div class="overview-cards">
-        <div class="overview-card expense">
-            <span class="card-label">Total Spent</span>
-            <span class="card-value">@TotalExpenses.ToString("C0")</span>
-        </div>
-        <div class="overview-card income">
-            <span class="card-label">Total Income</span>
-            <span class="card-value">@TotalIncome.ToString("C0")</span>
-        </div>
-    </div>
-
-    <div class="net-card @(NetAmount >= 0 ? "positive" : "negative")">
-        <span class="net-label">@(NetAmount >= 0 ? "You saved" : "You overspent")</span>
-        <span class="net-value">@Math.Abs(NetAmount).ToString("C0")</span>
-    </div>
-
-    <!-- Spending by Category -->
-    <div class="section">
-        <div class="section-header">
-            <span class="section-title">Spending by Category</span>
+        <!-- Overview Cards -->
+        <div class="overview-cards">
+            <div class="overview-card expense">
+                <span class="card-label">Total Spent</span>
+                <span class="card-value">@TotalExpenses.ToString("C0")</span>
+            </div>
+            <div class="overview-card income">
+                <span class="card-label">Total Income</span>
+                <span class="card-value">@TotalIncome.ToString("C0")</span>
+            </div>
         </div>
 
-        @if (CategorySpending.Any())
-        {
-            <div class="category-chart">
+        <div class="net-card @(NetAmount >= 0 ? "positive" : "negative")">
+            <span class="net-label">@(NetAmount >= 0 ? "You saved" : "You overspent")</span>
+            <span class="net-value">@Math.Abs(NetAmount).ToString("C0")</span>
+        </div>
+
+        <!-- Spending by Category -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Spending by Category</span>
+            </div>
+
+            @if (CategorySpending.Any())
+            {
+                <div class="category-chart">
+                    @foreach (var item in CategorySpending.OrderByDescending(c => c.Amount))
+                    {
+                        var percentage = TotalExpenses > 0 ? (double)(item.Amount / TotalExpenses) * 100 : 0;
+                        
+                        <div class="chart-row">
+                            <div class="chart-label">
+                                <span class="chart-icon" style="background-color: @item.Category.Color">@item.Category.Icon</span>
+                                <span class="chart-name">@item.Category.Name</span>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: @percentage%; background-color: @item.Category.Color"></div>
+                            </div>
+                            <div class="chart-value">
+                                <span class="chart-amount">@item.Amount.ToString("C0")</span>
+                                <span class="chart-percent">@percentage.ToString("F0")%</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <EmptyState Message="No spending data this month" />
+            }
+        </div>
+
+        <!-- Budget Status -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Budget Status</span>
+            </div>
+
+            <div class="budget-list">
                 @foreach (var item in CategorySpending.OrderByDescending(c => c.Amount))
                 {
-                    var percentage = TotalExpenses > 0 ? (double)(item.Amount / TotalExpenses) * 100 : 0;
-                    
-                    <div class="chart-row">
-                        <div class="chart-label">
-                            <span class="chart-icon" style="background-color: @item.Category.Color">@item.Category.Icon</span>
-                            <span class="chart-name">@item.Category.Name</span>
+                    var budget = BudgetService.GetBudgetByCategory(item.Category.Id, CurrentDate.Month, CurrentDate.Year);
+                    var percentage = budget > 0 ? Math.Min((double)(item.Amount / budget) * 100, 100) : 0;
+                    var isOver = item.Amount > budget;
+                    var remaining = budget - item.Amount;
+
+                    <div class="budget-item @(isOver ? "over" : "")">
+                        <div class="budget-header">
+                            <span class="budget-icon" style="background-color: @item.Category.Color">@item.Category.Icon</span>
+                            <span class="budget-name">@item.Category.Name</span>
+                            <span class="budget-status @(isOver ? "over" : "under")">
+                                @if (isOver)
+                                {
+                                    <span>@Math.Abs(remaining).ToString("C0") over</span>
+                                }
+                                else
+                                {
+                                    <span>@remaining.ToString("C0") left</span>
+                                }
+                            </span>
                         </div>
-                        <div class="chart-bar-container">
-                            <div class="chart-bar" style="width: @percentage%; background-color: @item.Category.Color"></div>
+                        <div class="budget-progress-container">
+                            <div class="budget-progress-bar @(isOver ? "over" : "")" 
+                                 style="width: @percentage%; background-color: @(isOver ? "#f87171" : item.Category.Color)"></div>
                         </div>
-                        <div class="chart-value">
-                            <span class="chart-amount">@item.Amount.ToString("C0")</span>
-                            <span class="chart-percent">@percentage.ToString("F0")%</span>
+                        <div class="budget-footer">
+                            <span>@item.Amount.ToString("C0") of @budget.ToString("C0")</span>
                         </div>
                     </div>
                 }
             </div>
-        }
-        else
-        {
-            <EmptyState Message="No spending data this month" />
-        }
-    </div>
+        </div>
 
-    <!-- Budget Status -->
+    <!-- Category Deep-Dive -->
     <div class="section">
         <div class="section-header">
-            <span class="section-title">Budget Status</span>
+            <span class="section-title">Category History</span>
         </div>
 
-        <div class="budget-list">
-            @foreach (var item in CategorySpending.OrderByDescending(c => c.Amount))
-            {
-                var budget = BudgetService.GetBudgetByCategory(item.Category.Id, CurrentDate.Month, CurrentDate.Year);
-                var percentage = budget > 0 ? Math.Min((double)(item.Amount / budget) * 100, 100) : 0;
-                var isOver = item.Amount > budget;
-                var remaining = budget - item.Amount;
+        <div class="deep-dive-picker">
+            <select class="deep-dive-select" @onchange="OnDeepDiveCategoryChanged">
+                <option value="0">Select a category...</option>
+                @foreach (var cat in Categories)
+                {
+                    <option value="@cat.Id">@cat.Icon @cat.Name</option>
+                }
+            </select>
+        </div>
 
-                <div class="budget-item @(isOver ? "over" : "")">
-                    <div class="budget-header">
-                        <span class="budget-icon" style="background-color: @item.Category.Color">@item.Category.Icon</span>
-                        <span class="budget-name">@item.Category.Name</span>
-                        <span class="budget-status @(isOver ? "over" : "under")">
-                            @if (isOver)
-                            {
-                                <span>@Math.Abs(remaining).ToString("C0") over</span>
-                            }
-                            else
-                            {
-                                <span>@remaining.ToString("C0") left</span>
-                            }
-                        </span>
-                    </div>
-                    <div class="budget-progress-container">
-                        <div class="budget-progress-bar @(isOver ? "over" : "")" 
-                             style="width: @percentage%; background-color: @(isOver ? "#f87171" : item.Category.Color)"></div>
-                    </div>
-                    <div class="budget-footer">
-                        <span>@item.Amount.ToString("C0") of @budget.ToString("C0")</span>
-                    </div>
+        @if (SelectedDeepDiveCategoryId > 0)
+        {
+            @if (CategoryHistory.Any())
+            {
+                <div class="deep-dive-summary">
+                    <span class="deep-dive-avg-label">Avg per month</span>
+                    <span class="deep-dive-avg-value">@CategoryHistoryAvg.ToString("C0")</span>
+                    <span class="deep-dive-count">across @CategoryHistory.Count month@(CategoryHistory.Count != 1 ? "s" : "") with data</span>
+                </div>
+
+                <div class="deep-dive-chart">
+                    @foreach (var item in CategoryHistory)
+                    {
+                        var barWidth = GetDeepDiveBarWidth(item.Amount);
+                        <div class="deep-dive-row">
+                            <span class="deep-dive-month">@item.Label</span>
+                            <div class="deep-dive-bar-container">
+                                <div class="deep-dive-bar" style="width: @barWidth%"></div>
+                            </div>
+                            <span class="deep-dive-amount">@item.Amount.ToString("C0")</span>
+                        </div>
+                    }
                 </div>
             }
-        </div>
+            else
+            {
+                <EmptyState Message="No spending history for this category" />
+            }
+        }
     </div>
 
     <div class="bottom-spacer"></div>

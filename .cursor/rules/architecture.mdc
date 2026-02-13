@@ -7,13 +7,16 @@ alwaysApply: true
 
 ## Project Structure
 
-This is a .NET 10 Blazor Hybrid app with three projects:
+This is a .NET 10 Blazor Hybrid app with four projects:
 
 - `BudgetApp.Shared` -- shared Razor pages, components, services, and models (the bulk of the code)
 - `BudgetApp.Web` -- ASP.NET Core host for the web version
 - `BudgetApp` -- .NET MAUI host for mobile/desktop
+- `BudgetApp.Api` -- ASP.NET Core Web API backend (PostgreSQL, EF Core, ASP.NET Identity + JWT)
 
 All UI and business logic lives in `BudgetApp.Shared`. The Web and MAUI projects are thin hosts that register DI services and provide platform-specific `IFormFactor` implementations.
+
+`BudgetApp.Api` is a standalone backend that does NOT reference `BudgetApp.Shared` (to avoid pulling SQLite dependencies into the server). It defines its own EF Core entities that mirror the shared models with additional server-side fields (UserId, SyncId, UpdatedAt, IsDeleted).
 
 ## Folder Layout (BudgetApp.Shared)
 
@@ -34,9 +37,11 @@ wwwroot/      -- app.css (design tokens), bootstrap, theme.js
 
 - **Split interfaces** -- never create a monolithic service. Each domain has its own interface:
   `ICategoryService`, `ITransactionService`, `IBudgetService`,
-  `IRecurringTransactionService`, `ISettingsService`, `ISinkingFundService`
+  `IRecurringTransactionService`, `ISettingsService`, `ISinkingFundService`,
+  `IAuthService`, `ISyncService`, `IBankConnectionService`
 - **IDatabaseService** is the pure data-access layer (CRUD only, no business logic)
 - **Business logic lives in Sqlite*Service classes**, not in DatabaseService
+- **Api*Service classes** (ApiAuthService, ApiBankConnectionService) talk to the backend via HttpClient
 - Pages inject only the interfaces they actually need
 
 ## Dependency Injection
@@ -51,3 +56,50 @@ When adding a new service:
 
 - `DateHelpers.FormatDate()` and `DateHelpers.GetOrdinal()` -- use these instead of writing local date helpers
 - `RecurrenceCalculator.CalculateNextDueDate()` -- centralised recurring-transaction math
+
+## Backend API (BudgetApp.Api)
+
+### Folder Layout
+```
+Controllers/   -- API endpoints (AuthController, SyncController, PlaidController)
+Data/          -- AppDbContext (EF Core + Identity)
+Models/
+  Entities/    -- EF Core entity classes (with UserId, SyncId, timestamps)
+               -- Plaid entities: PlaidItem, PlaidAccount, ImportedTransaction
+  DTOs/        -- request/response data transfer objects
+Services/      -- TokenService, SyncService, PlaidService
+Migrations/    -- EF Core database migrations
+```
+
+### Key Conventions
+- All domain entities have `UserId` (FK to AppUser) for multi-tenancy
+- All domain entities have `SyncId` (Guid) for client-server record matching
+- All domain entities have `UpdatedAt` and `IsDeleted` for sync
+- Enums are duplicated from Shared (same numeric values) to avoid cross-project dependency
+- Authentication uses JWT Bearer tokens (short-lived access + long-lived refresh)
+- CORS is configured to allow client apps to call the API
+- Plaid config (ClientId, Secret, Environment) lives in appsettings.json under `Plaid:` section
+- Plaid webhooks handled at POST /api/plaid/webhook (unauthenticated -- Plaid calls it directly)
+
+### Data Sync
+- All shared models have `SyncId`, `UpdatedAt`, `IsDeleted` for bidirectional sync
+- DatabaseService auto-stamps these on every write and uses soft deletes
+- POST /api/sync is the single sync endpoint (push + pull in one request)
+- Conflict resolution: last-write-wins based on `UpdatedAt`
+
+### Plaid Integration
+- PlaidItem = one bank connection (stores Plaid access token)
+- PlaidAccount = one account within a bank connection
+- ImportedTransaction = raw Plaid data, staged before becoming a budget Transaction
+- Plaid Link (JavaScript SDK) is invoked via JS interop from ConnectBank.razor
+
+### Subscription / Paywall
+- **Free tier**: all budget features (categories, transactions, budgets, recurring, sinking funds, sync)
+- **Premium tier**: everything in Free + automatic bank transaction import (Plaid)
+- Subscription entity tracks status, store (apple/google), period start/end, auto-renewal
+- SubscriptionService validates receipts with Apple/Google servers
+- PlaidController gates bank connection behind `IsPremiumAsync()` check (403 if not premium)
+- ConnectBank page redirects to `/upgrade` if user isn't premium
+- Upgrade page shows plan selection and handles sandbox purchase simulation
+- Subscription config lives in appsettings.json under `Subscription:` section
+- In sandbox mode, all receipts are auto-accepted for testing

@@ -38,6 +38,12 @@ public partial class AddTransaction : ComponentBase
             {
                 ReturnUrl = returnUrlParam;
             }
+
+            var categoryIdParam = queryParams["categoryId"];
+            if (int.TryParse(categoryIdParam, out var catId) && catId > 0)
+            {
+                SelectedCategoryId = catId;
+            }
         }
 
         if (IsEditing)
@@ -59,7 +65,7 @@ public partial class AddTransaction : ComponentBase
                 }
             }
         }
-        else if (Categories.Any())
+        else if (SelectedCategoryId == 0 && Categories.Any())
         {
             SelectedCategoryId = Categories.First().Id;
         }

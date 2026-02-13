@@ -1,0 +1,328 @@
+/* Upgrade page styles.
+   A premium marketing page that shows free vs premium features.
+   Uses the same design tokens as the rest of the app. */
+
+.upgrade-page {
+    min-height: 100vh;
+    background: var(--gradient-bg);
+    padding-bottom: 2rem;
+}
+
+/* ── Hero Section ────────────────────────────────────────────── */
+
+.hero-section {
+    text-align: center;
+    padding: 2rem 1.5rem;
+}
+
+.hero-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #f59e0b;
+}
+
+.hero-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.hero-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Premium Active Card ─────────────────────────────────────── */
+
+.premium-active-card {
+    margin: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 1.25rem;
+    text-align: center;
+    color: white;
+}
+
+.premium-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+}
+
+.premium-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+}
+
+.premium-detail {
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+    opacity: 0.9;
+}
+
+.premium-hint {
+    font-size: 0.8rem;
+    margin: 1rem 0 0 0;
+    opacity: 0.7;
+}
+
+/* ── Features Section ────────────────────────────────────────── */
+
+.features-section {
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.features-title,
+.plans-title,
+.free-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.75rem 0;
+    padding: 0 0.25rem;
+}
+
+.feature-list {
+    background: var(--bg-secondary);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.feature-list.compact .feature-item {
+    padding: 0.625rem 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.feature-item:last-child {
+    border-bottom: none;
+}
+
+.feature-item.unlocked {
+    color: var(--text-primary);
+}
+
+.feature-item.free {
+    color: var(--text-secondary);
+}
+
+.feature-check {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.feature-item.unlocked .feature-check {
+    color: #10b981;
+}
+
+.feature-item.free .feature-check {
+    color: var(--text-muted);
+}
+
+.feature-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.feature-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.feature-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ── Plan Cards ──────────────────────────────────────────────── */
+
+.plans-section {
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.plan-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.plan-card {
+    position: relative;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.plan-card:hover {
+    border-color: var(--text-muted);
+}
+
+.plan-card.plan-selected {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.plan-card.plan-popular {
+    border-color: #6366f1;
+}
+
+.popular-badge {
+    position: absolute;
+    top: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.125rem 0.625rem;
+    background: #6366f1;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+}
+
+.plan-price {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.plan-period {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.125rem;
+}
+
+.plan-savings {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* ── Subscribe Button ────────────────────────────────────────── */
+
+.subscribe-section {
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.subscribe-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subscribe-btn:hover:not(:disabled) {
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}
+
+.subscribe-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.subscribe-hint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 0 0;
+    line-height: 1.4;
+}
+
+/* ── Error Banner ────────────────────────────────────────────── */
+
+.error-banner {
+    margin: 0 1rem 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-radius: 0.75rem;
+    color: var(--danger);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* ── Free Features ───────────────────────────────────────────── */
+
+.free-features {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Spinner ─────────────────────────────────────────────────── */
+
+.spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Bottom Spacer ───────────────────────────────────────────── */
+
+.bottom-spacer {
+    height: 2rem;
+}

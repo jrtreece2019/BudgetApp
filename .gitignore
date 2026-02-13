@@ -339,6 +339,9 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# Secrets / local dev settings (contains Plaid keys, DB passwords, JWT keys, etc.)
+**/appsettings.Development.json
+
 # MAUI
 *.csproj.user
 *.csproj.user.*

@@ -1,0 +1,62 @@
+@inherits LayoutComponentBase
+@inject ThemeService ThemeService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="@ThemeService.ThemeClass">
+    <div class="app-container">
+        @Body
+    </div>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ThemeService.OnThemeChanged += OnThemeChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var savedTheme = await JSRuntime.InvokeAsync<string>("themeHelper.getTheme");
+                if (savedTheme == "light")
+                {
+                    ThemeService.SetTheme(AppTheme.Light);
+                }
+            }
+            catch
+            {
+                // JS interop not available (e.g., prerendering)
+            }
+        }
+    }
+
+    private async void OnThemeChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var themeName = ThemeService.IsDarkMode ? "dark" : "light";
+            await JSRuntime.InvokeVoidAsync("themeHelper.setTheme", themeName);
+        }
+        catch
+        {
+            // JS interop not available
+        }
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= OnThemeChanged;
+    }
+}

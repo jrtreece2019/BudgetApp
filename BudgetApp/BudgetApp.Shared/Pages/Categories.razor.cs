@@ -126,11 +126,25 @@ public partial class Categories : ComponentBase
         LoadData();
     }
 
+    // Confirm delete state
+    private bool ShowDeleteConfirm { get; set; }
+
+    private void ConfirmDeleteCategory()
+    {
+        ShowDeleteConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+    }
+
     private void DeleteCurrentCategory()
     {
         if (IsEditingCategory && EditCategoryId.HasValue && CanDelete)
         {
             CategoryService.DeleteCategory(EditCategoryId.Value);
+            ShowDeleteConfirm = false;
             CloseModal();
             LoadData();
         }

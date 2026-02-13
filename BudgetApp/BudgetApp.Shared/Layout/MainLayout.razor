@@ -1,6 +1,8 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @inject ThemeService ThemeService
 @inject IJSRuntime JSRuntime
+@inject BudgetApp.Shared.Services.Interfaces.IAuthService AuthService
+@inject BudgetApp.Shared.Services.Interfaces.ISyncService SyncService
 @implements IDisposable
 
 <div class="@ThemeService.ThemeClass">
@@ -40,12 +42,33 @@
             {
                 // JS interop not available (e.g., prerendering)
             }
+
+            // ── Auto-sync on startup ──────────────────────────────────
+            // If the user is already logged in (e.g., they have a saved token
+            // from a previous session), kick off a sync immediately to pull
+            // down any changes made on other devices or by the server (Plaid
+            // transactions, etc.).  Also start the periodic auto-sync timer.
+            //
+            // We do this in OnAfterRenderAsync (not OnInitialized) because:
+            // 1. It runs after the UI has painted, so the user sees the app
+            //    instantly and sync happens in the background.
+            // 2. JS interop is available here (needed for some auth token
+            //    storage implementations).
+            if (AuthService.IsAuthenticated)
+            {
+                _ = SyncService.SyncAsync();
+                SyncService.StartAutoSync(TimeSpan.FromMinutes(5));
+            }
         }
     }
 
     private async void OnThemeChanged()
     {
-        StateHasChanged();
+        // InvokeAsync marshals execution back to Blazor's synchronization
+        // context (the "Dispatcher").  StateHasChanged() must run on the
+        // UI thread; calling it directly from an event handler that could
+        // fire on a background thread throws InvalidOperationException.
+        await InvokeAsync(StateHasChanged);
         
         try
         {
@@ -62,5 +85,10 @@
     public void Dispose()
     {
         ThemeService.OnThemeChanged -= OnThemeChanged;
+
+        // Stop the auto-sync timer when the layout is disposed.
+        // This prevents background sync from running after the user
+        // navigates away or the app is shutting down.
+        SyncService.StopAutoSync();
     }
 }

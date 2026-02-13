@@ -13,6 +13,7 @@ public class SinkingFund
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
+    public Guid SyncId { get; set; } = Guid.NewGuid();
     
     public string Name { get; set; } = string.Empty;
     public string Icon { get; set; } = "🎯";
@@ -30,6 +31,8 @@ public class SinkingFund
     public bool AutoContribute { get; set; } = false;
     
     public DateTime? LastAutoContributeDate { get; set; }
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public bool IsDeleted { get; set; }
     
     // Computed properties (not stored in DB)
     [Ignore]

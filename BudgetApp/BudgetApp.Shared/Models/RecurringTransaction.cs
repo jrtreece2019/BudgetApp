@@ -14,6 +14,7 @@ public class RecurringTransaction
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
+    public Guid SyncId { get; set; } = Guid.NewGuid();
     
     public string Description { get; set; } = string.Empty;
     
@@ -45,5 +46,7 @@ public class RecurringTransaction
     /// Whether this recurring transaction is active.
     /// </summary>
     public bool IsActive { get; set; } = true;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public bool IsDeleted { get; set; }
 }
 

@@ -79,10 +79,31 @@ public partial class SinkingFundDetail : ComponentBase
         CloseModal();
     }
 
-    private void DeleteTransaction(int transactionId)
+    // Confirm delete state
+    private bool ShowDeleteConfirm { get; set; }
+    private int? PendingDeleteTransactionId { get; set; }
+
+    private void ConfirmDeleteTransaction(int transactionId)
     {
-        SinkingFundService.DeleteSinkingFundTransaction(transactionId);
-        LoadData();
+        PendingDeleteTransactionId = transactionId;
+        ShowDeleteConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+        PendingDeleteTransactionId = null;
+    }
+
+    private void DeleteTransaction()
+    {
+        if (PendingDeleteTransactionId.HasValue)
+        {
+            SinkingFundService.DeleteSinkingFundTransaction(PendingDeleteTransactionId.Value);
+            LoadData();
+        }
+        ShowDeleteConfirm = false;
+        PendingDeleteTransactionId = null;
     }
 
     private void EditFund()

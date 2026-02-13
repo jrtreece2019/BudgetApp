@@ -1,0 +1,68 @@
+@page "/login"
+@layout BudgetApp.Shared.Layout.AuthLayout
+
+<PageTitle>Sign In</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to sync your budget across devices</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="auth-error">
+                <span class="error-icon">!</span>
+                <span>@ErrorMessage</span>
+            </div>
+        }
+
+        <div class="auth-form">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email"
+                       class="form-input"
+                       placeholder="you@example.com"
+                       @bind="Email"
+                       @bind:event="oninput"
+                       disabled="@IsLoading" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password"
+                       class="form-input"
+                       placeholder="Enter your password"
+                       @bind="Password"
+                       @bind:event="oninput"
+                       disabled="@IsLoading" />
+            </div>
+
+            <button class="auth-btn" @onclick="HandleLogin" disabled="@(!IsFormValid || IsLoading)">
+                @if (IsLoading)
+                {
+                    <span class="spinner"></span>
+                    <span>Signing in...</span>
+                }
+                else
+                {
+                    <span>Sign In</span>
+                }
+            </button>
+        </div>
+
+        <div class="auth-forgot">
+            <a href="/forgot-password" class="auth-link">Forgot your password?</a>
+        </div>
+
+        <div class="auth-footer">
+            <span class="auth-footer-text">Don't have an account?</span>
+            <a href="/register" class="auth-link">Create one</a>
+        </div>
+
+        <div class="auth-skip">
+            <a href="/" class="skip-link">Continue without an account</a>
+        </div>
+    </div>
+</div>

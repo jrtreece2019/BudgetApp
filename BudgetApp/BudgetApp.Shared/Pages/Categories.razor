@@ -160,7 +160,7 @@
     <Footer>
         @if (IsEditingCategory && CanDelete)
         {
-            <button class="delete-category-btn" @onclick="DeleteCurrentCategory">Delete</button>
+            <button class="delete-category-btn" @onclick="ConfirmDeleteCategory">Delete</button>
         }
         <button class="save-category-btn @(!IsModalValid ? "disabled" : "")"
                 @onclick="SaveCategory"
@@ -169,3 +169,11 @@
         </button>
     </Footer>
 </ModalBase>
+
+<ConfirmDialog IsVisible="ShowDeleteConfirm"
+               Title="Delete Category"
+               Message="Are you sure you want to delete this category? This cannot be undone."
+               ConfirmText="Delete"
+               IsDanger="true"
+               OnConfirm="DeleteCurrentCategory"
+               OnCancel="CancelDelete" />
